@@ -44,6 +44,7 @@ If constraints are missing, infer from repository docs and existing UI patterns.
 - `Color and contrast`: state clarity and WCAG risk areas
 - `Interaction states`: hover/focus/active/disabled/loading/empty/error
 - `Responsive behavior`: breakpoints, touch ergonomics, text wrapping
+- `Responsive state sync`: drawer/overlay state and body scroll lock on resize/orientation changes
 - `Accessibility semantics`: labels, roles, keyboard path, focus visibility
 - `Consistency`: component reuse, naming, variant behavior
 

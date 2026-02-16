@@ -20,9 +20,12 @@
 
 ## Responsiveness
 
+- Tablet and phone breakpoints are explicitly covered (for example 1024 / 768 / 560)
 - Content does not overflow at mobile widths
 - Tap targets are usable on touch screens
 - Text remains readable without clipping
+- Drawer/overlay visibility is synchronized when viewport size changes
+- Body scroll lock is correctly restored after closing mobile overlays
 
 ## Accessibility
 
