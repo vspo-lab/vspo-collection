@@ -1,0 +1,35 @@
+{
+  "name": "@vspo/search",
+  "private": true,
+  "description": "Transcript search system for VTuber content",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sugar-cat7/vspo-search"
+  },
+  "scripts": {
+    "dev:next": "pnpm --filter web dev",
+    "dev": "dotenv -e .env.local -- turbo dev",
+    "build": "turbo build",
+    "type-check": "turbo type-check",
+    "biome": "turbo biome",
+    "knip": "knip",
+    "knip:fix": "knip --fix",
+    "test": "docker compose -f compose.test.yaml run --rm --build test-all",
+    "test:unit": "docker compose -f compose.test.yaml run --rm --build test-unit",
+    "test:integration": "docker compose -f compose.test.yaml run --rm --build test-integration",
+    "test:coverage": "docker compose -f compose.test.yaml run --rm --build test-coverage",
+    "test:clean": "docker compose -f compose.test.yaml down --rmi local --remove-orphans",
+    "storybook": "pnpm --filter web storybook",
+    "security-scan": "./scripts/security-scan.sh",
+    "security-scan:docker": "./scripts/security-scan.sh --docker"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "dotenv-cli": "^11.0.0",
+    "knip": "^5.82.1",
+    "turbo": "2.6.3",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.24.0"
+}

@@ -1,0 +1,23 @@
+# octocov configuration
+# https://github.com/k1LoW/octocov
+
+coverage:
+  paths:
+    - services/server/coverage/coverage-final.json
+
+codeToTestRatio:
+  code:
+    - services/server/domain/**/*.ts
+    - services/server/pkg/**/*.ts
+    - services/server/usecase/**/*.ts
+    - services/server/infra/**/*.ts
+    - "!**/*.test.ts"
+  test:
+    - services/server/**/*.test.ts
+
+comment:
+  enable: true
+  hideFooterLink: false
+
+summary:
+  enable: true

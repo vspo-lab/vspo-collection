@@ -1,0 +1,41 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreExportsUsedInFile": {
+    "interface": true,
+    "type": true
+  },
+  "tags": ["-lintignore"],
+  "workspaces": {
+    ".": {},
+    "services/transcriptor": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts"],
+      "ignore": [".wrangler/**", "node_modules/**"],
+      "ignoreDependencies": ["cloudflare"]
+    },
+    "services/web": {
+      "entry": ["app/**/{page,layout,loading,error,not-found,route,global-error}.{ts,tsx}"],
+      "project": ["**/*.{ts,tsx}"],
+      "ignore": [".next/**", "node_modules/**"],
+      "ignoreDependencies": [
+        "tailwindcss"
+      ],
+      "next": {
+        "config": "next.config.ts"
+      }
+    },
+    "services/api": {
+      "entry": ["cmd/*.ts", "local/**/*.ts"],
+      "project": ["**/*.ts"],
+      "ignore": ["dist/**", "drizzle/**", "node_modules/**"]
+    },
+    "packages/errors": {
+      "project": ["*.ts"],
+      "ignore": ["dist/**", "node_modules/**"]
+    },
+    "packages/logger": {
+      "project": ["*.ts"],
+      "ignore": ["dist/**", "node_modules/**"]
+    }
+  }
+}

@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ぶいすぽサーチ — あの動画どこだっけ？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Shippori+Mincho+B1:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* ========================================
+   DESIGN TOKENS (per design-tokens.md)
+   ======================================== */
+:root {
+  /* Brand Colors (per colors.md) */
+  --bg: #F7F6F3;
+  --accent: #E6EC49;
+  --accent-hover: #d4da2e;
+  --beige: #CBC6BE;
+  --mint: #97D5D9;
+  --orange: #F7643D;
+  --blue: #83A8F9;
+  --grey: #D9D9D9;
+  --ink: #1a1a1a;
+  --ink-soft: #3d3d3d;
+  --ink-muted: #555555;
+  --white: #ffffff;
+
+  /* Semantic */
+  --surface: var(--white);
+  --surface-warm: rgba(203,198,190,0.15);
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.12);
+
+  /* Typography (per typography.md) */
+  --font-body: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+  --font-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+
+  /* Radius */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 24px;
+  --r-2xl: 32px;
+  --r-full: 9999px;
+
+  /* Shadows (per design-tokens.md) */
+  --shadow-card: 0 20px 40px rgba(26,26,26,0.08);
+  --shadow-action: 0 12px 24px rgba(26,26,26,0.2);
+  --shadow-hero: 0 30px 80px rgba(26,26,26,0.3);
+  --shadow-focus: 0 0 0 2px rgba(26,26,26,0.2);
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur-md: 300ms;
+
+  /* Member Colors */
+  --c-sumire: #B0C4DE;
+  --c-nazuna: #FABEDC;
+  --c-toto: #F5EB4A;
+  --c-uruha: #4182FA;
+  --c-noa: #FFDBFE;
+  --c-mimi: #C7B2D6;
+  --c-sena: #FFFFFF;
+  --c-hinano: #FA96C8;
+  --c-lisa: #D1DE79;
+  --c-ren: #BE2152;
+  --c-kyupi: #FFD23C;
+  --c-beni: #85CAB3;
+  --c-emma: #B4F1F9;
+  --c-runa: #D6ADFF;
+  --c-tsuna: #FF3652;
+  --c-ramune: #8ECED9;
+  --c-met: #FBA03F;
+  --c-akari: #FF998D;
+  --c-kuromu: #909EC8;
+  --c-kokage: #5195E1;
+  --c-yuuhi: #ED784A;
+  --c-hanabi: #EA5506;
+  --c-moka: #ECA0AA;
+  --c-seine: #58535E;
+  --c-chise: #BEFF77;
+}
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: 1.5;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ========================================
+   LAYOUT
+   ======================================== */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-layout {
+  display: flex;
+  flex: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+.header {
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(247,246,243,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-action);
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.3));
+}
+
+.brand-icon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--ink);
+  position: relative;
+  z-index: 1;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brand-tagline {
+  font-size: 0.7rem;
+  color: var(--ink-muted);
+  font-weight: 400;
+  display: block;
+  margin-top: -2px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-toggle-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: all var(--dur-fast) var(--ease);
+}
+
+.filter-toggle-btn:hover {
+  background: var(--surface-warm);
+}
+
+/* ========================================
+   HERO
+   ======================================== */
+.hero {
+  text-align: center;
+  padding: 40px 24px 28px;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(230,236,73,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.hero h1 .hl {
+  position: relative;
+  display: inline-block;
+}
+
+.hero h1 .hl::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: -4px;
+  right: -4px;
+  height: 10px;
+  background: var(--accent);
+  opacity: 0.4;
+  border-radius: 4px;
+  z-index: -1;
+}
+
+.hero-sub {
+  font-size: 0.92rem;
+  color: var(--ink-muted);
+  max-width: 420px;
+  margin: 0 auto 14px;
+  line-height: 1.7;
+}
+
+.hero-badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-soft);
+}
+
+.badge svg { width: 12px; height: 12px; }
+
+.badge--accent {
+  background: rgba(230,236,73,0.15);
+  border-color: rgba(230,236,73,0.3);
+  color: #6b6e0f;
+}
+
+/* ========================================
+   SIDEBAR
+   ======================================== */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  padding: 24px 20px;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  overflow-y: auto;
+  transition: transform var(--dur-md) var(--ease);
+  position: relative;
+}
+
+.sidebar-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-title svg { width: 16px; height: 16px; color: var(--ink-muted); }
+
+.filter-section { margin-bottom: 24px; }
+
+.filter-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* Member chips with color dots */
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  padding: 5px 10px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chip:hover {
+  border-color: var(--ink-muted);
+  background: var(--surface-warm);
+}
+
+.chip.active {
+  background: var(--ink);
+  color: var(--white);
+  border-color: var(--ink);
+}
+
+.chip.active:hover {
+  background: var(--ink-soft);
+}
+
+.chip .color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.chip.active .color-dot {
+  border-color: rgba(255,255,255,0.3);
+}
+
+/* Type toggles */
+.type-toggles { display: flex; gap: 6px; }
+
+.type-toggle {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+  text-align: center;
+}
+
+.type-toggle:hover { border-color: var(--ink-muted); }
+
+.type-toggle.active-stream {
+  background: rgba(151,213,217,0.15);
+  border-color: var(--mint);
+  color: #2a7a7e;
+}
+
+.type-toggle.active-clip {
+  background: rgba(131,168,249,0.15);
+  border-color: var(--blue);
+  color: #3d5fb3;
+}
+
+/* Date inputs */
+.date-inputs { display: flex; flex-direction: column; gap: 8px; }
+
+.date-field { display: flex; flex-direction: column; gap: 3px; }
+.date-field span { font-size: 0.7rem; color: var(--ink-muted); }
+
+.date-field input {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--ink);
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+/* ========================================
+   CHAT AREA
+   ======================================== */
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Status bar */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  background: var(--surface-warm);
+  border-bottom: 1px solid var(--border);
+}
+
+.status-bar .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--mint);
+  animation: pulse-dot 2s ease infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Messages */
+.message {
+  display: flex;
+  gap: 10px;
+  max-width: 100%;
+  animation: msg-in var(--dur-md) var(--ease) both;
+}
+
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(12px); }
+}
+
+.message--user { justify-content: flex-end; }
+.message--system { justify-content: flex-start; }
+
+.msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.msg-avatar--user {
+  background: var(--accent);
+  color: var(--ink);
+  order: 2;
+}
+
+.msg-avatar--system {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.msg-bubble {
+  border-radius: var(--r-lg);
+  max-width: 720px;
+}
+
+.msg-bubble--user {
+  background: var(--ink);
+  color: var(--white);
+  padding: 12px 18px;
+  border-bottom-right-radius: var(--r-sm);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.msg-bubble--system {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px 20px;
+  border-bottom-left-radius: var(--r-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.msg-result-count {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.msg-result-count strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* ========================================
+   VIDEO CARDS
+   ======================================== */
+.video-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.video-card {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  border-radius: var(--r-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  transition: all var(--dur-fast) var(--ease);
+  cursor: pointer;
+}
+
+.video-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px);
+}
+
+.video-thumb {
+  width: 152px;
+  height: 86px;
+  border-radius: var(--r-sm);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.35), transparent 50%);
+}
+
+.video-thumb .duration {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(0,0,0,0.75);
+  color: white;
+  padding: 1px 5px;
+  border-radius: 3px;
+  z-index: 1;
+  letter-spacing: 0.02em;
+}
+
+.video-thumb .play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+
+.video-card:hover .play-icon { opacity: 1; }
+
+.play-icon svg {
+  width: 12px;
+  height: 12px;
+  margin-left: 2px;
+  color: var(--ink);
+}
+
+.video-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.video-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.video-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  flex-wrap: wrap;
+}
+
+.video-channel {
+  font-weight: 500;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.video-channel .ch-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.video-sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--grey);
+}
+
+.video-type {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--r-full);
+  letter-spacing: 0.02em;
+}
+
+.video-type--stream {
+  background: rgba(151,213,217,0.2);
+  color: #2a7a7e;
+  border: 1px solid rgba(151,213,217,0.4);
+}
+
+.video-type--clip {
+  background: rgba(131,168,249,0.2);
+  color: #3d5fb3;
+  border: 1px solid rgba(131,168,249,0.4);
+}
+
+/* Timestamps */
+.video-timestamps {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.timestamp {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.73rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease);
+  cursor: pointer;
+}
+
+.timestamp:hover { color: var(--ink); }
+
+.timestamp:hover .ts-time {
+  background: var(--accent);
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+.ts-time {
+  font-size: 0.66rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #6b6e0f;
+  background: rgba(230,236,73,0.15);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(230,236,73,0.3);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all var(--dur-fast) var(--ease);
+}
+
+.ts-text { color: var(--ink-muted); }
+
+.ts-text mark {
+  background: rgba(230,236,73,0.25);
+  color: var(--ink);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* ========================================
+   CHAT INPUT
+   ======================================== */
+.chat-input-area {
+  padding: 16px 24px 24px;
+  background: linear-gradient(to top, var(--bg) 60%, transparent);
+  position: sticky;
+  bottom: 0;
+}
+
+.chat-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--r-2xl);
+  padding: 6px 6px 6px 20px;
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.chat-input {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+  padding: 8px 0;
+}
+
+.chat-input::placeholder { color: var(--grey); }
+
+.send-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--dur-fast) var(--ease);
+  box-shadow: var(--shadow-action);
+}
+
+.send-btn:hover {
+  background: var(--accent-hover);
+  transform: scale(1.05);
+}
+
+.send-btn:active { transform: scale(0.95); }
+
+.send-btn svg { width: 18px; height: 18px; margin-left: 1px; }
+
+.input-hints {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 10px;
+  font-size: 0.7rem;
+  color: var(--ink-muted);
+}
+
+.input-hint { display: flex; align-items: center; gap: 4px; }
+
+.input-hint kbd {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--ink-muted);
+}
+
+/* ========================================
+   MOBILE OVERLAY
+   ======================================== */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 200;
+  opacity: 0;
+  transition: opacity var(--dur-md) var(--ease);
+}
+
+.sidebar-overlay.visible { opacity: 1; }
+
+/* ========================================
+   SCROLLBAR
+   ======================================== */
+.chat-messages::-webkit-scrollbar, .sidebar::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track, .sidebar::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb, .sidebar::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 4px; }
+
+/* ========================================
+   FOCUS INDICATORS (accessibility)
+   ======================================== */
+.chip:focus-visible,
+.type-toggle:focus-visible,
+.filter-toggle-btn:focus-visible,
+.sidebar-close:focus-visible,
+.send-btn:focus-visible,
+.video-card:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+.chat-input:focus-visible { outline: none; }
+
+.chat-input-wrapper:focus-within {
+  border-color: var(--ink-muted);
+  box-shadow: var(--shadow-focus);
+}
+
+.timestamp:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+
+.brand:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: var(--r-sm);
+}
+
+.date-field input:focus-visible {
+  border-color: var(--ink);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+.msg-enter-1 { animation-delay: 0ms; }
+.msg-enter-2 { animation-delay: 100ms; }
+.msg-enter-3 { animation-delay: 200ms; }
+.msg-enter-4 { animation-delay: 300ms; }
+
+.card-stagger-1 { animation: card-in var(--dur-md) var(--ease) both; animation-delay: 80ms; }
+.card-stagger-2 { animation: card-in var(--dur-md) var(--ease) both; animation-delay: 160ms; }
+.card-stagger-3 { animation: card-in var(--dur-md) var(--ease) both; animation-delay: 240ms; }
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 1.5rem; }
+  .hero-sub { font-size: 0.85rem; }
+
+  .filter-toggle-btn { display: flex; }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 201;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-card);
+    width: 280px;
+  }
+
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.visible { display: block; opacity: 1; }
+  .sidebar-close { display: flex; }
+
+  .chat-messages { padding: 16px; }
+  .chat-input-area { padding: 12px 16px 20px; }
+
+  .video-card { flex-direction: column; }
+  .video-thumb { width: 100%; height: auto; aspect-ratio: 16/9; }
+  .msg-bubble { max-width: calc(100vw - 80px); }
+  .input-hints { display: none; }
+}
+
+@media (max-width: 480px) {
+  .hero { padding: 28px 16px 20px; }
+  .hero-badges { gap: 6px; }
+  .badge { font-size: 0.65rem; padding: 3px 8px; }
+}
+
+/* Sidebar close button */
+.sidebar-close {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  border: none;
+  background: var(--surface-warm);
+  cursor: pointer;
+  color: var(--ink-muted);
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="#">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <div>
+          <span class="brand-name">ぶいすぽサーチ</span>
+          <span class="brand-tagline">あの動画どこだっけ？</span>
+        </div>
+      </a>
+      <div class="header-right">
+        <button class="filter-toggle-btn" onclick="toggleSidebar()" aria-label="フィルターを開く">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1><span class="hl">あの動画</span>どこだっけ？</h1>
+    <p class="hero-sub">VTuber配信・切り抜きの文字起こしから、<br>話題で動画を見つけよう</p>
+    <div class="hero-badges">
+      <span class="badge badge--accent">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        ブラウザ完結
+      </span>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h10"/></svg>
+        DuckDB-WASM
+      </span>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+        サーバー不要
+      </span>
+    </div>
+  </section>
+
+  <!-- MAIN -->
+  <div class="main-layout">
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <button class="sidebar-close" onclick="toggleSidebar()" aria-label="閉じる">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+
+      <div class="sidebar-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        フィルター
+      </div>
+
+      <div class="filter-section">
+        <span class="filter-label">チャンネル</span>
+        <div class="filter-chips">
+          <button class="chip active" data-all>すべて</button>
+          <button class="chip"><span class="color-dot" style="background:#B0C4DE"></span>花芽すみれ</button>
+          <button class="chip"><span class="color-dot" style="background:#FABEDC"></span>花芽なずな</button>
+          <button class="chip"><span class="color-dot" style="background:#FA96C8"></span>橘ひなの</button>
+          <button class="chip"><span class="color-dot" style="background:#F5EB4A"></span>小雀とと</button>
+          <button class="chip"><span class="color-dot" style="background:#4182FA"></span>一ノ瀬うるは</button>
+          <button class="chip"><span class="color-dot" style="background:#D1DE79"></span>英リサ</button>
+          <button class="chip"><span class="color-dot" style="background:#FFD23C"></span>神成きゅぴ</button>
+          <button class="chip"><span class="color-dot" style="background:#B4F1F9"></span>藍沢エマ</button>
+          <button class="chip"><span class="color-dot" style="background:#8ECED9"></span>白波らむね</button>
+          <button class="chip"><span class="color-dot" style="background:#FBA03F"></span>小森めと</button>
+          <button class="chip"><span class="color-dot" style="background:#85CAB3"></span>八雲べに</button>
+          <button class="chip"><span class="color-dot" style="background:#D6ADFF"></span>紫宮るな</button>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <span class="filter-label">動画タイプ</span>
+        <div class="type-toggles">
+          <button class="type-toggle active-stream">配信</button>
+          <button class="type-toggle active-clip">切り抜き</button>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <span class="filter-label">期間</span>
+        <div class="date-inputs">
+          <div class="date-field"><span>開始日</span><input type="date" value="2025-01-01"></div>
+          <div class="date-field"><span>終了日</span><input type="date" value="2025-01-31"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CHAT -->
+    <main class="chat-area" role="log" aria-live="polite">
+
+      <div class="status-bar" role="status">
+        <span class="dot"></span>
+        <span>Parquetデータ読み込み完了 &middot; <strong>1,847本</strong>の動画を検索可能</span>
+      </div>
+
+      <div class="chat-messages">
+
+        <!-- ====== Query 1 ====== -->
+        <div class="message message--user msg-enter-1">
+          <div class="msg-avatar msg-avatar--user">U</div>
+          <div class="msg-bubble msg-bubble--user">大会 練習</div>
+        </div>
+
+        <div class="message message--system msg-enter-2">
+          <div class="msg-avatar msg-avatar--system">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+          <div class="msg-bubble msg-bubble--system">
+            <div class="msg-result-count">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+              <strong>3件</strong>見つかりました
+            </div>
+
+            <div class="video-cards">
+
+              <!-- Card 1: 花芽すみれ VALORANT配信 -->
+              <div class="video-card card-stagger-1">
+                <div class="video-thumb" style="background:linear-gradient(135deg, #B0C4DE, var(--beige))">
+                  <span class="duration">4:12:30</span>
+                  <div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                </div>
+                <div class="video-info">
+                  <div class="video-title">【VALORANT】CR CUP 本番前日！最後のスクリム練習【花芽すみれ/ぶいすぽっ!】</div>
+                  <div class="video-meta">
+                    <span class="video-channel"><span class="ch-dot" style="background:#B0C4DE"></span>花芽すみれ</span>
+                    <span class="video-sep"></span>
+                    <span>2025/01/14</span>
+                    <span class="video-type video-type--stream">配信</span>
+                  </div>
+                  <div class="video-timestamps">
+                    <a class="timestamp" href="#">
+                      <span class="ts-time">0:45:12</span>
+                      <span class="ts-text">「<mark>大会</mark>前の<mark>練習</mark>ってほんとに緊張する、明日やばいよ」</span>
+                    </a>
+                    <a class="timestamp" href="#">
+                      <span class="ts-time">2:30:05</span>
+                      <span class="ts-text">「今日の<mark>練習</mark>で<mark>大会</mark>の作戦固まったかも」</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: 橘ひなの APEX配信 -->
+              <div class="video-card card-stagger-2">
+                <div class="video-thumb" style="background:linear-gradient(135deg, #FA96C8, var(--beige))">
+                  <span class="duration">5:23:45</span>
+                  <div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                </div>
+                <div class="video-info">
+                  <div class="video-title">【APEX】ぶいすぽカスタム大会に向けて猛特訓！！！【橘ひなの/ぶいすぽっ!】</div>
+                  <div class="video-meta">
+                    <span class="video-channel"><span class="ch-dot" style="background:#FA96C8"></span>橘ひなの</span>
+                    <span class="video-sep"></span>
+                    <span>2025/01/11</span>
+                    <span class="video-type video-type--stream">配信</span>
+                  </div>
+                  <div class="video-timestamps">
+                    <a class="timestamp" href="#">
+                      <span class="ts-time">0:12:30</span>
+                      <span class="ts-text">「<mark>大会</mark>の<mark>練習</mark>しないとまずい、めっちゃやる」</span>
+                    </a>
+                    <a class="timestamp" href="#">
+                      <span class="ts-time">3:45:10</span>
+                      <span class="ts-text">「今日の<mark>練習</mark>で結構仕上がってきた気がする」</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: 切り抜き -->
+              <div class="video-card card-stagger-3">
+                <div class="video-thumb" style="background:linear-gradient(135deg, var(--blue), var(--beige))">
+                  <span class="duration">8:42</span>
+                  <div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                </div>
+                <div class="video-info">
+                  <div class="video-title">【切り抜き】大会練習中のぶいすぽメンバーまとめ【VALORANT/APEX】</div>
+                  <div class="video-meta">
+                    <span class="video-channel"><span class="ch-dot" style="background:var(--grey)"></span>ぶいすぽ切り抜き</span>
+                    <span class="video-sep"></span>
+                    <span>2025/01/16</span>
+                    <span class="video-type video-type--clip">切り抜き</span>
+                  </div>
+                  <div class="video-timestamps">
+                    <a class="timestamp" href="#">
+                      <span class="ts-time">0:30</span>
+                      <span class="ts-text">「<mark>大会</mark><mark>練習</mark>中のすみれとひなの」</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ====== Query 2 ====== -->
+        <div class="message message--user msg-enter-3">
+          <div class="msg-avatar msg-avatar--user">U</div>
+          <div class="msg-bubble msg-bubble--user">小森めと 雑談 おもしろ</div>
+        </div>
+
+        <div class="message message--system msg-enter-4">
+          <div class="msg-avatar msg-avatar--system">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+          <div class="msg-bubble msg-bubble--system">
+            <div class="msg-result-count">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+              <strong>2件</strong>見つかりました
+            </div>
+
+            <div class="video-cards">
+
+              <!-- Card 4: 小森めと 雑談配信 -->
+              <div class="video-card card-stagger-1">
+                <div class="video-thumb" style="background:linear-gradient(135deg, #FBA03F, var(--beige))">
+                  <span class="duration">3:15:50</span>
+                  <div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                </div>
+                <div class="video-info">
+                  <div class="video-title">【雑談】最近あったおもしろい話を聞いてくれ〜！！【小森めと/ぶいすぽっ!】</div>
+                  <div class="video-meta">
+                    <span class="video-channel"><span class="ch-dot" style="background:#FBA03F"></span>小森めと</span>
+                    <span class="video-sep"></span>
+                    <span>2025/01/20</span>
+                    <span class="video-type video-type--stream">配信</span>
+                  </div>
+                  <div class="video-timestamps">
+                    <a class="timestamp" href="#">
+                      <span class="ts-time">0:23:15</span>
+                      <span class="ts-text">「この前<mark>おもしろ</mark>いことがあってさ、聞いて」</span>
+                    </a>
+                    <a class="timestamp" href="#">
+                      <span class="ts-time">1:45:30</span>
+                      <span class="ts-text">「<mark>雑談</mark>配信ってほんと楽しい、<mark>おもしろ</mark>い話いっぱいある」</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 5: 切り抜き -->
+              <div class="video-card card-stagger-2">
+                <div class="video-thumb" style="background:linear-gradient(135deg, #FBA03F, #FA96C8)">
+                  <span class="duration">12:34</span>
+                  <div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                </div>
+                <div class="video-info">
+                  <div class="video-title">【切り抜き】小森めとの爆笑エピソードまとめ【雑談配信ハイライト】</div>
+                  <div class="video-meta">
+                    <span class="video-channel"><span class="ch-dot" style="background:var(--grey)"></span>ぶいすぽ切り抜きch</span>
+                    <span class="video-sep"></span>
+                    <span>2025/01/22</span>
+                    <span class="video-type video-type--clip">切り抜き</span>
+                  </div>
+                  <div class="video-timestamps">
+                    <a class="timestamp" href="#">
+                      <span class="ts-time">2:10</span>
+                      <span class="ts-text">「めとの<mark>おもしろ</mark>すぎる<mark>雑談</mark>」</span>
+                    </a>
+                    <a class="timestamp" href="#">
+                      <span class="ts-time">7:45</span>
+                      <span class="ts-text">「<mark>雑談</mark>中に起きた<mark>おもしろ</mark>ハプニング集」</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- INPUT -->
+      <div class="chat-input-area">
+        <div class="chat-input-wrapper">
+          <input class="chat-input" type="text" placeholder="キーワードで動画を検索..." aria-label="検索キーワードを入力">
+          <button class="send-btn" aria-label="検索">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          </button>
+        </div>
+        <div class="input-hints">
+          <span class="input-hint"><kbd>Enter</kbd> で送信</span>
+          <span class="input-hint">AND / OR で複数キーワード検索</span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const isOpen = sidebar.classList.contains('open');
+  if (isOpen) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('visible');
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+  } else {
+    overlay.style.display = 'block';
+    requestAnimationFrame(() => {
+      sidebar.classList.add('open');
+      overlay.classList.add('visible');
+    });
+  }
+}
+
+document.querySelectorAll('.filter-chips').forEach(group => {
+  const allChip = group.querySelector('[data-all]');
+  group.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      if (chip.hasAttribute('data-all')) {
+        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      } else {
+        if (allChip) allChip.classList.remove('active');
+        chip.classList.toggle('active');
+        const anyActive = [...group.querySelectorAll('.chip:not([data-all])')].some(c => c.classList.contains('active'));
+        if (!anyActive && allChip) allChip.classList.add('active');
+      }
+    });
+  });
+});
+
+document.querySelectorAll('.type-toggle').forEach(toggle => {
+  toggle.addEventListener('click', () => {
+    toggle.classList.toggle(toggle.textContent === '配信' ? 'active-stream' : 'active-clip');
+  });
+});
+
+document.querySelector('.chat-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); e.target.value = ''; }
+});
+</script>
+
+</body>
+</html>
