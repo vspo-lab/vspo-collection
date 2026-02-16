@@ -29,21 +29,21 @@
 			}
 		]
 	},
-	// "migrations": [
-	// 	{
-	// 		"new_sqlite_classes": [
-	// 			"YTContainer"
-	// 		],
-	// 		"tag": "v1"
-	// 	}
-	// ],
-	// "d1_databases": [
-	// 	{
-	// 		"binding": "TRANSCRIPT_DB",
-	// 		"database_name": "transcript-jobs",
-	// 		"database_id": "<placeholder>"
-	// 	}
-	// ],
+	"migrations": [
+		{
+			"new_sqlite_classes": [
+				"YTContainer"
+			],
+			"tag": "v1"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "TRANSCRIPT_DB",
+			"database_name": "vspo-search",
+			"database_id": "8eb751cb-7bfa-4eae-8087-0182a02b2a6c"
+		}
+	],
 	"r2_buckets": [
 		{
 			"binding": "TRANSCRIPT_BUCKET",
