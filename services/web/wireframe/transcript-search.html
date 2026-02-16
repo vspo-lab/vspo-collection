@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&amp;family=Shippori+Mincho+B1:wght@600;700&amp;display=swap" rel="stylesheet">
 <style>
 :root {
+  /* Base palette */
   --bg: #efede8;
   --bg-depth: #e5e0d7;
   --surface: #faf8f4;
@@ -24,6 +25,45 @@
   --success: #3f7a57;
   --danger: #a2423f;
   --focus: rgba(171, 125, 66, 0.32);
+  --text-inverse: #ffffff;
+  --accent-text: #6f4d27;
+  --accent-text-strong: #5f4630;
+
+  /* Alpha surfaces */
+  --surface-frost: rgba(250, 248, 244, 0.88);
+  --surface-panel: rgba(250, 248, 244, 0.8);
+  --surface-status: rgba(243, 240, 233, 0.75);
+  --border-frost: rgba(217, 211, 200, 0.85);
+  --border-subtle: rgba(217, 211, 200, 0.7);
+  --border-panel: rgba(217, 211, 200, 0.78);
+  --overlay-backdrop: rgba(16, 20, 26, 0.42);
+  --bg-glow-warm: rgba(171, 125, 66, 0.16);
+  --bg-glow-cool: rgba(102, 112, 133, 0.16);
+
+  /* Accent alpha helpers */
+  --accent-alpha-08: rgba(171, 125, 66, 0.08);
+  --accent-alpha-09: rgba(171, 125, 66, 0.09);
+  --accent-alpha-10: rgba(171, 125, 66, 0.1);
+  --accent-alpha-12: rgba(171, 125, 66, 0.12);
+  --accent-alpha-22: rgba(171, 125, 66, 0.22);
+  --accent-alpha-26: rgba(171, 125, 66, 0.26);
+  --accent-alpha-30: rgba(171, 125, 66, 0.3);
+  --accent-alpha-32: rgba(171, 125, 66, 0.32);
+  --accent-alpha-34: rgba(171, 125, 66, 0.34);
+  --accent-alpha-46: rgba(171, 125, 66, 0.46);
+  --accent-alpha-48: rgba(171, 125, 66, 0.48);
+
+  /* Brand and source tokens */
+  --brand-grad-start: #d4bd9a;
+  --brand-grad-end: #ab7d42;
+  --source-chip-active: #374151;
+  --thumb-neutral-end: #cec7ba;
+  --thumb-overlay: rgba(16, 20, 26, 0.38);
+  --duration-bg: rgba(0, 0, 0, 0.72);
+  --citation-bg: rgba(255, 255, 255, 0.66);
+  --member-dot-border: rgba(0, 0, 0, 0.16);
+  --bg-fade-strong: rgba(239, 237, 232, 0.98);
+  --bg-fade-soft: rgba(239, 237, 232, 0.3);
 
   --font-body: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
   --font-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
@@ -85,8 +125,8 @@ body {
   font-family: var(--font-body);
   color: var(--ink);
   background:
-    radial-gradient(circle at 88% -10%, rgba(171, 125, 66, 0.16), transparent 36%),
-    radial-gradient(circle at -8% 12%, rgba(102, 112, 133, 0.16), transparent 32%),
+    radial-gradient(circle at 88% -10%, var(--bg-glow-warm), transparent 36%),
+    radial-gradient(circle at -8% 12%, var(--bg-glow-cool), transparent 32%),
     linear-gradient(160deg, var(--bg), var(--bg-depth));
   min-height: 100vh;
   line-height: 1.6;
@@ -107,8 +147,8 @@ h1, h2, h3 {
   position: sticky;
   top: 0;
   z-index: 50;
-  border-bottom: 1px solid rgba(217, 211, 200, 0.85);
-  background: rgba(250, 248, 244, 0.88);
+  border-bottom: 1px solid var(--border-frost);
+  background: var(--surface-frost);
   backdrop-filter: blur(12px);
 }
 
@@ -134,8 +174,8 @@ h1, h2, h3 {
   width: 38px;
   height: 38px;
   border-radius: var(--r-md);
-  background: linear-gradient(140deg, #d4bd9a, #ab7d42);
-  color: #fff;
+  background: linear-gradient(140deg, var(--brand-grad-start), var(--brand-grad-end));
+  color: var(--text-inverse);
   display: grid;
   place-items: center;
   box-shadow: var(--shadow-soft);
@@ -192,8 +232,8 @@ h1, h2, h3 {
 }
 
 .hero-grid {
-  background: rgba(250, 248, 244, 0.8);
-  border: 1px solid rgba(217, 211, 200, 0.7);
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-card);
   padding: 22px 24px;
@@ -220,7 +260,7 @@ h1, h2, h3 {
   height: 9px;
   border-radius: 6px;
   z-index: -1;
-  background: rgba(171, 125, 66, 0.22);
+  background: var(--accent-alpha-22);
 }
 
 .hero-sub {
@@ -237,9 +277,9 @@ h1, h2, h3 {
 
 .feature-badge {
   font-size: 0.72rem;
-  border: 1px solid rgba(171, 125, 66, 0.3);
+  border: 1px solid var(--accent-alpha-30);
   background: var(--accent-soft);
-  color: #6f4d27;
+  color: var(--accent-text);
   border-radius: var(--r-full);
   padding: 4px 10px;
 }
@@ -284,7 +324,7 @@ h1, h2, h3 {
   position: fixed;
   inset: 0;
   z-index: 59;
-  background: rgba(16, 20, 26, 0.42);
+  background: var(--overlay-backdrop);
   opacity: 0;
   transition: opacity var(--dur-mid) var(--ease);
 }
@@ -292,8 +332,8 @@ h1, h2, h3 {
 .sidebar {
   width: 292px;
   flex-shrink: 0;
-  border-right: 1px solid rgba(217, 211, 200, 0.78);
-  background: rgba(250, 248, 244, 0.8);
+  border-right: 1px solid var(--border-panel);
+  background: var(--surface-panel);
   padding: 20px 18px 22px;
   overflow-y: auto;
   position: relative;
@@ -361,15 +401,26 @@ h1, h2, h3 {
 .chip.active {
   background: var(--ink);
   border-color: var(--ink);
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .color-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.16);
+  border: 1px solid var(--member-dot-border);
+  background: var(--member-color, var(--ink-muted));
 }
+
+.member-sumire { --member-color: var(--c-sumire); }
+.member-nazuna { --member-color: var(--c-nazuna); }
+.member-hinano { --member-color: var(--c-hinano); }
+.member-uruha { --member-color: var(--c-uruha); }
+.member-lisa { --member-color: var(--c-lisa); }
+.member-kyupi { --member-color: var(--c-kyupi); }
+.member-beni { --member-color: var(--c-beni); }
+.member-met { --member-color: var(--c-met); }
+.member-runa { --member-color: var(--c-runa); }
 
 .mode-list {
   display: grid;
@@ -398,14 +449,14 @@ h1, h2, h3 {
 }
 
 .mode-btn.active {
-  border-color: rgba(171, 125, 66, 0.48);
-  background: rgba(171, 125, 66, 0.1);
+  border-color: var(--accent-alpha-48);
+  background: var(--accent-alpha-10);
 }
 
 .source-chip.active {
-  background: #374151;
-  border-color: #374151;
-  color: #fff;
+  background: var(--source-chip-active);
+  border-color: var(--source-chip-active);
+  color: var(--text-inverse);
 }
 
 .date-inputs {
@@ -436,8 +487,8 @@ h1, h2, h3 {
 
 .sidebar-callout {
   border-radius: var(--r-md);
-  border: 1px solid rgba(171, 125, 66, 0.34);
-  background: rgba(171, 125, 66, 0.09);
+  border: 1px solid var(--accent-alpha-34);
+  background: var(--accent-alpha-09);
   padding: 10px;
 }
 
@@ -453,7 +504,7 @@ h1, h2, h3 {
   gap: 4px;
   padding-left: 18px;
   font-size: 0.7rem;
-  color: #6f4d27;
+  color: var(--accent-text);
 }
 
 .chat-area {
@@ -465,7 +516,7 @@ h1, h2, h3 {
 
 .status-bar {
   border-bottom: 1px solid var(--border);
-  background: rgba(243, 240, 233, 0.75);
+  background: var(--surface-status);
   padding: 10px 18px;
   display: flex;
   align-items: center;
@@ -534,13 +585,13 @@ h1, h2, h3 {
 
 .msg-avatar--user {
   order: 2;
-  background: linear-gradient(140deg, #d4bd9a, #ab7d42);
-  color: #fff;
+  background: linear-gradient(140deg, var(--brand-grad-start), var(--brand-grad-end));
+  color: var(--text-inverse);
 }
 
 .msg-avatar--system {
   background: var(--ink);
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .msg-bubble {
@@ -550,7 +601,7 @@ h1, h2, h3 {
 
 .msg-bubble--user {
   background: var(--ink);
-  color: #fff;
+  color: var(--text-inverse);
   border-bottom-right-radius: var(--r-sm);
   padding: 12px 16px;
   font-size: 0.9rem;
@@ -604,7 +655,7 @@ h1, h2, h3 {
 
 .mode-chip.active {
   background: var(--ink);
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .result-section {
@@ -631,6 +682,10 @@ h1, h2, h3 {
   text-transform: uppercase;
 }
 
+.source-subtitle.with-gap {
+  margin-top: 10px;
+}
+
 .video-cards {
   display: grid;
   gap: 10px;
@@ -654,11 +709,19 @@ h1, h2, h3 {
   overflow: hidden;
 }
 
+.thumb-sumire {
+  background: linear-gradient(140deg, var(--c-sumire), var(--thumb-neutral-end));
+}
+
+.thumb-hinano {
+  background: linear-gradient(140deg, var(--c-hinano), var(--thumb-neutral-end));
+}
+
 .video-thumb::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(16, 20, 26, 0.38), transparent 56%);
+  background: linear-gradient(to top, var(--thumb-overlay), transparent 56%);
 }
 
 .video-thumb .duration {
@@ -668,8 +731,8 @@ h1, h2, h3 {
   border-radius: 4px;
   font-size: 0.63rem;
   font-weight: 700;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.72);
+  color: var(--text-inverse);
+  background: var(--duration-bg);
   padding: 1px 5px;
   z-index: 1;
 }
@@ -724,15 +787,15 @@ h1, h2, h3 {
   font-size: 0.64rem;
   font-weight: 700;
   border-radius: 4px;
-  border: 1px solid rgba(171, 125, 66, 0.32);
-  color: #6f4d27;
-  background: rgba(171, 125, 66, 0.12);
+  border: 1px solid var(--accent-alpha-32);
+  color: var(--accent-text);
+  background: var(--accent-alpha-12);
   padding: 1px 5px;
   white-space: nowrap;
 }
 
 .ts-text mark {
-  background: rgba(171, 125, 66, 0.22);
+  background: var(--accent-alpha-22);
   color: var(--ink);
   border-radius: 2px;
 }
@@ -780,7 +843,7 @@ h1, h2, h3 {
 }
 
 .x-text mark {
-  background: rgba(171, 125, 66, 0.22);
+  background: var(--accent-alpha-22);
   border-radius: 2px;
   color: var(--ink);
 }
@@ -804,21 +867,21 @@ h1, h2, h3 {
 
 .answer-card {
   border-radius: var(--r-md);
-  border: 1px solid rgba(171, 125, 66, 0.34);
-  background: rgba(171, 125, 66, 0.08);
+  border: 1px solid var(--accent-alpha-34);
+  background: var(--accent-alpha-08);
   padding: 12px;
 }
 
 .answer-title {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #6f4d27;
+  color: var(--accent-text);
   margin-bottom: 6px;
 }
 
 .answer-card p {
   font-size: 0.79rem;
-  color: #5f4630;
+  color: var(--accent-text-strong);
 }
 
 .citation-list {
@@ -829,11 +892,11 @@ h1, h2, h3 {
 
 .citation-item {
   border-radius: var(--r-sm);
-  border: 1px solid rgba(171, 125, 66, 0.26);
-  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid var(--accent-alpha-26);
+  background: var(--citation-bg);
   padding: 7px 8px;
   font-size: 0.7rem;
-  color: #5f4630;
+  color: var(--accent-text-strong);
 }
 
 .analysis-grid {
@@ -887,7 +950,7 @@ h1, h2, h3 {
 .bar-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #ab7d42, #d4bd9a);
+  background: linear-gradient(90deg, var(--brand-grad-end), var(--brand-grad-start));
 }
 
 .follow-up-actions {
@@ -908,14 +971,14 @@ h1, h2, h3 {
 
 .action-btn.primary {
   background: var(--ink);
-  color: #fff;
+  color: var(--text-inverse);
   border-color: var(--ink);
 }
 
 .chat-input-area {
   position: sticky;
   bottom: 0;
-  background: linear-gradient(to top, rgba(239, 237, 232, 0.98) 72%, rgba(239, 237, 232, 0.3));
+  background: linear-gradient(to top, var(--bg-fade-strong) 72%, var(--bg-fade-soft));
   padding: 14px 22px 20px;
 }
 
@@ -944,9 +1007,9 @@ h1, h2, h3 {
 }
 
 .quick-mode.active {
-  border-color: rgba(171, 125, 66, 0.46);
-  color: #6f4d27;
-  background: rgba(171, 125, 66, 0.1);
+  border-color: var(--accent-alpha-46);
+  color: var(--accent-text);
+  background: var(--accent-alpha-10);
 }
 
 .chat-input-wrapper {
@@ -976,8 +1039,8 @@ h1, h2, h3 {
   height: 42px;
   border: 0;
   border-radius: 50%;
-  background: linear-gradient(140deg, #d4bd9a, #ab7d42);
-  color: #fff;
+  background: linear-gradient(140deg, var(--brand-grad-start), var(--brand-grad-end));
+  color: var(--text-inverse);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -1217,15 +1280,15 @@ kbd {
         <span class="filter-label">Members</span>
         <div class="filter-chip-group">
           <button class="chip active" data-all>すべて</button>
-          <button class="chip"><span class="color-dot" style="background:#B0C4DE"></span>花芽すみれ</button>
-          <button class="chip"><span class="color-dot" style="background:#FABEDC"></span>花芽なずな</button>
-          <button class="chip"><span class="color-dot" style="background:#FA96C8"></span>橘ひなの</button>
-          <button class="chip"><span class="color-dot" style="background:#4182FA"></span>一ノ瀬うるは</button>
-          <button class="chip"><span class="color-dot" style="background:#D1DE79"></span>英リサ</button>
-          <button class="chip"><span class="color-dot" style="background:#FFD23C"></span>神成きゅぴ</button>
-          <button class="chip"><span class="color-dot" style="background:#85CAB3"></span>八雲べに</button>
-          <button class="chip"><span class="color-dot" style="background:#FBA03F"></span>小森めと</button>
-          <button class="chip"><span class="color-dot" style="background:#D6ADFF"></span>紫宮るな</button>
+          <button class="chip"><span class="color-dot member-sumire"></span>花芽すみれ</button>
+          <button class="chip"><span class="color-dot member-nazuna"></span>花芽なずな</button>
+          <button class="chip"><span class="color-dot member-hinano"></span>橘ひなの</button>
+          <button class="chip"><span class="color-dot member-uruha"></span>一ノ瀬うるは</button>
+          <button class="chip"><span class="color-dot member-lisa"></span>英リサ</button>
+          <button class="chip"><span class="color-dot member-kyupi"></span>神成きゅぴ</button>
+          <button class="chip"><span class="color-dot member-beni"></span>八雲べに</button>
+          <button class="chip"><span class="color-dot member-met"></span>小森めと</button>
+          <button class="chip"><span class="color-dot member-runa"></span>紫宮るな</button>
         </div>
       </section>
 
@@ -1284,13 +1347,13 @@ kbd {
               <div class="source-subtitle">YouTube Matches</div>
               <div class="video-cards">
                 <article class="video-card" role="article">
-                  <div class="video-thumb" style="background: linear-gradient(140deg, #B0C4DE, #cec7ba);">
+                  <div class="video-thumb thumb-sumire">
                     <span class="duration">4:12:30</span>
                   </div>
                   <div>
                     <div class="video-title">【VALORANT】CR CUP本番前日！最後のスクリム練習【花芽すみれ】</div>
                     <div class="video-meta">
-                      <span class="video-channel"><span class="color-dot" style="background:#B0C4DE"></span>花芽すみれ</span>
+                      <span class="video-channel"><span class="color-dot member-sumire"></span>花芽すみれ</span>
                       <span>2025/01/14</span>
                       <span class="video-type">配信</span>
                     </div>
@@ -1302,13 +1365,13 @@ kbd {
                 </article>
 
                 <article class="video-card" role="article">
-                  <div class="video-thumb" style="background: linear-gradient(140deg, #FA96C8, #cec7ba);">
+                  <div class="video-thumb thumb-hinano">
                     <span class="duration">5:23:45</span>
                   </div>
                   <div>
                     <div class="video-title">【APEX】カスタム大会に向けた猛特訓【橘ひなの】</div>
                     <div class="video-meta">
-                      <span class="video-channel"><span class="color-dot" style="background:#FA96C8"></span>橘ひなの</span>
+                      <span class="video-channel"><span class="color-dot member-hinano"></span>橘ひなの</span>
                       <span>2025/01/11</span>
                       <span class="video-type">配信</span>
                     </div>
@@ -1319,7 +1382,7 @@ kbd {
                 </article>
               </div>
 
-              <div class="source-subtitle" style="margin-top:10px;">X Matches</div>
+              <div class="source-subtitle with-gap">X Matches</div>
               <div class="x-cards">
                 <article class="x-card" role="article">
                   <div class="x-head">

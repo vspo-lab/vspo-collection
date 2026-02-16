@@ -39,6 +39,21 @@ Allowed colorful usage:
 
 Avoid overusing saturated colors for each feature mode.
 
+### Design Token Groups
+
+The UI should use tokenized values instead of ad-hoc literals.
+
+1. `foundation` tokens: base colors, typography, spacing, radius, elevation
+2. `semantic` tokens: text/surface/border/interactive states
+3. `source` tokens: visual identity for `YouTube`, `X`, and mixed mode
+4. `member` tokens: member color set used for dots and member accents
+
+Rules:
+
+1. Avoid inline color literals when a token exists
+2. Prefer utility classes that map to tokens for member/source variations
+3. Keep alpha variants tokenized (`--accent-alpha-*`) for consistent overlays and highlights
+
 ### Typography
 
 - Display: `Shippori Mincho B1`
