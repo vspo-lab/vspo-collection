@@ -3,8 +3,8 @@ import {
 	type WorkflowEvent,
 	type WorkflowStep,
 } from "cloudflare:workers";
-import type { TranscriptParams } from "../domain/transcript";
-import { TranscriptUseCase } from "../usecase/transcript";
+import type { TranscriptParams } from "../../domain/transcript";
+import { TranscriptUseCase } from "../../usecase/transcript";
 
 export class TranscriptWorkflow extends WorkflowEntrypoint<
 	Env,

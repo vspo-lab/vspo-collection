@@ -3,10 +3,10 @@ import { Hono } from "hono/quick";
 import { serve } from "inngest/hono";
 import { runRequestSchema } from "./domain/transcript";
 import { YtdlpContainer } from "./infra/container/ytdlp";
-import { inngest } from "./inngest/client";
-import { processTranscript } from "./inngest/functions/process-transcript";
+import { inngest } from "./infra/inngest/client";
+import { processTranscript } from "./infra/inngest/functions/process-transcript";
+import { TranscriptWorkflow } from "./infra/workflow/transcript-workflow";
 import { TranscriptUseCase } from "./usecase/transcript";
-import { TranscriptWorkflow } from "./workflow/transcript-workflow";
 
 // --- Exports (wrangler requires top-level exports) ---
 

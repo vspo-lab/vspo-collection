@@ -1,5 +1,5 @@
-import { JobRepository } from "../../infra/repository/job";
-import { TranscriptUseCase } from "../../usecase/transcript";
+import { JobRepository } from "../../repository/job";
+import { TranscriptUseCase } from "../../../usecase/transcript";
 import { inngest } from "../client";
 import { z } from "zod";
 

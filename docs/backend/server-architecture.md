@@ -43,10 +43,15 @@ services/transcriptor/
     ├── infra/
     │   ├── container/
     │   │   └── ytdlp.ts        # YtdlpContainer DO + TranscriptFetcher
-    │   └── repository/
-    │       └── transcript.ts   # R2 TranscriptRepository (wrapped with Result via wrap)
-    ├── workflow/
-    │   └── transcript-workflow.ts  # Cloudflare Workflow (step-based execution)
+    │   ├── inngest/
+    │   │   ├── client.ts       # Inngest client + Hono bindings middleware
+    │   │   └── functions/
+    │   │       └── process-transcript.ts # Event-driven transcript processing
+    │   ├── repository/
+    │   │   ├── job.ts          # D1 JobRepository for processing status
+    │   │   └── transcript.ts   # R2 TranscriptRepository (wrapped with Result via wrap)
+    │   └── workflow/
+    │       └── transcript-workflow.ts  # Cloudflare Workflow (step-based execution)
     └── index.ts                # Entry point + HTTP routes
 ```
 
