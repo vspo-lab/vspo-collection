@@ -3,57 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ぶいすぽサーチ — あの動画どこだっけ？</title>
+<title>ぶいすぽサーチ - Search, Follow-up, Analysis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Shippori+Mincho+B1:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&amp;family=Shippori+Mincho+B1:wght@600;700&amp;display=swap" rel="stylesheet">
 <style>
-/* ========================================
-   DESIGN TOKENS (per design-tokens.md)
-   ======================================== */
 :root {
-  /* Brand Colors (per colors.md) */
-  --bg: #F7F6F3;
-  --accent: #E6EC49;
-  --accent-hover: #d4da2e;
-  --beige: #CBC6BE;
-  --mint: #97D5D9;
-  --orange: #F7643D;
-  --blue: #83A8F9;
-  --grey: #D9D9D9;
-  --ink: #1a1a1a;
-  --ink-soft: #3d3d3d;
-  --ink-muted: #555555;
-  --white: #ffffff;
+  /* Base palette */
+  --bg: #efede8;
+  --bg-depth: #e5e0d7;
+  --surface: #faf8f4;
+  --surface-soft: #f3f0e9;
+  --surface-raised: #ffffff;
+  --border: #d9d3c8;
+  --border-strong: #c4bcad;
+  --ink: #202530;
+  --ink-soft: #3f4a5c;
+  --ink-muted: #667085;
+  --accent: #ab7d42;
+  --accent-soft: #ebdbc6;
+  --success: #3f7a57;
+  --danger: #a2423f;
+  --focus: rgba(171, 125, 66, 0.32);
+  --text-inverse: #ffffff;
+  --accent-text: #6f4d27;
+  --accent-text-strong: #5f4630;
 
-  /* Semantic */
-  --surface: var(--white);
-  --surface-warm: rgba(203,198,190,0.15);
-  --border: rgba(0,0,0,0.08);
-  --border-strong: rgba(0,0,0,0.12);
+  /* Alpha surfaces */
+  --surface-frost: rgba(250, 248, 244, 0.88);
+  --surface-panel: rgba(250, 248, 244, 0.8);
+  --surface-status: rgba(243, 240, 233, 0.75);
+  --border-frost: rgba(217, 211, 200, 0.85);
+  --border-subtle: rgba(217, 211, 200, 0.7);
+  --border-panel: rgba(217, 211, 200, 0.78);
+  --overlay-backdrop: rgba(16, 20, 26, 0.42);
+  --bg-glow-warm: rgba(171, 125, 66, 0.16);
+  --bg-glow-cool: rgba(102, 112, 133, 0.16);
 
-  /* Typography (per typography.md) */
+  /* Accent alpha helpers */
+  --accent-alpha-08: rgba(171, 125, 66, 0.08);
+  --accent-alpha-09: rgba(171, 125, 66, 0.09);
+  --accent-alpha-10: rgba(171, 125, 66, 0.1);
+  --accent-alpha-12: rgba(171, 125, 66, 0.12);
+  --accent-alpha-22: rgba(171, 125, 66, 0.22);
+  --accent-alpha-26: rgba(171, 125, 66, 0.26);
+  --accent-alpha-30: rgba(171, 125, 66, 0.3);
+  --accent-alpha-32: rgba(171, 125, 66, 0.32);
+  --accent-alpha-34: rgba(171, 125, 66, 0.34);
+  --accent-alpha-46: rgba(171, 125, 66, 0.46);
+  --accent-alpha-48: rgba(171, 125, 66, 0.48);
+
+  /* Brand and source tokens */
+  --brand-grad-start: #d4bd9a;
+  --brand-grad-end: #ab7d42;
+  --source-chip-active: #374151;
+  --thumb-neutral-end: #cec7ba;
+  --thumb-overlay: rgba(16, 20, 26, 0.38);
+  --duration-bg: rgba(0, 0, 0, 0.72);
+  --citation-bg: rgba(255, 255, 255, 0.66);
+  --member-dot-border: rgba(0, 0, 0, 0.16);
+  --bg-fade-strong: rgba(239, 237, 232, 0.98);
+  --bg-fade-soft: rgba(239, 237, 232, 0.3);
+
   --font-body: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
   --font-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
 
-  /* Radius */
   --r-sm: 8px;
-  --r-md: 14px;
-  --r-lg: 20px;
+  --r-md: 12px;
+  --r-lg: 18px;
   --r-xl: 24px;
-  --r-2xl: 32px;
   --r-full: 9999px;
 
-  /* Shadows (per design-tokens.md) */
-  --shadow-card: 0 20px 40px rgba(26,26,26,0.08);
-  --shadow-action: 0 12px 24px rgba(26,26,26,0.2);
-  --shadow-hero: 0 30px 80px rgba(26,26,26,0.3);
-  --shadow-focus: 0 0 0 2px rgba(26,26,26,0.2);
+  --shadow-card: 0 16px 36px rgba(32, 37, 48, 0.08);
+  --shadow-soft: 0 10px 24px rgba(32, 37, 48, 0.06);
+  --shadow-focus: 0 0 0 3px var(--focus);
 
-  /* Motion */
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --dur-fast: 150ms;
-  --dur-md: 300ms;
+  --ease: cubic-bezier(0.22, 0.68, 0.2, 1);
+  --dur-fast: 160ms;
+  --dur-mid: 280ms;
 
   /* Member Colors */
   --c-sumire: #B0C4DE;
@@ -83,931 +110,1281 @@
   --c-chise: #BEFF77;
 }
 
-/* ========================================
-   RESET & BASE
-   ======================================== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 html {
   font-size: 16px;
-  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
 }
 
 body {
   font-family: var(--font-body);
-  background: var(--bg);
   color: var(--ink);
-  line-height: 1.6;
+  background:
+    radial-gradient(circle at 88% -10%, var(--bg-glow-warm), transparent 36%),
+    radial-gradient(circle at -8% 12%, var(--bg-glow-cool), transparent 32%),
+    linear-gradient(160deg, var(--bg), var(--bg-depth));
   min-height: 100vh;
-  overflow-x: hidden;
+  line-height: 1.6;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3 {
   font-family: var(--font-display);
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-}
-
-/* ========================================
-   LAYOUT
-   ======================================== */
 .app {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
-.main-layout {
-  display: flex;
-  flex: 1;
-  max-width: 1280px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-/* ========================================
-   HEADER
-   ======================================== */
 .header {
-  padding: 0 24px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(247,246,243,0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 50;
+  border-bottom: 1px solid var(--border-frost);
+  background: var(--surface-frost);
+  backdrop-filter: blur(12px);
 }
 
 .header-inner {
-  max-width: 1280px;
+  max-width: 1320px;
   margin: 0 auto;
+  padding: 0 24px;
+  height: 68px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
 }
 
 .brand {
+  color: inherit;
+  text-decoration: none;
   display: flex;
   align-items: center;
   gap: 12px;
-  text-decoration: none;
-  color: var(--ink);
 }
 
 .brand-icon {
-  width: 36px;
-  height: 36px;
-  background: var(--accent);
-  border-radius: var(--r-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-action);
-  position: relative;
-  overflow: hidden;
-}
-
-.brand-icon::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.3));
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-md);
+  background: linear-gradient(140deg, var(--brand-grad-start), var(--brand-grad-end));
+  color: var(--text-inverse);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-soft);
 }
 
 .brand-icon svg {
   width: 20px;
   height: 20px;
-  color: var(--ink);
-  position: relative;
-  z-index: 1;
 }
 
 .brand-name {
-  font-family: var(--font-display);
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-size: 1.1rem;
+  letter-spacing: 0.01em;
 }
 
-.brand-tagline {
-  font-size: 0.7rem;
-  color: var(--ink-muted);
-  font-weight: 400;
+.brand-note {
   display: block;
   margin-top: -2px;
+  font-size: 0.7rem;
+  color: var(--ink-muted);
 }
 
-.header-right {
+.header-meta {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+.pill {
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 5px 10px;
+  font-size: 0.68rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
 .filter-toggle-btn {
   display: none;
-  align-items: center;
-  justify-content: center;
   width: 40px;
   height: 40px;
   border-radius: var(--r-sm);
   border: 1px solid var(--border);
   background: var(--surface);
-  cursor: pointer;
   color: var(--ink-soft);
-  transition: all var(--dur-fast) var(--ease);
+  cursor: pointer;
 }
 
-.filter-toggle-btn:hover {
-  background: var(--surface-warm);
-}
-
-/* ========================================
-   HERO
-   ======================================== */
 .hero {
-  text-align: center;
-  padding: 40px 24px 28px;
-  position: relative;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 36px 24px 18px;
 }
 
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 320px;
-  height: 320px;
-  background: radial-gradient(circle, rgba(230,236,73,0.12) 0%, transparent 70%);
-  pointer-events: none;
+.hero-grid {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-card);
+  padding: 22px 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
 }
 
 .hero h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  position: relative;
+  font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+  margin-bottom: 6px;
 }
 
 .hero h1 .hl {
   position: relative;
-  display: inline-block;
 }
 
 .hero h1 .hl::after {
-  content: '';
+  content: "";
   position: absolute;
-  bottom: 4px;
-  left: -4px;
-  right: -4px;
-  height: 10px;
-  background: var(--accent);
-  opacity: 0.4;
-  border-radius: 4px;
+  left: -2px;
+  right: -2px;
+  bottom: 5px;
+  height: 9px;
+  border-radius: 6px;
   z-index: -1;
+  background: var(--accent-alpha-22);
 }
 
 .hero-sub {
+  color: var(--ink-soft);
   font-size: 0.92rem;
-  color: var(--ink-muted);
-  max-width: 420px;
-  margin: 0 auto 14px;
-  line-height: 1.7;
 }
 
-.hero-badges {
+.hero-features {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+.feature-badge {
   font-size: 0.72rem;
-  font-weight: 500;
-  padding: 4px 10px;
+  border: 1px solid var(--accent-alpha-30);
+  background: var(--accent-soft);
+  color: var(--accent-text);
   border-radius: var(--r-full);
+  padding: 4px 10px;
+}
+
+.hero-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(74px, 1fr));
+  gap: 8px;
+  min-width: 280px;
+}
+
+.kpi-card {
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  padding: 10px;
+}
+
+.kpi-label {
+  font-size: 0.66rem;
+  color: var(--ink-muted);
+}
+
+.kpi-value {
+  margin-top: 2px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.main-layout {
+  max-width: 1320px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 59;
+  background: var(--overlay-backdrop);
+  opacity: 0;
+  transition: opacity var(--dur-mid) var(--ease);
+}
+
+.sidebar {
+  width: 292px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border-panel);
+  background: var(--surface-panel);
+  padding: 20px 18px 22px;
+  overflow-y: auto;
+  position: relative;
+  transition: transform var(--dur-mid) var(--ease);
+}
+
+.sidebar-close {
+  display: none;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-sm);
   border: 1px solid var(--border);
   background: var(--surface);
+  cursor: pointer;
   color: var(--ink-soft);
 }
 
-.badge svg { width: 12px; height: 12px; }
-
-.badge--accent {
-  background: rgba(230,236,73,0.15);
-  border-color: rgba(230,236,73,0.3);
-  color: #6b6e0f;
-}
-
-/* ========================================
-   SIDEBAR
-   ======================================== */
-.sidebar {
-  width: 260px;
-  flex-shrink: 0;
-  padding: 24px 20px;
-  border-right: 1px solid var(--border);
-  background: var(--surface);
-  overflow-y: auto;
-  transition: transform var(--dur-md) var(--ease);
-  position: relative;
-}
-
 .sidebar-title {
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  text-transform: uppercase;
 }
 
-.sidebar-title svg { width: 16px; height: 16px; color: var(--ink-muted); }
-
-.filter-section { margin-bottom: 24px; }
+.filter-section {
+  margin-bottom: 18px;
+}
 
 .filter-label {
   font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--ink-muted);
-  letter-spacing: 0.06em;
-  margin-bottom: 10px;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
   display: block;
 }
 
-/* Member chips with color dots */
-.filter-chips {
+.filter-chip-group {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
 .chip {
-  font-family: var(--font-body);
-  font-size: 0.75rem;
-  padding: 5px 10px;
-  border-radius: var(--r-full);
-  border: 1px solid var(--border-strong);
-  background: var(--bg);
+  border: 1px solid var(--border);
+  background: var(--surface);
   color: var(--ink-soft);
+  border-radius: var(--r-full);
+  font-size: 0.72rem;
+  padding: 5px 10px;
   cursor: pointer;
-  transition: all var(--dur-fast) var(--ease);
-  user-select: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  transition: all var(--dur-fast) var(--ease);
 }
 
 .chip:hover {
-  border-color: var(--ink-muted);
-  background: var(--surface-warm);
+  border-color: var(--border-strong);
+  background: var(--surface-soft);
 }
 
 .chip.active {
   background: var(--ink);
-  color: var(--white);
   border-color: var(--ink);
+  color: var(--text-inverse);
 }
 
-.chip.active:hover {
-  background: var(--ink-soft);
-}
-
-.chip .color-dot {
+.color-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  flex-shrink: 0;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid var(--member-dot-border);
+  background: var(--member-color, var(--ink-muted));
 }
 
-.chip.active .color-dot {
-  border-color: rgba(255,255,255,0.3);
+.member-sumire { --member-color: var(--c-sumire); }
+.member-nazuna { --member-color: var(--c-nazuna); }
+.member-hinano { --member-color: var(--c-hinano); }
+.member-uruha { --member-color: var(--c-uruha); }
+.member-lisa { --member-color: var(--c-lisa); }
+.member-kyupi { --member-color: var(--c-kyupi); }
+.member-beni { --member-color: var(--c-beni); }
+.member-met { --member-color: var(--c-met); }
+.member-runa { --member-color: var(--c-runa); }
+
+.mode-list {
+  display: grid;
+  gap: 6px;
 }
 
-/* Type toggles */
-.type-toggles { display: flex; gap: 6px; }
-
-.type-toggle {
-  flex: 1;
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  font-weight: 500;
-  padding: 8px 12px;
+.mode-btn {
+  border: 1px solid var(--border);
   border-radius: var(--r-md);
-  border: 1.5px solid var(--border-strong);
-  background: var(--bg);
+  background: var(--surface);
   color: var(--ink-soft);
+  text-align: left;
+  padding: 9px 10px;
   cursor: pointer;
-  transition: all var(--dur-fast) var(--ease);
-  text-align: center;
 }
 
-.type-toggle:hover { border-color: var(--ink-muted); }
-
-.type-toggle.active-stream {
-  background: rgba(151,213,217,0.15);
-  border-color: var(--mint);
-  color: #2a7a7e;
+.mode-btn strong {
+  display: block;
+  font-size: 0.76rem;
 }
 
-.type-toggle.active-clip {
-  background: rgba(131,168,249,0.15);
-  border-color: var(--blue);
-  color: #3d5fb3;
+.mode-btn span {
+  display: block;
+  font-size: 0.66rem;
+  color: var(--ink-muted);
 }
 
-/* Date inputs */
-.date-inputs { display: flex; flex-direction: column; gap: 8px; }
+.mode-btn.active {
+  border-color: var(--accent-alpha-48);
+  background: var(--accent-alpha-10);
+}
 
-.date-field { display: flex; flex-direction: column; gap: 3px; }
-.date-field span { font-size: 0.7rem; color: var(--ink-muted); }
+.source-chip.active {
+  background: var(--source-chip-active);
+  border-color: var(--source-chip-active);
+  color: var(--text-inverse);
+}
+
+.date-inputs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.date-field {
+  display: grid;
+  gap: 3px;
+}
+
+.date-field span {
+  font-size: 0.66rem;
+  color: var(--ink-muted);
+}
 
 .date-field input {
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  padding: 7px 10px;
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  border: 1px solid var(--border-strong);
-  background: var(--bg);
+  padding: 7px 9px;
+  font-family: inherit;
+  font-size: 0.76rem;
+  background: var(--surface);
   color: var(--ink);
-  outline: none;
-  transition: border-color var(--dur-fast) var(--ease);
 }
 
-/* ========================================
-   CHAT AREA
-   ======================================== */
+.sidebar-callout {
+  border-radius: var(--r-md);
+  border: 1px solid var(--accent-alpha-34);
+  background: var(--accent-alpha-09);
+  padding: 10px;
+}
+
+.sidebar-callout h3 {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  margin-bottom: 6px;
+  letter-spacing: 0.03em;
+}
+
+.sidebar-callout ul {
+  display: grid;
+  gap: 4px;
+  padding-left: 18px;
+  font-size: 0.7rem;
+  color: var(--accent-text);
+}
+
 .chat-area {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+}
+
+.status-bar {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-status);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+
+.status-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulse 2.2s ease infinite;
+}
+
+.status-meta {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.status-meta span {
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 2px 8px;
 }
 
 .chat-messages {
   flex: 1;
-  padding: 24px;
   overflow-y: auto;
+  padding: 22px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
-/* Status bar */
-.status-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px 16px;
-  font-size: 0.72rem;
-  color: var(--ink-muted);
-  background: var(--surface-warm);
-  border-bottom: 1px solid var(--border);
-}
-
-.status-bar .dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--mint);
-  animation: pulse-dot 2s ease infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* Messages */
 .message {
   display: flex;
   gap: 10px;
   max-width: 100%;
-  animation: msg-in var(--dur-md) var(--ease) both;
+  animation: slide-in var(--dur-mid) var(--ease) both;
 }
 
-@keyframes msg-in {
-  from { opacity: 0; transform: translateY(12px); }
+.message--user {
+  justify-content: flex-end;
 }
-
-.message--user { justify-content: flex-end; }
-.message--system { justify-content: flex-start; }
 
 .msg-avatar {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--r-sm);
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   font-size: 0.75rem;
   font-weight: 700;
 }
 
 .msg-avatar--user {
-  background: var(--accent);
-  color: var(--ink);
   order: 2;
+  background: linear-gradient(140deg, var(--brand-grad-start), var(--brand-grad-end));
+  color: var(--text-inverse);
 }
 
 .msg-avatar--system {
   background: var(--ink);
-  color: var(--white);
+  color: var(--text-inverse);
 }
 
 .msg-bubble {
   border-radius: var(--r-lg);
-  max-width: 720px;
+  max-width: min(840px, 100%);
 }
 
 .msg-bubble--user {
   background: var(--ink);
-  color: var(--white);
-  padding: 12px 18px;
+  color: var(--text-inverse);
   border-bottom-right-radius: var(--r-sm);
-  font-size: 0.92rem;
-  font-weight: 500;
+  padding: 12px 16px;
+  font-size: 0.9rem;
 }
 
 .msg-bubble--system {
-  background: var(--surface);
   border: 1px solid var(--border);
-  padding: 16px 20px;
+  background: var(--surface-raised);
   border-bottom-left-radius: var(--r-sm);
+  padding: 16px;
   box-shadow: var(--shadow-card);
 }
 
-.msg-result-count {
-  font-size: 0.85rem;
-  color: var(--ink-muted);
-  margin-bottom: 16px;
+.msg-head {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
 }
 
-.msg-result-count strong {
+.result-count {
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+}
+
+.result-count strong {
   color: var(--ink);
-  font-weight: 700;
 }
 
-/* ========================================
-   VIDEO CARDS
-   ======================================== */
-.video-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.video-card {
-  display: flex;
-  gap: 14px;
-  padding: 14px;
-  border-radius: var(--r-md);
-  background: var(--bg);
+.mode-switch {
+  display: inline-flex;
+  gap: 4px;
+  border-radius: var(--r-full);
   border: 1px solid var(--border);
-  transition: all var(--dur-fast) var(--ease);
+  padding: 3px;
+  background: var(--surface-soft);
+}
+
+.mode-chip {
+  border: 0;
+  border-radius: var(--r-full);
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 0.66rem;
+  padding: 4px 8px;
   cursor: pointer;
 }
 
-.video-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-card);
-  transform: translateY(-1px);
+.mode-chip.active {
+  background: var(--ink);
+  color: var(--text-inverse);
+}
+
+.result-section {
+  margin-bottom: 14px;
+}
+
+.result-section:last-child {
+  margin-bottom: 0;
+}
+
+.result-title {
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
+
+.source-subtitle {
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.source-subtitle.with-gap {
+  margin-top: 10px;
+}
+
+.video-cards {
+  display: grid;
+  gap: 10px;
+}
+
+.video-card {
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 11px;
+  display: grid;
+  grid-template-columns: 152px minmax(0, 1fr);
+  gap: 12px;
 }
 
 .video-thumb {
   width: 152px;
   height: 86px;
   border-radius: var(--r-sm);
-  flex-shrink: 0;
   position: relative;
   overflow: hidden;
 }
 
+.thumb-sumire {
+  background: linear-gradient(140deg, var(--c-sumire), var(--thumb-neutral-end));
+}
+
+.thumb-hinano {
+  background: linear-gradient(140deg, var(--c-hinano), var(--thumb-neutral-end));
+}
+
 .video-thumb::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.35), transparent 50%);
+  background: linear-gradient(to top, var(--thumb-overlay), transparent 56%);
 }
 
 .video-thumb .duration {
   position: absolute;
   bottom: 5px;
-  right: 5px;
-  font-size: 0.65rem;
+  right: 6px;
+  border-radius: 4px;
+  font-size: 0.63rem;
   font-weight: 700;
-  background: rgba(0,0,0,0.75);
-  color: white;
+  color: var(--text-inverse);
+  background: var(--duration-bg);
   padding: 1px 5px;
-  border-radius: 3px;
   z-index: 1;
-  letter-spacing: 0.02em;
-}
-
-.video-thumb .play-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 30px;
-  height: 30px;
-  background: rgba(255,255,255,0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity var(--dur-fast) var(--ease);
-}
-
-.video-card:hover .play-icon { opacity: 1; }
-
-.play-icon svg {
-  width: 12px;
-  height: 12px;
-  margin-left: 2px;
-  color: var(--ink);
-}
-
-.video-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
 }
 
 .video-title {
   font-size: 0.84rem;
   font-weight: 700;
   line-height: 1.4;
-  color: var(--ink);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  margin-bottom: 4px;
 }
 
 .video-meta {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 0.72rem;
-  color: var(--ink-muted);
   flex-wrap: wrap;
+  gap: 7px;
+  color: var(--ink-muted);
+  font-size: 0.71rem;
+  margin-bottom: 6px;
 }
 
 .video-channel {
-  font-weight: 500;
-  color: var(--ink-soft);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
-}
-
-.video-channel .ch-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.video-sep {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--grey);
+  color: var(--ink-soft);
 }
 
 .video-type {
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 2px 7px;
   border-radius: var(--r-full);
-  letter-spacing: 0.02em;
+  border: 1px solid var(--border);
+  padding: 1px 7px;
+  font-size: 0.62rem;
+  background: var(--surface-soft);
+  color: var(--ink-soft);
 }
 
-.video-type--stream {
-  background: rgba(151,213,217,0.2);
-  color: #2a7a7e;
-  border: 1px solid rgba(151,213,217,0.4);
-}
-
-.video-type--clip {
-  background: rgba(131,168,249,0.2);
-  color: #3d5fb3;
-  border: 1px solid rgba(131,168,249,0.4);
-}
-
-/* Timestamps */
 .video-timestamps {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin-top: 2px;
+  display: grid;
+  gap: 4px;
 }
 
 .timestamp {
   display: inline-flex;
-  align-items: flex-start;
   gap: 6px;
-  font-size: 0.73rem;
-  color: var(--ink-soft);
-  line-height: 1.5;
   text-decoration: none;
-  transition: color var(--dur-fast) var(--ease);
-  cursor: pointer;
-}
-
-.timestamp:hover { color: var(--ink); }
-
-.timestamp:hover .ts-time {
-  background: var(--accent);
-  color: var(--ink);
-  border-color: var(--accent);
+  font-size: 0.71rem;
+  color: var(--ink-soft);
 }
 
 .ts-time {
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: #6b6e0f;
-  background: rgba(230,236,73,0.15);
+  border-radius: 4px;
+  border: 1px solid var(--accent-alpha-32);
+  color: var(--accent-text);
+  background: var(--accent-alpha-12);
   padding: 1px 5px;
-  border-radius: 3px;
-  border: 1px solid rgba(230,236,73,0.3);
   white-space: nowrap;
-  flex-shrink: 0;
-  margin-top: 1px;
-  transition: all var(--dur-fast) var(--ease);
 }
-
-.ts-text { color: var(--ink-muted); }
 
 .ts-text mark {
-  background: rgba(230,236,73,0.25);
+  background: var(--accent-alpha-22);
   color: var(--ink);
   border-radius: 2px;
-  padding: 0 1px;
 }
 
-/* ========================================
-   CHAT INPUT
-   ======================================== */
+.x-cards {
+  display: grid;
+  gap: 8px;
+}
+
+.x-card {
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 10px 11px;
+}
+
+.x-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.x-author {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.x-handle {
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+}
+
+.x-post-time {
+  font-size: 0.66rem;
+  color: var(--ink-muted);
+}
+
+.x-text {
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.x-text mark {
+  background: var(--accent-alpha-22);
+  border-radius: 2px;
+  color: var(--ink);
+}
+
+.x-footer {
+  margin-top: 7px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.67rem;
+  color: var(--ink-muted);
+}
+
+.metric-pill {
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  padding: 2px 7px;
+  background: var(--surface-soft);
+}
+
+.answer-card {
+  border-radius: var(--r-md);
+  border: 1px solid var(--accent-alpha-34);
+  background: var(--accent-alpha-08);
+  padding: 12px;
+}
+
+.answer-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-text);
+  margin-bottom: 6px;
+}
+
+.answer-card p {
+  font-size: 0.79rem;
+  color: var(--accent-text-strong);
+}
+
+.citation-list {
+  margin-top: 9px;
+  display: grid;
+  gap: 6px;
+}
+
+.citation-item {
+  border-radius: var(--r-sm);
+  border: 1px solid var(--accent-alpha-26);
+  background: var(--citation-bg);
+  padding: 7px 8px;
+  font-size: 0.7rem;
+  color: var(--accent-text-strong);
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.analysis-card {
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  padding: 8px;
+}
+
+.analysis-card span {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--ink-muted);
+}
+
+.analysis-card strong {
+  margin-top: 1px;
+  display: block;
+  font-size: 0.9rem;
+}
+
+.analysis-bars {
+  display: grid;
+  gap: 6px;
+}
+
+.analysis-row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.bar-track {
+  width: 100%;
+  height: 7px;
+  border-radius: var(--r-full);
+  background: var(--surface-soft);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--brand-grad-end), var(--brand-grad-start));
+}
+
+.follow-up-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.action-btn {
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.action-btn.primary {
+  background: var(--ink);
+  color: var(--text-inverse);
+  border-color: var(--ink);
+}
+
 .chat-input-area {
-  padding: 16px 24px 24px;
-  background: linear-gradient(to top, var(--bg) 60%, transparent);
   position: sticky;
   bottom: 0;
+  background: linear-gradient(to top, var(--bg-fade-strong) 72%, var(--bg-fade-soft));
+  padding: 14px 22px 20px;
+}
+
+.input-toolbar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.input-source {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.quick-mode {
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  background: var(--surface);
+  font-size: 0.68rem;
+  color: var(--ink-soft);
+  padding: 4px 9px;
+  cursor: pointer;
+}
+
+.quick-mode.active {
+  border-color: var(--accent-alpha-46);
+  color: var(--accent-text);
+  background: var(--accent-alpha-10);
 }
 
 .chat-input-wrapper {
+  border: 1px solid var(--border-strong);
+  background: var(--surface-raised);
+  border-radius: var(--r-xl);
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: var(--surface);
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--r-2xl);
-  padding: 6px 6px 6px 20px;
+  gap: 8px;
+  padding: 7px 7px 7px 16px;
   box-shadow: var(--shadow-card);
-  transition: border-color var(--dur-fast) var(--ease);
 }
 
 .chat-input {
   flex: 1;
-  font-family: var(--font-body);
-  font-size: 0.92rem;
-  border: none;
+  border: 0;
   outline: none;
   background: transparent;
   color: var(--ink);
-  padding: 8px 0;
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 7px 0;
 }
-
-.chat-input::placeholder { color: var(--grey); }
 
 .send-btn {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
+  border: 0;
   border-radius: 50%;
-  border: none;
-  background: var(--accent);
-  color: var(--ink);
+  background: linear-gradient(140deg, var(--brand-grad-start), var(--brand-grad-end));
+  color: var(--text-inverse);
+  display: grid;
+  place-items: center;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all var(--dur-fast) var(--ease);
-  box-shadow: var(--shadow-action);
 }
 
-.send-btn:hover {
-  background: var(--accent-hover);
-  transform: scale(1.05);
+.send-btn svg {
+  width: 17px;
+  height: 17px;
 }
-
-.send-btn:active { transform: scale(0.95); }
-
-.send-btn svg { width: 18px; height: 18px; margin-left: 1px; }
 
 .input-hints {
+  margin-top: 8px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 10px;
-  font-size: 0.7rem;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.68rem;
   color: var(--ink-muted);
 }
 
-.input-hint { display: flex; align-items: center; gap: 4px; }
-
-.input-hint kbd {
-  font-family: var(--font-body);
-  font-size: 0.65rem;
-  padding: 2px 5px;
+kbd {
   border-radius: 4px;
+  border: 1px solid var(--border);
   background: var(--surface);
-  border: 1px solid var(--border-strong);
-  color: var(--ink-muted);
+  font-size: 0.64rem;
+  padding: 1px 5px;
 }
 
-/* ========================================
-   MOBILE OVERLAY
-   ======================================== */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.3);
-  z-index: 200;
-  opacity: 0;
-  transition: opacity var(--dur-md) var(--ease);
-}
-
-.sidebar-overlay.visible { opacity: 1; }
-
-/* ========================================
-   SCROLLBAR
-   ======================================== */
-.chat-messages::-webkit-scrollbar, .sidebar::-webkit-scrollbar { width: 4px; }
-.chat-messages::-webkit-scrollbar-track, .sidebar::-webkit-scrollbar-track { background: transparent; }
-.chat-messages::-webkit-scrollbar-thumb, .sidebar::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 4px; }
-
-/* ========================================
-   FOCUS INDICATORS (accessibility)
-   ======================================== */
 .chip:focus-visible,
-.type-toggle:focus-visible,
+.mode-btn:focus-visible,
+.quick-mode:focus-visible,
+.mode-chip:focus-visible,
+.action-btn:focus-visible,
+.send-btn:focus-visible,
 .filter-toggle-btn:focus-visible,
 .sidebar-close:focus-visible,
-.send-btn:focus-visible,
-.video-card:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
+.brand:focus-visible,
+.date-field input:focus-visible {
+  outline: none;
   box-shadow: var(--shadow-focus);
 }
-
-.chat-input:focus-visible { outline: none; }
 
 .chat-input-wrapper:focus-within {
-  border-color: var(--ink-muted);
   box-shadow: var(--shadow-focus);
 }
 
-.timestamp:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 1px;
-  border-radius: 4px;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
-.brand:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 4px;
-  border-radius: var(--r-sm);
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 }
 
-.date-field input:focus-visible {
-  border-color: var(--ink);
-  box-shadow: var(--shadow-focus);
+@media (max-width: 960px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-kpis {
+    min-width: 0;
+  }
 }
 
-/* ========================================
-   ANIMATIONS
-   ======================================== */
-.msg-enter-1 { animation-delay: 0ms; }
-.msg-enter-2 { animation-delay: 100ms; }
-.msg-enter-3 { animation-delay: 200ms; }
-.msg-enter-4 { animation-delay: 300ms; }
+@media (max-width: 1024px) {
+  .header-inner,
+  .hero,
+  .chat-messages,
+  .chat-input-area {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
 
-.card-stagger-1 { animation: card-in var(--dur-md) var(--ease) both; animation-delay: 80ms; }
-.card-stagger-2 { animation: card-in var(--dur-md) var(--ease) both; animation-delay: 160ms; }
-.card-stagger-3 { animation: card-in var(--dur-md) var(--ease) both; animation-delay: 240ms; }
+  .pill {
+    display: none;
+  }
 
-@keyframes card-in {
-  from { opacity: 0; transform: translateY(8px) scale(0.98); }
-}
+  .filter-toggle-btn {
+    display: grid;
+    place-items: center;
+  }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
-@media (max-width: 768px) {
-  .hero h1 { font-size: 1.5rem; }
-  .hero-sub { font-size: 0.85rem; }
-
-  .filter-toggle-btn { display: flex; }
+  .main-layout {
+    max-width: none;
+  }
 
   .sidebar {
     position: fixed;
-    top: 0;
+    top: 68px;
     left: 0;
     bottom: 0;
-    z-index: 201;
+    z-index: 60;
+    width: min(320px, 88vw);
     transform: translateX(-100%);
     box-shadow: var(--shadow-card);
-    width: 280px;
   }
 
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-overlay.visible { display: block; opacity: 1; }
-  .sidebar-close { display: flex; }
+  .sidebar.open {
+    transform: translateX(0);
+  }
 
-  .chat-messages { padding: 16px; }
-  .chat-input-area { padding: 12px 16px 20px; }
+  .sidebar-close {
+    display: grid;
+    place-items: center;
+  }
 
-  .video-card { flex-direction: column; }
-  .video-thumb { width: 100%; height: auto; aspect-ratio: 16/9; }
-  .msg-bubble { max-width: calc(100vw - 80px); }
-  .input-hints { display: none; }
+  .sidebar-overlay.visible {
+    display: block;
+    opacity: 1;
+  }
+
+  .msg-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mode-switch {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .status-bar {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .status-meta {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .video-card {
+    grid-template-columns: 132px minmax(0, 1fr);
+  }
+
+  .video-thumb {
+    width: 132px;
+    height: 74px;
+  }
+
+  .analysis-row {
+    grid-template-columns: 88px minmax(0, 1fr) 38px;
+  }
 }
 
-@media (max-width: 480px) {
-  .hero { padding: 28px 16px 20px; }
-  .hero-badges { gap: 6px; }
-  .badge { font-size: 0.65rem; padding: 3px 8px; }
+@media (max-width: 768px) {
+  .header-inner,
+  .hero,
+  .chat-messages,
+  .chat-input-area {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .hero {
+    padding-top: 28px;
+    padding-bottom: 14px;
+  }
+
+  .hero-sub {
+    font-size: 0.86rem;
+  }
+
+  .kpi-card {
+    padding: 8px;
+  }
+
+  .kpi-value {
+    font-size: 0.92rem;
+  }
+
+  .status-bar {
+    font-size: 0.7rem;
+    gap: 8px;
+  }
+
+  .status-meta span {
+    font-size: 0.66rem;
+  }
+
+  .video-card {
+    grid-template-columns: 1fr;
+  }
+
+  .video-thumb {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .x-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .chat-input-area {
+    padding-top: 12px;
+    padding-bottom: 16px;
+  }
+
+  .input-hints {
+    gap: 8px;
+  }
 }
 
-/* Sidebar close button */
-.sidebar-close {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--r-sm);
-  border: none;
-  background: var(--surface-warm);
-  cursor: pointer;
-  color: var(--ink-muted);
-  position: absolute;
-  top: 16px;
-  right: 16px;
+@media (max-width: 560px) {
+  .header-inner {
+    height: 60px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .brand {
+    gap: 10px;
+  }
+
+  .brand-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-name {
+    font-size: 1rem;
+  }
+
+  .brand-note {
+    font-size: 0.64rem;
+  }
+
+  .hero {
+    padding: 22px 14px 12px;
+  }
+
+  .hero-features {
+    gap: 6px;
+  }
+
+  .feature-badge {
+    font-size: 0.64rem;
+    padding: 3px 8px;
+  }
+
+  .hero-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-messages {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .msg-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 0.68rem;
+  }
+
+  .msg-bubble--user {
+    font-size: 0.84rem;
+    padding: 10px 12px;
+  }
+
+  .msg-bubble--system {
+    padding: 12px;
+  }
+
+  .result-count {
+    font-size: 0.77rem;
+  }
+
+  .mode-chip {
+    font-size: 0.62rem;
+    padding: 3px 7px;
+  }
+
+  .source-subtitle {
+    font-size: 0.64rem;
+  }
+
+  .analysis-row {
+    grid-template-columns: 74px minmax(0, 1fr) 30px;
+    gap: 6px;
+    font-size: 0.64rem;
+  }
+
+  .follow-up-actions .action-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .quick-mode {
+    font-size: 0.64rem;
+    padding: 4px 8px;
+  }
+
+  .chat-input-wrapper {
+    padding: 6px 6px 6px 12px;
+  }
+
+  .chat-input {
+    font-size: 0.84rem;
+  }
+
+  .send-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .input-hints {
+    display: none;
+  }
+
+  .sidebar {
+    top: 60px;
+    width: min(300px, 92vw);
+  }
 }
 </style>
 </head>
 <body>
-
 <div class="app">
-
-  <!-- HEADER -->
   <header class="header">
     <div class="header-inner">
       <a class="brand" href="#">
-        <div class="brand-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
         <div>
           <span class="brand-name">ぶいすぽサーチ</span>
-          <span class="brand-tagline">あの動画どこだっけ？</span>
+          <span class="brand-note">検索だけで終わらない、会話と分析の検索体験</span>
         </div>
       </a>
-      <div class="header-right">
+      <div class="header-meta">
+        <span class="pill">Prototype Wireframe</span>
         <button class="filter-toggle-btn" onclick="toggleSidebar()" aria-label="フィルターを開く">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
         </button>
@@ -1015,327 +1392,391 @@ body::before {
     </div>
   </header>
 
-  <!-- HERO -->
   <section class="hero">
-    <h1><span class="hl">あの動画</span>どこだっけ？</h1>
-    <p class="hero-sub">VTuber配信・切り抜きの文字起こしから、<br>話題で動画を見つけよう</p>
-    <div class="hero-badges">
-      <span class="badge badge--accent">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-        ブラウザ完結
-      </span>
-      <span class="badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h10"/></svg>
-        DuckDB-WASM
-      </span>
-      <span class="badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
-        サーバー不要
-      </span>
+    <div class="hero-grid">
+      <div>
+        <h1><span class="hl">あの動画</span>どこだっけ？を、その先まで。</h1>
+        <p class="hero-sub">動画検索に加えて、フォローアップ回答生成と横断分析を同じ会話画面で実行。検索結果をそのまま「答え」と「比較インサイト」に変換します。</p>
+        <div class="hero-features">
+          <span class="feature-badge">Transcript Search</span>
+          <span class="feature-badge">X Signal Retrieval</span>
+          <span class="feature-badge">Follow-up Grounded Answer</span>
+          <span class="feature-badge">Cross Source Analysis</span>
+        </div>
+      </div>
+      <div class="hero-kpis" aria-label="key metrics">
+        <div class="kpi-card">
+          <span class="kpi-label">Indexed Videos</span>
+          <span class="kpi-value">1,847</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Indexed X Posts</span>
+          <span class="kpi-value">92,440</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Analysis Lens</span>
+          <span class="kpi-value">Cross Source</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- MAIN -->
   <div class="main-layout">
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
+    <aside id="sidebar" class="sidebar" role="complementary" aria-label="Search and analysis filters">
       <button class="sidebar-close" onclick="toggleSidebar()" aria-label="閉じる">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
 
-      <div class="sidebar-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-        フィルター
-      </div>
+      <div class="sidebar-title">search controls</div>
 
-      <div class="filter-section">
-        <span class="filter-label">チャンネル</span>
-        <div class="filter-chips">
+      <section class="filter-section">
+        <span class="filter-label">Data Source</span>
+        <div class="filter-chip-group">
+          <button class="chip source-chip active">All</button>
+          <button class="chip source-chip active">YouTube</button>
+          <button class="chip source-chip active">X</button>
+        </div>
+      </section>
+
+      <section class="filter-section">
+        <span class="filter-label">Search Scope</span>
+        <div class="filter-chip-group">
+          <button class="chip active">配信</button>
+          <button class="chip active">切り抜き</button>
+        </div>
+      </section>
+
+      <section class="filter-section">
+        <span class="filter-label">Output Mode</span>
+        <div class="mode-list">
+          <button class="mode-btn active">
+            <strong>Video Search</strong>
+            <span>該当動画とタイムスタンプを表示</span>
+          </button>
+          <button class="mode-btn active">
+            <strong>Follow-up Answer</strong>
+            <span>根拠引用付きで回答を生成</span>
+          </button>
+          <button class="mode-btn active">
+            <strong>Analysis</strong>
+            <span>傾向・比較・話題の分布を可視化</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="filter-section">
+        <span class="filter-label">Analysis Lens</span>
+        <div class="filter-chip-group">
+          <button class="chip active">話題推移</button>
+          <button class="chip">メンバー比率</button>
+          <button class="chip">感情トーン</button>
+          <button class="chip">配信比較</button>
+        </div>
+      </section>
+
+      <section class="filter-section">
+        <span class="filter-label">Members</span>
+        <div class="filter-chip-group">
           <button class="chip active" data-all>すべて</button>
-          <button class="chip"><span class="color-dot" style="background:#B0C4DE"></span>花芽すみれ</button>
-          <button class="chip"><span class="color-dot" style="background:#FABEDC"></span>花芽なずな</button>
-          <button class="chip"><span class="color-dot" style="background:#FA96C8"></span>橘ひなの</button>
-          <button class="chip"><span class="color-dot" style="background:#F5EB4A"></span>小雀とと</button>
-          <button class="chip"><span class="color-dot" style="background:#4182FA"></span>一ノ瀬うるは</button>
-          <button class="chip"><span class="color-dot" style="background:#D1DE79"></span>英リサ</button>
-          <button class="chip"><span class="color-dot" style="background:#FFD23C"></span>神成きゅぴ</button>
-          <button class="chip"><span class="color-dot" style="background:#B4F1F9"></span>藍沢エマ</button>
-          <button class="chip"><span class="color-dot" style="background:#8ECED9"></span>白波らむね</button>
-          <button class="chip"><span class="color-dot" style="background:#FBA03F"></span>小森めと</button>
-          <button class="chip"><span class="color-dot" style="background:#85CAB3"></span>八雲べに</button>
-          <button class="chip"><span class="color-dot" style="background:#D6ADFF"></span>紫宮るな</button>
+          <button class="chip"><span class="color-dot member-sumire"></span>花芽すみれ</button>
+          <button class="chip"><span class="color-dot member-nazuna"></span>花芽なずな</button>
+          <button class="chip"><span class="color-dot member-hinano"></span>橘ひなの</button>
+          <button class="chip"><span class="color-dot member-uruha"></span>一ノ瀬うるは</button>
+          <button class="chip"><span class="color-dot member-lisa"></span>英リサ</button>
+          <button class="chip"><span class="color-dot member-kyupi"></span>神成きゅぴ</button>
+          <button class="chip"><span class="color-dot member-beni"></span>八雲べに</button>
+          <button class="chip"><span class="color-dot member-met"></span>小森めと</button>
+          <button class="chip"><span class="color-dot member-runa"></span>紫宮るな</button>
         </div>
-      </div>
+      </section>
 
-      <div class="filter-section">
-        <span class="filter-label">動画タイプ</span>
-        <div class="type-toggles">
-          <button class="type-toggle active-stream">配信</button>
-          <button class="type-toggle active-clip">切り抜き</button>
-        </div>
-      </div>
-
-      <div class="filter-section">
-        <span class="filter-label">期間</span>
+      <section class="filter-section">
+        <span class="filter-label">Date Range</span>
         <div class="date-inputs">
-          <div class="date-field"><span>開始日</span><input type="date" value="2025-01-01"></div>
-          <div class="date-field"><span>終了日</span><input type="date" value="2025-01-31"></div>
+          <label class="date-field"><span>From</span><input type="date" value="2025-01-01"></label>
+          <label class="date-field"><span>To</span><input type="date" value="2025-01-31"></label>
         </div>
-      </div>
+      </section>
+
+      <section class="sidebar-callout">
+        <h3>Feature Differentiators</h3>
+        <ul>
+          <li>Generate answers from mixed YouTube and X evidence</li>
+          <li>Verify claims with timestamps and post permalinks</li>
+          <li>Analyze trend shifts between stream and social reactions</li>
+        </ul>
+      </section>
     </aside>
 
-    <!-- CHAT -->
     <main class="chat-area" role="log" aria-live="polite">
-
       <div class="status-bar" role="status">
-        <span class="dot"></span>
-        <span>Parquetデータ読み込み完了 &middot; <strong>1,847本</strong>の動画を検索可能</span>
+        <div class="status-left">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span>Data ready · <strong>1,847 videos</strong> + <strong>92,440 X posts</strong> · Last update 2026-02-16 02:15 JST</span>
+        </div>
+        <div class="status-meta">
+          <span>Answer grounding: Enabled</span>
+          <span>Source fusion: Enabled</span>
+        </div>
       </div>
 
       <div class="chat-messages">
-
-        <!-- ====== Query 1 ====== -->
-        <div class="message message--user msg-enter-1">
+        <div class="message message--user">
           <div class="msg-avatar msg-avatar--user">U</div>
-          <div class="msg-bubble msg-bubble--user">大会 練習</div>
+          <div class="msg-bubble msg-bubble--user">大会前に一番多く練習していたのは誰？根拠付きで教えて</div>
         </div>
 
-        <div class="message message--system msg-enter-2">
+        <div class="message message--system">
           <div class="msg-avatar msg-avatar--system">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           </div>
           <div class="msg-bubble msg-bubble--system">
-            <div class="msg-result-count">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-              <strong>3件</strong>見つかりました
+            <div class="msg-head">
+              <div class="result-count"><strong>8件</strong>の根拠を発見（動画3件 / X投稿5件）し、回答と分析を生成しました</div>
+              <div class="mode-switch" aria-label="result sections">
+                <button class="mode-chip active" aria-pressed="true">Search</button>
+                <button class="mode-chip active" aria-pressed="true">Answer</button>
+                <button class="mode-chip active" aria-pressed="true">Analysis</button>
+              </div>
             </div>
 
-            <div class="video-cards">
+            <section class="result-section">
+              <h2 class="result-title">Search Results</h2>
+              <div class="source-subtitle">YouTube Matches</div>
+              <div class="video-cards">
+                <article class="video-card" role="article">
+                  <div class="video-thumb thumb-sumire">
+                    <span class="duration">4:12:30</span>
+                  </div>
+                  <div>
+                    <div class="video-title">【VALORANT】CR CUP本番前日！最後のスクリム練習【花芽すみれ】</div>
+                    <div class="video-meta">
+                      <span class="video-channel"><span class="color-dot member-sumire"></span>花芽すみれ</span>
+                      <span>2025/01/14</span>
+                      <span class="video-type">配信</span>
+                    </div>
+                    <div class="video-timestamps">
+                      <a class="timestamp" href="#"><span class="ts-time">0:45:12</span><span class="ts-text">「<mark>大会</mark>前の<mark>練習</mark>ほんとに緊張する」</span></a>
+                      <a class="timestamp" href="#"><span class="ts-time">2:30:05</span><span class="ts-text">「今日の<mark>練習</mark>で大会の作戦固まった」</span></a>
+                    </div>
+                  </div>
+                </article>
 
-              <!-- Card 1: 花芽すみれ VALORANT配信 -->
-              <div class="video-card card-stagger-1">
-                <div class="video-thumb" style="background:linear-gradient(135deg, #B0C4DE, var(--beige))">
-                  <span class="duration">4:12:30</span>
-                  <div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
-                </div>
-                <div class="video-info">
-                  <div class="video-title">【VALORANT】CR CUP 本番前日！最後のスクリム練習【花芽すみれ/ぶいすぽっ!】</div>
-                  <div class="video-meta">
-                    <span class="video-channel"><span class="ch-dot" style="background:#B0C4DE"></span>花芽すみれ</span>
-                    <span class="video-sep"></span>
-                    <span>2025/01/14</span>
-                    <span class="video-type video-type--stream">配信</span>
+                <article class="video-card" role="article">
+                  <div class="video-thumb thumb-hinano">
+                    <span class="duration">5:23:45</span>
                   </div>
-                  <div class="video-timestamps">
-                    <a class="timestamp" href="#">
-                      <span class="ts-time">0:45:12</span>
-                      <span class="ts-text">「<mark>大会</mark>前の<mark>練習</mark>ってほんとに緊張する、明日やばいよ」</span>
-                    </a>
-                    <a class="timestamp" href="#">
-                      <span class="ts-time">2:30:05</span>
-                      <span class="ts-text">「今日の<mark>練習</mark>で<mark>大会</mark>の作戦固まったかも」</span>
-                    </a>
+                  <div>
+                    <div class="video-title">【APEX】カスタム大会に向けた猛特訓【橘ひなの】</div>
+                    <div class="video-meta">
+                      <span class="video-channel"><span class="color-dot member-hinano"></span>橘ひなの</span>
+                      <span>2025/01/11</span>
+                      <span class="video-type">配信</span>
+                    </div>
+                    <div class="video-timestamps">
+                      <a class="timestamp" href="#"><span class="ts-time">0:12:30</span><span class="ts-text">「<mark>大会</mark>の<mark>練習</mark>しないとまずい」</span></a>
+                    </div>
                   </div>
-                </div>
+                </article>
               </div>
 
-              <!-- Card 2: 橘ひなの APEX配信 -->
-              <div class="video-card card-stagger-2">
-                <div class="video-thumb" style="background:linear-gradient(135deg, #FA96C8, var(--beige))">
-                  <span class="duration">5:23:45</span>
-                  <div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
-                </div>
-                <div class="video-info">
-                  <div class="video-title">【APEX】ぶいすぽカスタム大会に向けて猛特訓！！！【橘ひなの/ぶいすぽっ!】</div>
-                  <div class="video-meta">
-                    <span class="video-channel"><span class="ch-dot" style="background:#FA96C8"></span>橘ひなの</span>
-                    <span class="video-sep"></span>
-                    <span>2025/01/11</span>
-                    <span class="video-type video-type--stream">配信</span>
+              <div class="source-subtitle with-gap">X Matches</div>
+              <div class="x-cards">
+                <article class="x-card" role="article">
+                  <div class="x-head">
+                    <div>
+                      <span class="x-author">ぶいすぽ速報</span>
+                      <span class="x-handle">@vspo_feed</span>
+                    </div>
+                    <span class="x-post-time">2025/01/14 21:03</span>
                   </div>
-                  <div class="video-timestamps">
-                    <a class="timestamp" href="#">
-                      <span class="ts-time">0:12:30</span>
-                      <span class="ts-text">「<mark>大会</mark>の<mark>練習</mark>しないとまずい、めっちゃやる」</span>
-                    </a>
-                    <a class="timestamp" href="#">
-                      <span class="ts-time">3:45:10</span>
-                      <span class="ts-text">「今日の<mark>練習</mark>で結構仕上がってきた気がする」</span>
-                    </a>
+                  <p class="x-text">CR CUP前日の<mark>練習</mark>配信、すみれさん仕上がりすごい。明日の<mark>大会</mark>かなり期待。</p>
+                  <div class="x-footer">
+                    <span class="metric-pill">Like 2.4k</span>
+                    <span class="metric-pill">Repost 410</span>
+                    <a class="timestamp" href="#"><span class="ts-time">open post</span><span class="ts-text">source permalink</span></a>
                   </div>
+                </article>
+
+                <article class="x-card" role="article">
+                  <div class="x-head">
+                    <div>
+                      <span class="x-author">大会ウォッチャー</span>
+                      <span class="x-handle">@scrim_watch</span>
+                    </div>
+                    <span class="x-post-time">2025/01/14 22:41</span>
+                  </div>
+                  <p class="x-text">ひなのさんの<mark>練習</mark>量もえぐい。今日の仕上がりだと<mark>大会</mark>当日が楽しみ。</p>
+                  <div class="x-footer">
+                    <span class="metric-pill">Like 1.8k</span>
+                    <span class="metric-pill">Repost 255</span>
+                    <a class="timestamp" href="#"><span class="ts-time">open post</span><span class="ts-text">source permalink</span></a>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="result-section">
+              <h2 class="result-title">Follow-up Answer</h2>
+              <div class="answer-card">
+                <div class="answer-title">回答: 花芽すみれが最も練習量に言及していました</div>
+                <p>抽出した5本の候補動画のうち、練習に関する直接言及の頻度と継続時間が最も高いのは花芽すみれでした。特に大会前日配信で長時間にわたる反復練習が確認できます。</p>
+                <div class="citation-list">
+                  <div class="citation-item">YouTube証拠1: 花芽すみれ - 0:45:12 「大会前の練習ってほんとに緊張する」</div>
+                  <div class="citation-item">YouTube証拠2: 花芽すみれ - 2:30:05 「今日の練習で大会の作戦固まった」</div>
+                  <div class="citation-item">X証拠: @vspo_feed 2025/01/14 21:03 「CR CUP前日の練習配信...大会かなり期待」</div>
                 </div>
               </div>
+            </section>
 
-              <!-- Card 3: 切り抜き -->
-              <div class="video-card card-stagger-3">
-                <div class="video-thumb" style="background:linear-gradient(135deg, var(--blue), var(--beige))">
-                  <span class="duration">8:42</span>
-                  <div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+            <section class="result-section">
+              <h2 class="result-title">Analysis</h2>
+              <div class="analysis-grid">
+                <div class="analysis-card">
+                  <span>Practice Mentions</span>
+                  <strong>42</strong>
                 </div>
-                <div class="video-info">
-                  <div class="video-title">【切り抜き】大会練習中のぶいすぽメンバーまとめ【VALORANT/APEX】</div>
-                  <div class="video-meta">
-                    <span class="video-channel"><span class="ch-dot" style="background:var(--grey)"></span>ぶいすぽ切り抜き</span>
-                    <span class="video-sep"></span>
-                    <span>2025/01/16</span>
-                    <span class="video-type video-type--clip">切り抜き</span>
-                  </div>
-                  <div class="video-timestamps">
-                    <a class="timestamp" href="#">
-                      <span class="ts-time">0:30</span>
-                      <span class="ts-text">「<mark>大会</mark><mark>練習</mark>中のすみれとひなの」</span>
-                    </a>
-                  </div>
+                <div class="analysis-card">
+                  <span>Top Member (YouTube)</span>
+                  <strong>花芽すみれ</strong>
+                </div>
+                <div class="analysis-card">
+                  <span>Source Share</span>
+                  <strong>YouTube 38% / X 62%</strong>
                 </div>
               </div>
+              <div class="analysis-bars">
+                <div class="analysis-row"><span>YouTube</span><div class="bar-track"><div class="bar-fill" style="width: 38%;"></div></div><span>38%</span></div>
+                <div class="analysis-row"><span>X</span><div class="bar-track"><div class="bar-fill" style="width: 62%;"></div></div><span>62%</span></div>
+                <div class="analysis-row"><span>Sentiment Peak</span><div class="bar-track"><div class="bar-fill" style="width: 71%;"></div></div><span>71%</span></div>
+              </div>
+            </section>
 
-            </div>
+            <section class="result-section">
+              <h2 class="result-title">Next Actions</h2>
+              <div class="follow-up-actions">
+                <button class="action-btn primary">比較分析を続ける</button>
+                <button class="action-btn">X反応を深掘り</button>
+                <button class="action-btn">根拠をもっと表示</button>
+              </div>
+            </section>
           </div>
         </div>
 
-        <!-- ====== Query 2 ====== -->
-        <div class="message message--user msg-enter-3">
+        <div class="message message--user">
           <div class="msg-avatar msg-avatar--user">U</div>
-          <div class="msg-bubble msg-bubble--user">小森めと 雑談 おもしろ</div>
+          <div class="msg-bubble msg-bubble--user">その3人で「大会前日」と「大会当日」の差分を分析して</div>
         </div>
-
-        <div class="message message--system msg-enter-4">
-          <div class="msg-avatar msg-avatar--system">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          </div>
-          <div class="msg-bubble msg-bubble--system">
-            <div class="msg-result-count">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-              <strong>2件</strong>見つかりました
-            </div>
-
-            <div class="video-cards">
-
-              <!-- Card 4: 小森めと 雑談配信 -->
-              <div class="video-card card-stagger-1">
-                <div class="video-thumb" style="background:linear-gradient(135deg, #FBA03F, var(--beige))">
-                  <span class="duration">3:15:50</span>
-                  <div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
-                </div>
-                <div class="video-info">
-                  <div class="video-title">【雑談】最近あったおもしろい話を聞いてくれ〜！！【小森めと/ぶいすぽっ!】</div>
-                  <div class="video-meta">
-                    <span class="video-channel"><span class="ch-dot" style="background:#FBA03F"></span>小森めと</span>
-                    <span class="video-sep"></span>
-                    <span>2025/01/20</span>
-                    <span class="video-type video-type--stream">配信</span>
-                  </div>
-                  <div class="video-timestamps">
-                    <a class="timestamp" href="#">
-                      <span class="ts-time">0:23:15</span>
-                      <span class="ts-text">「この前<mark>おもしろ</mark>いことがあってさ、聞いて」</span>
-                    </a>
-                    <a class="timestamp" href="#">
-                      <span class="ts-time">1:45:30</span>
-                      <span class="ts-text">「<mark>雑談</mark>配信ってほんと楽しい、<mark>おもしろ</mark>い話いっぱいある」</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Card 5: 切り抜き -->
-              <div class="video-card card-stagger-2">
-                <div class="video-thumb" style="background:linear-gradient(135deg, #FBA03F, #FA96C8)">
-                  <span class="duration">12:34</span>
-                  <div class="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
-                </div>
-                <div class="video-info">
-                  <div class="video-title">【切り抜き】小森めとの爆笑エピソードまとめ【雑談配信ハイライト】</div>
-                  <div class="video-meta">
-                    <span class="video-channel"><span class="ch-dot" style="background:var(--grey)"></span>ぶいすぽ切り抜きch</span>
-                    <span class="video-sep"></span>
-                    <span>2025/01/22</span>
-                    <span class="video-type video-type--clip">切り抜き</span>
-                  </div>
-                  <div class="video-timestamps">
-                    <a class="timestamp" href="#">
-                      <span class="ts-time">2:10</span>
-                      <span class="ts-text">「めとの<mark>おもしろ</mark>すぎる<mark>雑談</mark>」</span>
-                    </a>
-                    <a class="timestamp" href="#">
-                      <span class="ts-time">7:45</span>
-                      <span class="ts-text">「<mark>雑談</mark>中に起きた<mark>おもしろ</mark>ハプニング集」</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      <!-- INPUT -->
       <div class="chat-input-area">
+        <div class="input-toolbar" aria-label="quick modes">
+          <button class="quick-mode active">検索</button>
+          <button class="quick-mode active">回答生成</button>
+          <button class="quick-mode active">分析</button>
+          <button class="quick-mode">比較レポート</button>
+        </div>
+        <div class="input-source" aria-label="quick data sources">
+          <button class="quick-mode active">All</button>
+          <button class="quick-mode active">YouTube</button>
+          <button class="quick-mode active">X</button>
+        </div>
         <div class="chat-input-wrapper">
-          <input class="chat-input" type="text" placeholder="キーワードで動画を検索..." aria-label="検索キーワードを入力">
-          <button class="send-btn" aria-label="検索">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          <input class="chat-input" type="text" aria-label="質問を入力" placeholder="例: 大会前日の配信内容とXの反応をまとめて" />
+          <button class="send-btn" aria-label="送信">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
           </button>
         </div>
         <div class="input-hints">
-          <span class="input-hint"><kbd>Enter</kbd> で送信</span>
-          <span class="input-hint">AND / OR で複数キーワード検索</span>
+          <span><kbd>Enter</kbd> 送信</span>
+          <span>AND / OR で条件指定</span>
+          <span>データソースを切り替えて検索範囲を制御</span>
         </div>
       </div>
-
     </main>
   </div>
 </div>
 
 <script>
+let overlayHideTimer;
+
 function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  const isOpen = sidebar.classList.contains('open');
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  const isOpen = sidebar.classList.contains("open");
+  clearTimeout(overlayHideTimer);
+
   if (isOpen) {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('visible');
-    setTimeout(() => { overlay.style.display = 'none'; }, 300);
-  } else {
-    overlay.style.display = 'block';
-    requestAnimationFrame(() => {
-      sidebar.classList.add('open');
-      overlay.classList.add('visible');
+    sidebar.classList.remove("open");
+    overlay.classList.remove("visible");
+    document.body.style.overflow = "";
+    overlayHideTimer = setTimeout(() => {
+      overlay.style.display = "none";
+    }, 280);
+    return;
+  }
+
+  overlay.style.display = "block";
+  requestAnimationFrame(() => {
+    sidebar.classList.add("open");
+    overlay.classList.add("visible");
+    document.body.style.overflow = "hidden";
+  });
+}
+
+function syncResponsiveSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  if (window.matchMedia("(min-width: 1025px)").matches) {
+    clearTimeout(overlayHideTimer);
+    sidebar.classList.remove("open");
+    overlay.classList.remove("visible");
+    overlay.style.display = "none";
+    document.body.style.overflow = "";
+  }
+}
+
+window.addEventListener("resize", syncResponsiveSidebar);
+syncResponsiveSidebar();
+
+for (const group of document.querySelectorAll(".filter-chip-group")) {
+  const allChip = group.querySelector("[data-all]");
+  const chips = [...group.querySelectorAll(".chip")];
+
+  for (const chip of chips) {
+    chip.addEventListener("click", () => {
+      if (chip.hasAttribute("data-all")) {
+        for (const item of chips) {
+          item.classList.remove("active");
+        }
+        chip.classList.add("active");
+        return;
+      }
+
+      if (allChip) {
+        allChip.classList.remove("active");
+      }
+
+      chip.classList.toggle("active");
+
+      const selected = chips.filter((item) => !item.hasAttribute("data-all") && item.classList.contains("active"));
+      if (selected.length === 0 && allChip) {
+        allChip.classList.add("active");
+      }
     });
   }
 }
 
-document.querySelectorAll('.filter-chips').forEach(group => {
-  const allChip = group.querySelector('[data-all]');
-  group.querySelectorAll('.chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      if (chip.hasAttribute('data-all')) {
-        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-      } else {
-        if (allChip) allChip.classList.remove('active');
-        chip.classList.toggle('active');
-        const anyActive = [...group.querySelectorAll('.chip:not([data-all])')].some(c => c.classList.contains('active'));
-        if (!anyActive && allChip) allChip.classList.add('active');
-      }
-    });
+for (const element of document.querySelectorAll(".mode-btn, .quick-mode, .mode-chip")) {
+  element.addEventListener("click", () => {
+    element.classList.toggle("active");
+    if (element.hasAttribute("aria-pressed")) {
+      element.setAttribute("aria-pressed", String(element.classList.contains("active")));
+    }
   });
-});
-
-document.querySelectorAll('.type-toggle').forEach(toggle => {
-  toggle.addEventListener('click', () => {
-    toggle.classList.toggle(toggle.textContent === '配信' ? 'active-stream' : 'active-clip');
-  });
-});
-
-document.querySelector('.chat-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') { e.preventDefault(); e.target.value = ''; }
-});
+}
 </script>
-
 </body>
 </html>

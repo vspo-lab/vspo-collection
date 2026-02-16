@@ -2,66 +2,118 @@
 
 ## Overview
 
-A system that leverages transcript data from YouTube streams and clips to search and recommend videos through a chat-style interface.
-To minimize costs, full-text search runs entirely in the browser using DuckDB-WASM.
+`vspo-search` is a multi-source discovery system for VTuber-related content.
+It combines YouTube transcripts and X posts in one conversational workflow.
 
-## Background and Goals
+The product provides three integrated capabilities:
 
-- Users want to find "that topic" from VTuber streams and clips, but video titles alone are insufficient
-- Cross-searching transcript data enables topic-based video discovery
-- Surface-level search (full-text matching) is sufficient for the initial phase; vector search will be considered later
+1. **Search**: retrieve relevant YouTube moments and X posts
+2. **Follow-up Answer**: generate grounded answers from retrieved evidence
+3. **Analysis**: summarize cross-source trends and comparisons
 
-## System Architecture
+Every answer and analysis result must be traceable to source evidence.
+
+## Product Goals
+
+1. Let users find specific stream moments quickly
+2. Add social context from X without leaving the same flow
+3. Support follow-up questions with preserved context
+4. Keep operation cost low with browser-first retrieval
+
+## Non-Goals (Current Scope)
+
+1. User account system
+2. Personalized long-term history sync
+3. Autonomous posting or action execution on X
+
+## High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  Data Pipeline (Cloudflare Workflow)                     │
-│                                                         │
-│  POST video IDs from external source                    │
-│       ↓                                                 │
-│  Cloudflare Workflow (TranscriptWorkflow)                │
-│  Create a Workflow instance per video                    │
-│       ↓                                                 │
-│  Step: fetch-and-save                                   │
-│    1. Fetch json3 via Container (yt-dlp)                │
-│    2. Save raw JSON to R2                               │
-│       ↓                                                 │
-│  Cloudflare R2                                          │
-│  transcripts/raw/{videoId}/{lang}.json                   │
-└─────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────┐
-│  Search Frontend (browser-only)                         │
-│                                                         │
-│  Next.js (App Router)                                   │
-│       ↓                                                 │
-│  DuckDB-WASM                                            │
-│  Load Parquet from R2 → full-text search via SQL        │
-│       ↓                                                 │
-│  Chat UI                                                │
-│  Display search results as video cards                  │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│ Data Ingestion                                                   │
+│  - YouTube transcript fetch (Cloudflare Workflow + yt-dlp)      │
+│  - X post collector (scheduled/API-based ingestion)             │
+│  - save raw data to R2                                           │
+└──────────────────────────────────────────────────────────────────┘
+                         ↓
+┌──────────────────────────────────────────────────────────────────┐
+│ Data Preparation (ETL)                                           │
+│  - normalize video metadata and transcript segments              │
+│  - normalize X post metadata and text                            │
+│  - export Parquet datasets for browser query                     │
+└──────────────────────────────────────────────────────────────────┘
+                         ↓
+┌──────────────────────────────────────────────────────────────────┐
+│ Web App (TanStack Start + DuckDB-WASM)                          │
+│  Search      -> candidate evidence across YouTube and X          │
+│  Answer      -> grounded response with mixed-source citations    │
+│  Analysis    -> aggregate trends by source/member/topic/time     │
+└──────────────────────────────────────────────────────────────────┘
 ```
+
+## Domain Capabilities
+
+### 1. Search
+
+Input:
+
+- Query text
+- Source filter (`youtube` / `x` / `all`)
+- Member filters
+- YouTube type filter (`stream` / `clip`)
+- Date range
+
+Output:
+
+- Candidate video results with timestamps
+- Candidate X posts with post links and metrics
+- Unified ranked evidence list for downstream use
+
+### 2. Follow-up Answer Generation
+
+Input:
+
+- Follow-up question
+- Candidate evidence from current/previous turn
+- Active source filters
+
+Output:
+
+- Concise answer
+- Confidence hint (optional)
+- Citation list with source labels (`YouTube` / `X`)
+
+Rules:
+
+1. Do not assert facts without citation candidates
+2. If evidence is weak or source-biased, state uncertainty
+3. Prefer short grounded synthesis over speculative text
+
+### 3. Analysis
+
+Input:
+
+- Candidate evidence set
+- Active lens (topic trend/member share/sentiment/comparison)
+
+Output:
+
+- Aggregate counts and rates
+- Cross-source distribution (YouTube vs X)
+- Ranked entities (member/topic/post/video)
+- Time-window insights
+
+Rules:
+
+1. Analysis must be reproducible from candidate data
+2. Every metric must show denominator/window context
+3. Preserve search filters unless user requests reset
 
 ## Data Model
 
-### Input: json3 format (yt-dlp output)
+### Base Tables
 
-```json
-{
-  "events": [
-    {
-      "tStartMs": 0,
-      "dDurationMs": 5000,
-      "segs": [
-        { "utf8": "hello" }
-      ]
-    }
-  ]
-}
-```
-
-### Normalized: transcripts table
+#### `transcripts`
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -69,276 +121,190 @@ To minimize costs, full-text search runs entirely in the browser using DuckDB-WA
 | title | VARCHAR | Video title |
 | channel_id | VARCHAR | Channel ID |
 | channel_name | VARCHAR | Channel name |
-| published_at | TIMESTAMP | Publish date/time (UTC) |
-| duration_sec | INTEGER | Video duration (seconds) |
+| published_at | TIMESTAMP | Publish datetime (UTC) |
+| duration_sec | INTEGER | Video duration |
 | thumbnail_url | VARCHAR | Thumbnail URL |
-| video_type | VARCHAR | 'stream' / 'clip' |
+| video_type | VARCHAR | `stream` / `clip` |
 
-### Normalized: transcript_segments table
+#### `transcript_segments`
 
 | Column | Type | Description |
 |--------|------|-------------|
-| video_id | VARCHAR | YouTube video ID (FK) |
-| start_ms | INTEGER | Segment start time (ms) |
-| duration_ms | INTEGER | Segment duration (ms) |
+| video_id | VARCHAR | FK to `transcripts.video_id` |
+| start_ms | INTEGER | Segment start time |
+| duration_ms | INTEGER | Segment duration |
 | text | VARCHAR | Transcript text |
 
-### Search view: transcript_fulltext
-
-Full text concatenated per video by joining segments. Primary search target.
+#### `x_posts`
 
 | Column | Type | Description |
 |--------|------|-------------|
-| video_id | VARCHAR | YouTube video ID |
-| full_text | VARCHAR | All segments concatenated |
+| post_id | VARCHAR | X post ID |
+| author_id | VARCHAR | Author account ID |
+| author_handle | VARCHAR | Author handle |
+| display_name | VARCHAR | Display name |
+| posted_at | TIMESTAMP | Post datetime (UTC) |
+| lang | VARCHAR | Language code |
+| text | VARCHAR | Post body text |
+| like_count | INTEGER | Likes |
+| repost_count | INTEGER | Reposts |
+| reply_count | INTEGER | Replies |
+| quote_count | INTEGER | Quotes |
+| permalink | VARCHAR | X post URL |
 
-## Search Approach
+### Derived Views
 
-### Phase 1: Surface Search (Text Matching)
+#### `transcript_fulltext`
 
-Implemented via SQL in DuckDB-WASM. No server-side component required.
+Full-text concatenation per video for coarse retrieval.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| video_id | VARCHAR | Video ID |
+| full_text | VARCHAR | Concatenated segment text |
+
+#### `x_posts_fulltext`
+
+Normalized post text for retrieval.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| post_id | VARCHAR | X post ID |
+| full_text | VARCHAR | Normalized post text |
+
+#### `search_hits` (runtime temporary view)
+
+Unified evidence for answer and analysis.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| query_id | VARCHAR | Query execution ID |
+| source_type | VARCHAR | `youtube` / `x` |
+| source_id | VARCHAR | `video_id` or `post_id` |
+| occurred_at | TIMESTAMP | Published/posted datetime |
+| excerpt | VARCHAR | Evidence snippet |
+| score | DOUBLE | Ranking score |
+| keyword_hits | INTEGER | Keyword hit count |
+
+## Query Flow
+
+### YouTube Search SQL (baseline)
 
 ```sql
--- Keyword search
-SELECT t.video_id, t.title, t.channel_name, t.thumbnail_url,
-       t.published_at, t.video_type
+SELECT t.video_id AS source_id,
+       'youtube' AS source_type,
+       t.title,
+       t.channel_name,
+       t.published_at AS occurred_at,
+       ft.full_text
 FROM transcripts t
 JOIN transcript_fulltext ft ON t.video_id = ft.video_id
-WHERE ft.full_text ILIKE '%search_keyword%'
-ORDER BY t.published_at DESC
-LIMIT 20;
-
--- Retrieve timestamps for matching segments
-SELECT start_ms, duration_ms, text
-FROM transcript_segments
-WHERE video_id = ? AND text ILIKE '%search_keyword%'
-ORDER BY start_ms;
+WHERE ft.full_text ILIKE '%keyword%';
 ```
 
-**Search features:**
-- Partial keyword matching (ILIKE)
-- Multi-keyword AND/OR search
-- Channel name filter
-- Video type filter (stream / clip)
-- Date range filter
-- Timestamped link generation for matching segments
+### X Search SQL (baseline)
 
-### Phase 2 (future): Semantic Search
-
-- Vectorization with embedding models
-- DuckDB vss extension or external vector DB
-- Hybrid search (text + vector)
-
-## Data Pipeline
-
-### 1. Video List Management
-
-- A mechanism to manage the list of target channel video IDs is needed
-- Detect new videos via YouTube Data API v3 or RSS feeds
-- Initial data loaded manually or via script
-
-### 2. Transcript Retrieval + R2 Storage (transcriptor service)
-
-Fetch and save in a single Cloudflare Workflow execution.
-
-**Trigger (POST video IDs from external source):**
-
-```bash
-curl -X POST https://<worker>/run \
-  -H "Content-Type: application/json" \
-  -d '{"videoIds": ["dQw4w9WgXcQ", "abc123"], "lang": "ja"}'
+```sql
+SELECT p.post_id AS source_id,
+       'x' AS source_type,
+       p.author_handle,
+       p.posted_at AS occurred_at,
+       p.text AS full_text,
+       p.like_count,
+       p.repost_count
+FROM x_posts p
+WHERE p.text ILIKE '%keyword%';
 ```
 
-**Workflow flow:**
+### Unified Ranking (conceptual)
 
-```
-POST /run { videoIds, lang }
-  ↓ Create a Workflow instance per video
+1. Execute source-specific retrieval
+2. Normalize to `search_hits`
+3. Rank by recency + relevance + engagement
+4. Return grouped results by source type
 
-Step: fetch-and-save
-  → Fetch json3 via Container (yt-dlp)
-  → Save raw JSON to R2
-  → Retry up to 3 times on failure (exponential backoff, 5-minute timeout)
-```
+### Answer Pipeline (conceptual)
 
-**Progress check:**
+1. Select high-signal evidence from `search_hits`
+2. Build grounded context bundle with source labels
+3. Generate concise answer with citation anchors
+4. Return answer + mixed-source citations
 
-```bash
-GET /run/{instanceId}
-# → { "instanceId": "...", "status": { ... } }
-```
+### Analysis Pipeline (conceptual)
 
-**R2 storage path:**
+1. Aggregate `search_hits` by lens and source
+2. Compute source share, trend windows, and entity ranks
+3. Return compact cards and distributions
 
-```
-r2://transcripts/
-└── transcripts/
-    └── raw/
-        ├── {videoId}/
-        │   ├── ja.json     # Japanese subtitles
-        │   └── en.json     # English subtitles (multi-language support)
-        └── ...
-```
+## UI Requirements Impact
 
-### 3. ETL Processing (future)
+The UI response supports section-level rendering:
 
-```
-raw JSON (R2) → segment splitting → metadata enrichment → Parquet conversion
-```
+1. Search results (YouTube cards + X post cards)
+2. Follow-up answer (mixed-source citations)
+3. Analysis (includes source-share metrics)
 
-### 4. Parquet File Design (future)
+If one source fails, render partial success with source-level error notices.
 
-```
-r2://transcripts/
-├── transcripts/raw/...               # raw JSON (current)
-├── transcripts.parquet              # Video metadata
-├── transcript_segments.parquet      # Segment data
-└── transcript_fulltext.parquet      # Full text (for search)
-```
+## Error Handling
 
-**Why Parquet:**
-- DuckDB-WASM can partially load via HTTP Range Requests
-- Columnar compression minimizes transfer size
-- Embedded schema makes versioning straightforward
+Follow Result-style error semantics (`event + cause + recovery`).
 
-## Frontend
+Error classes:
 
-### Chat UI
+1. YouTube search execution failure
+2. X search execution failure
+3. Evidence extraction failure
+4. Answer generation timeout/failure
+5. Analysis computation failure
 
-```
-┌──────────────────────────────────────┐
-│  🔍 Stream & Clip Search             │
-│                                      │
-│  ┌──────────────────────────────┐    │
-│  │ User: "tournament practice"  │    │
-│  └──────────────────────────────┘    │
-│                                      │
-│  ┌──────────────────────────────┐    │
-│  │ System:                      │    │
-│  │ 3 results found              │    │
-│  │                              │    │
-│  │ ┌────────────────────────┐   │    │
-│  │ │ 🎬 [Stream title]      │   │    │
-│  │ │ ch: Channel name       │   │    │
-│  │ │ 📅 2025-01-15          │   │    │
-│  │ │ Matching segments:     │   │    │
-│  │ │  ⏱ 1:23:45 "tourna..." │   │    │
-│  │ │  ⏱ 1:45:00 "practi..." │   │    │
-│  │ └────────────────────────┘   │    │
-│  │ ...                          │    │
-│  └──────────────────────────────┘    │
-│                                      │
-│  ┌──────────────────────────┐  [Send] │
-│  │ Enter message...          │        │
-│  └──────────────────────────┘        │
-└──────────────────────────────────────┘
-```
+Recovery behavior:
 
-**UI requirements:**
-- Chat-style message exchange
-- Search results displayed as video cards
-- Clicking a timestamp navigates to the corresponding YouTube timecode (`&t=` parameter)
-- Thumbnail display
-- Stream / clip tag display
-- Responsive layout
+- Retry source fetch where safe
+- Preserve user query and filters
+- Render partial results from healthy source(s)
 
-### DuckDB-WASM Integration
+## Performance Targets
 
-```typescript
-// Initialization flow
-// 1. Load DuckDB-WASM
-// 2. Register Parquet files from R2 (httpfs)
-// 3. Convert user input to SQL and execute
-// 4. Render results in the UI
-```
+| Metric | Target |
+|--------|--------|
+| DuckDB-WASM init | < 3 sec |
+| YouTube-only search | < 500 ms |
+| X-only search | < 350 ms |
+| Combined search | < 800 ms |
+| Follow-up answer generation | < 2 sec |
+| Analysis generation | < 1.5 sec |
 
-**Performance considerations:**
-- Cache Parquet files on initial load (Service Worker or Cache API)
-- Run DuckDB-WASM in a Web Worker to avoid blocking the main thread
-- Fetch only required columns via partial Parquet reads (HTTP Range Requests)
+## Cost and Scalability
 
-## Technology Stack
+- Keep retrieval browser-first for low baseline cost
+- Store normalized datasets in R2 as Parquet
+- For larger scale (>10k videos, >1M posts), evaluate hybrid server retrieval
 
-| Layer | Technology | Rationale |
-|-------|------------|-----------|
-| Transcript retrieval | Cloudflare Container + yt-dlp | Existing implementation available |
-| ETL | TypeScript scripts | Integrates with existing ecosystem |
-| Data storage | Cloudflare R2 + Parquet | Low cost, DuckDB-compatible |
-| Search engine | DuckDB-WASM | Browser-only, SQL-based, free |
-| Frontend | Next.js (App Router) | Existing stack |
-| UI components | Existing shared components | Reuse |
+## Roadmap
 
-## Cost Estimate
+### Phase 1 (Current Target)
 
-| Item | Cost |
-|------|------|
-| Cloudflare Workers (transcript retrieval) | Free plan: 100K requests/day |
-| Cloudflare R2 (data storage) | 10 GB free, reads free |
-| DuckDB-WASM | Free (runs in browser) |
-| YouTube Data API | 10,000 units/day (free) |
-| **Total** | **Effectively free** (within free tier) |
+1. YouTube transcript search with timestamp links
+2. Follow-up grounded answer generation
+3. Analysis summary blocks and comparison lens
 
-## Data Volume Estimate
+### Phase 2
 
-| Item | Estimate |
-|------|----------|
-| Transcript per video | ~50 KB (json3) -> ~10 KB (Parquet compressed) |
-| Target videos (initial) | ~1,000 |
-| Total data size | ~10 MB (Parquet) |
-| Browser memory usage | ~50 MB (DuckDB-WASM + data) |
+1. X data ingestion and normalized post search
+2. Mixed-source citations in answer generation
+3. Cross-source analysis metrics and filters
 
-Around 1,000 videos is a manageable scale for in-browser processing.
-Beyond 10,000 videos, data partitioning or server-side search should be considered.
+### Phase 3
 
-## Phased Roadmap
+1. Hybrid lexical + semantic retrieval
+2. Cross-session memory and personalized ranking
+3. Exportable structured reports
 
-### Phase 1: MVP (Minimum Viable Product)
+## References
 
-1. **ETL script**: json3 -> Parquet conversion + R2 upload
-2. **Search UI**: Keyword search via DuckDB-WASM, chat-style interface
-3. **Data ingestion**: Manually managed video ID list, batch retrieval via script
-
-**Out of scope (Phase 1):**
-- Automatic new video detection
-- User authentication
-- Search history / bookmarks
-- Semantic search
-
-### Phase 2: Automation
-
-- Automatic new video detection via YouTube Data API / RSS
-- Cron-based periodic ETL execution
-- Incremental updates (process only new videos)
-
-### Phase 3: Advanced Search
-
-- Semantic search (embeddings)
-- Natural language query -> SQL conversion via LLM
-- Summary generation
-- Similar video recommendations
-
-## Implementation Notes
-
-### DuckDB-WASM
-
-- Use the `@duckdb/duckdb-wasm` package
-- Run in a Web Worker to avoid blocking the main thread
-- Query Parquet files on R2 directly via the `httpfs` extension
-- Cache in the browser's IndexedDB to speed up subsequent loads
-
-### Parquet Generation
-
-- Use `duckdb` (native) or `apache-arrow` + `parquet-wasm` in Node.js
-- Include a version in metadata for schema versioning
-
-### Japanese Text Search
-
-- Partial matching via `ILIKE` works as-is with Japanese text
-- Morphological analysis is unnecessary for Phase 1 (partial matching is practical enough)
-- N-gram indexing or morphological analysis may be considered in the future
-
-### Error Handling
-
-- Follow the existing `Result` type pattern
-- Display a fallback UI on DuckDB-WASM initialization failure
-- Retry + error notification on Parquet load failure
+- [UI specification](./transcript-search-ui.md)
+- [Server architecture](../backend/server-architecture.md)
+- [Domain modeling](../backend/domain-modeling.md)
+- [Datetime handling](../backend/datetime-handling.md)
+- [Frontend error handling](../web-frontend/error-handling.md)
