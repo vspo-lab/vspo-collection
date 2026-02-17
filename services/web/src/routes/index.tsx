@@ -1,37 +1,35 @@
-import { createFileRoute } from '@tanstack/react-router'
-import '../App.css'
+import { createFileRoute } from "@tanstack/react-router";
+import {
+	defaultFilterState,
+	mockChannels,
+	mockMessages,
+} from "@/features/transcript-search/__mocks__/fixtures";
+import { TranscriptSearchPagePresenter } from "@/features/transcript-search/components/presenters/TranscriptSearchPagePresenter";
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute("/")({ component: TranscriptSearchPage });
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img
-          src="/tanstack-circle-logo.png"
-          className="App-logo"
-          alt="TanStack Logo"
-        />
-        <p>
-          Edit <code>src/routes/index.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <a
-          className="App-link"
-          href="https://tanstack.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn TanStack
-        </a>
-      </header>
-    </div>
-  )
+/**
+ * Placeholder container for the transcript search page.
+ * Will be replaced with a proper container that manages state and data fetching.
+ */
+function TranscriptSearchPage() {
+	return (
+		<TranscriptSearchPagePresenter
+			channels={mockChannels.filter((ch) => ch.group === "JP").slice(0, 12)}
+			filters={defaultFilterState}
+			isSidebarOpen={false}
+			onSidebarToggle={() => {}}
+			onSidebarClose={() => {}}
+			onChannelToggle={() => {}}
+			onTypeToggle={() => {}}
+			onDateChange={() => {}}
+			isLoaded={true}
+			totalVideos={1847}
+			messages={mockMessages}
+			inputValue=""
+			onInputChange={() => {}}
+			onSearch={() => {}}
+			isSearchDisabled={false}
+		/>
+	);
 }
