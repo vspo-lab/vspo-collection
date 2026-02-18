@@ -10,7 +10,7 @@ export function HeaderPresenter({ onFilterToggle }: HeaderPresenterProps) {
 		<header
 			className={cn(
 				"sticky top-0 z-50 px-6",
-				"border-b border-border",
+				"border-b border-[var(--frost-border)] shadow-[0_1px_3px_rgb(32_37_48_/_0.04)]",
 				"bg-background/85 backdrop-blur-xl",
 			)}
 		>

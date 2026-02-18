@@ -21,12 +21,12 @@ export function AnalysisSectionPresenter({
 					{analysis.cards.map((card) => (
 						<div
 							key={card.label}
-							className="rounded-sm border border-border bg-surface p-2.5"
+							className="rounded-sm border border-border border-t-2 border-t-accent bg-surface p-2.5"
 						>
 							<span className="block text-[0.66rem] text-ink-muted">
 								{card.label}
 							</span>
-							<strong className="mt-0.5 block text-[0.92rem] text-ink">
+							<strong className="mt-0.5 block font-display text-[0.92rem] text-ink">
 								{card.value}
 							</strong>
 						</div>
@@ -45,7 +45,7 @@ export function AnalysisSectionPresenter({
 							<span className="truncate">{bar.label}</span>
 							<div className="h-[7px] w-full overflow-hidden rounded-full bg-surface-soft">
 								<div
-									className="h-full rounded-full bg-[linear-gradient(90deg,var(--brand-grad-end),var(--brand-grad-start))]"
+									className="h-full rounded-full bg-[linear-gradient(90deg,var(--brand-grad-end),var(--brand-grad-start))] animate-[bar-fill_0.6s_ease-out_forwards]"
 									style={{ width: `${bar.percentage}%` }}
 								/>
 							</div>

@@ -73,7 +73,7 @@ export function SidebarPresenter({
 			{/* Sidebar */}
 			<aside
 				className={cn(
-					"w-[280px] shrink-0 overflow-y-auto border-r border-border bg-surface p-6 pr-5",
+					"w-[280px] shrink-0 overflow-y-auto border-r border-[var(--frost-border)] bg-[var(--frost)] backdrop-blur-sm p-6 pr-5",
 					"transition-transform duration-[var(--dur-md)] ease-[var(--ease)]",
 					"max-md:fixed max-md:top-0 max-md:left-0 max-md:bottom-0 max-md:z-[201] max-md:w-[280px] max-md:shadow-[var(--shadow-card)]",
 					isOpen ? "max-md:translate-x-0" : "max-md:-translate-x-full",
@@ -214,7 +214,7 @@ function FilterSection({
 }: { label: string; children: React.ReactNode }) {
 	return (
 		<div className="mb-5">
-			<span className="mb-2 block text-[0.72rem] text-ink-soft">
+			<span className="mb-2 block font-display text-[0.72rem] text-ink-soft">
 				{label}
 			</span>
 			{children}

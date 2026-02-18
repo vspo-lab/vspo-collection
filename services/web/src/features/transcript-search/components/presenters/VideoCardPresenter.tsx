@@ -10,10 +10,10 @@ export function VideoCardPresenter({ video }: VideoCardPresenterProps) {
 	return (
 		<div
 			className={cn(
-				"group flex gap-3.5 p-3.5 rounded-md bg-background border border-border",
+				"group flex gap-3.5 p-3.5 rounded-md bg-background border border-border border-l-[3px] border-l-source-yt",
 				"cursor-pointer",
 				"transition-all duration-[var(--dur-fast)] ease-[var(--ease)]",
-				"hover:border-border-strong hover:shadow-[var(--shadow-card)] hover:-translate-y-px",
+				"hover:border-border-strong hover:border-l-source-yt hover:shadow-[var(--shadow-card)] hover:-translate-y-0.5",
 				"focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2 focus-visible:shadow-[var(--shadow-focus)]",
 				"max-md:flex-col",
 			)}

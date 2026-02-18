@@ -35,6 +35,20 @@ export const WithIcon: Story = {
 	},
 };
 
+export const YouTube: Story = {
+	args: {
+		variant: "youtube",
+		children: "YouTube",
+	},
+};
+
+export const X: Story = {
+	args: {
+		variant: "x",
+		children: "X",
+	},
+};
+
 export const AllVariants: Story = {
 	args: {} as any,
 	render: () => (
@@ -44,6 +58,8 @@ export const AllVariants: Story = {
 			</Badge>
 			<Badge icon={<Database />}>DuckDB-WASM</Badge>
 			<Badge icon={<Zap />}>サーバー不要</Badge>
+			<Badge variant="youtube">YouTube</Badge>
+			<Badge variant="x">X</Badge>
 		</div>
 	),
 };

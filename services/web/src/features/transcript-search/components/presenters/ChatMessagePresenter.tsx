@@ -67,7 +67,7 @@ function SystemMessageBubble({ message }: { message: SystemMessage }) {
 			<div
 				className={cn(
 					"max-w-[840px] rounded-lg rounded-bl-sm",
-					"border border-border bg-surface px-5 py-4",
+					"border border-border bg-[var(--frost)] backdrop-blur-sm px-5 py-4",
 					"shadow-[var(--shadow-card)]",
 				)}
 			>
@@ -82,7 +82,7 @@ function SystemMessageBubble({ message }: { message: SystemMessage }) {
 
 				{/* Search Results — YouTube */}
 				{message.videos.length > 0 && (
-					<ResultSection title="YouTube Matches">
+					<ResultSection title="YouTube Matches" dotColor="var(--source-yt)">
 						<div className="flex flex-col gap-2.5">
 							{message.videos.map((video) => (
 								<VideoCardPresenter
@@ -96,7 +96,7 @@ function SystemMessageBubble({ message }: { message: SystemMessage }) {
 
 				{/* Search Results — X */}
 				{hasXPosts && (
-					<ResultSection title="X Matches">
+					<ResultSection title="X Matches" dotColor="var(--source-x)">
 						<div className="flex flex-col gap-2">
 							{message.xPosts?.map((post) => (
 								<XPostCardPresenter
@@ -156,11 +156,18 @@ function SystemMessageBubble({ message }: { message: SystemMessage }) {
 
 function ResultSection({
 	title,
+	dotColor,
 	children,
-}: { title: string; children: React.ReactNode }) {
+}: { title: string; dotColor?: string; children: React.ReactNode }) {
 	return (
 		<section className="mb-3.5 border-t border-border pt-3 first:border-t-0 first:pt-0 last:mb-0">
-			<h3 className="mb-2 text-[0.76rem] font-bold uppercase tracking-wider text-ink-muted">
+			<h3 className="mb-2 flex items-center gap-1.5 text-[0.76rem] font-bold uppercase tracking-wider text-ink-muted">
+				{dotColor && (
+					<span
+						className="inline-block h-1.5 w-1.5 shrink-0 rounded-full"
+						style={{ backgroundColor: dotColor }}
+					/>
+				)}
 				{title}
 			</h3>
 			{children}

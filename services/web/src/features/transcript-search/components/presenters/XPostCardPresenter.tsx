@@ -9,9 +9,9 @@ export function XPostCardPresenter({ post }: XPostCardPresenterProps) {
 	return (
 		<div
 			className={cn(
-				"rounded-md border border-border bg-surface p-3",
+				"rounded-md border border-border border-l-[3px] border-l-source-x bg-surface p-3",
 				"transition-all duration-[var(--dur-fast)] ease-[var(--ease)]",
-				"hover:border-border-strong hover:shadow-[var(--shadow-card)]",
+				"hover:border-border-strong hover:border-l-source-x hover:shadow-[var(--shadow-card)] hover:-translate-y-0.5",
 			)}
 			role="article"
 		>

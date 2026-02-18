@@ -41,8 +41,8 @@ export function AnswerCardPresenter({ answer }: AnswerCardPresenterProps) {
 								className={cn(
 									"mr-1.5 inline-block rounded-sm px-1 py-px text-[0.62rem] font-bold uppercase",
 									citation.sourceType === "youtube"
-										? "bg-ink/10 text-ink-soft"
-										: "bg-ink/10 text-ink-soft",
+										? "bg-[rgb(196_48_43_/_0.1)] text-[#9b2520]"
+										: "bg-[rgb(29_155_240_/_0.1)] text-[#1270b0]",
 								)}
 							>
 								{citation.sourceType === "youtube"

@@ -38,7 +38,7 @@ export function ChatInputPresenter({
 	onSourceChange,
 }: ChatInputPresenterProps) {
 	return (
-		<div>
+		<div className="rounded-xl border border-[var(--frost-border)] bg-[var(--frost)] p-3 backdrop-blur-sm">
 			{/* Mode toolbar */}
 			<div className="mb-2 flex flex-wrap gap-1.5" aria-label="output mode">
 				{MODE_OPTIONS.map((opt) => (
@@ -124,6 +124,7 @@ export function ChatInputPresenter({
 						"hover:scale-105",
 						"active:scale-95",
 						"disabled:opacity-50 disabled:hover:scale-100",
+						value.length > 0 && "ring-2 ring-accent/30 ring-offset-1",
 						"focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2 focus-visible:shadow-[var(--shadow-focus)]",
 					)}
 				>

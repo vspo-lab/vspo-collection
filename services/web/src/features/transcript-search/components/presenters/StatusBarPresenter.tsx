@@ -14,7 +14,7 @@ export function StatusBarPresenter({
 	return (
 		<div
 			role="status"
-			className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface-warm px-4 py-2 text-[0.72rem] text-ink-muted"
+			className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--frost-border)] bg-[var(--frost)] backdrop-blur-sm px-4 py-2 text-[0.72rem] text-ink-muted"
 		>
 			<div className="flex items-center gap-2">
 				<motion.span
