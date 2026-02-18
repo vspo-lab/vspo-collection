@@ -24,12 +24,12 @@ const typeToggleVariants = cva(
 			{
 				videoType: "stream",
 				isActive: true,
-				className: "bg-[rgb(151_213_217_/_0.15)] border-mint text-[#2a7a7e]",
+				className: "bg-[rgb(63_122_87_/_0.12)] border-success text-[#2a6b42]",
 			},
 			{
 				videoType: "clip",
 				isActive: true,
-				className: "bg-[rgb(131_168_249_/_0.15)] border-blue text-[#3d5fb3]",
+				className: "bg-[var(--accent-alpha-12)] border-accent text-accent-text",
 			},
 		],
 		defaultVariants: {

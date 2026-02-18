@@ -10,7 +10,7 @@ export function HeaderPresenter({ onFilterToggle }: HeaderPresenterProps) {
 		<header
 			className={cn(
 				"sticky top-0 z-50 px-6",
-				"border-b border-border",
+				"border-b border-[var(--frost-border)] shadow-[0_1px_3px_rgb(32_37_48_/_0.04)]",
 				"bg-background/85 backdrop-blur-xl",
 			)}
 		>
@@ -26,18 +26,18 @@ export function HeaderPresenter({ onFilterToggle }: HeaderPresenterProps) {
 					<div
 						className={cn(
 							"relative flex h-9 w-9 items-center justify-center overflow-hidden",
-							"rounded-sm bg-accent shadow-[var(--shadow-action)]",
+							"rounded-sm bg-[linear-gradient(140deg,var(--brand-grad-start),var(--brand-grad-end))] shadow-[var(--shadow-soft)]",
 						)}
 					>
-						<Search className="relative z-10 h-5 w-5 text-ink" />
+						<Search className="relative z-10 h-5 w-5 text-white" />
 						<span className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-white/30" />
 					</div>
 					<div>
-						<span className="block font-display text-[1.15rem] font-bold tracking-wide">
-							ぶいすぽサーチ
+						<span className="block font-body text-[1.15rem] font-bold tracking-wide">
+							ぶいすぽっ!サーチ
 						</span>
 						<span className="-mt-0.5 block text-[0.7rem] font-normal text-ink-muted">
-							あの動画どこだっけ？
+							検索だけで終わらない、会話と分析の検索体験
 						</span>
 					</div>
 				</a>
