@@ -49,8 +49,11 @@ Concrete values at the lowest layer, carrying atomic meaning.
 /* Accent colors (per docs/design/colors.md) */
 --palette-mint-100: oklch(0.82 0.06 195); /* #97D5D9 Mint green */
 --palette-sky-100: oklch(0.72 0.12 260);  /* #83A8F9 Soft blue */
---palette-coral-100: oklch(0.90 0.08 50); /* Coral (primary accent) */
---palette-amber-100: oklch(0.65 0.20 35); /* #F7643D Vivid orange */
+--palette-amber-100: oklch(0.62 0.12 70); /* #ab7d42 Amber (primary accent) */
+--palette-amber-hover: oklch(0.55 0.12 70); /* #956b35 Amber hover */
+--palette-amber-soft: oklch(0.90 0.04 70); /* #ebdbc6 Amber soft */
+--palette-amber-bg: oklch(0.95 0.02 70);  /* #f5efe6 Amber bg */
+--palette-coral-100: oklch(0.65 0.20 35); /* #F7643D Vivid orange (warnings) */
 --palette-beige-100: oklch(0.82 0.015 80);/* #CBC6BE Warm beige */
 
 /* Soft variants (with alpha) */
@@ -60,9 +63,30 @@ Concrete values at the lowest layer, carrying atomic meaning.
 --palette-amber-soft: oklch(0.65 0.20 35 / 0.7);
 --palette-cream-soft: oklch(0.94 0.025 80 / 0.7); /* Warm cream */
 
+/* Status */
+--palette-like: #e05c6c;       /* Like/favorite heart */
+--palette-like-bg: #fce8eb;    /* Favorite card tint */
+--palette-success: #3f7a57;    /* Success/positive actions */
+
 /* Dark mode only */
 --palette-dark-bg: oklch(0.18 0.03 280);
 --palette-dark-bar: oklch(0.12 0.02 280);
+```
+
+#### Member Brand Colors
+
+Per-member brand colors (sourced from `design-tokens.ts`). Used for avatars, hero gradients, and personalized accents.
+
+```css
+--c-sumire: #B0C4DE;   --c-nazuna: #FABEDC;  --c-toto: #F5EB4A;
+--c-uruha: #4182FA;    --c-noa: #FFDBFE;     --c-mimi: #C7B2D6;
+--c-sena: #FFFFFF;     --c-hinano: #FA96C8;  --c-lisa: #D1DE79;
+--c-ren: #BE2152;      --c-kyupi: #FFD23C;   --c-beni: #85CAB3;
+--c-emma: #B4F1F9;     --c-runa: #D6ADFF;    --c-tsuna: #FF3652;
+--c-ramune: #8ECED9;   --c-met: #FBA03F;     --c-akari: #FF998D;
+--c-kuromu: #909EC8;   --c-kokage: #5195E1;  --c-yuuhi: #ED784A;
+--c-hanabi: #EA5506;   --c-moka: #ECA0AA;    --c-seine: #58535E;
+--c-chise: #BEFF77;
 ```
 
 ### 2. Semantic Tokens
@@ -85,15 +109,19 @@ Context-specific values that convey the intended purpose of each token.
 --token-border: var(--palette-line);         /* Standard border */
 
 /* Accent */
---token-accent: var(--palette-coral-100);    /* Primary accent */
---token-accent-soft: var(--palette-coral-soft);
+--token-accent: var(--palette-amber-100);    /* Primary accent (amber) */
+--token-accent-hover: var(--palette-amber-hover);
+--token-accent-soft: var(--palette-amber-soft);
+--token-accent-bg: var(--palette-amber-bg);
 
 /* Status colors */
+--token-like: var(--palette-like);
+--token-like-bg: var(--palette-like-bg);
+--token-success: var(--palette-success);
 --token-info: var(--palette-sky-100);
 --token-info-soft: var(--palette-cream-soft);
---token-warning: var(--palette-amber-100);
---token-warning-soft: var(--palette-amber-soft);
---token-success: var(--palette-mint-100);
+--token-warning: var(--palette-coral-100);
+--token-warning-soft: oklch(0.65 0.20 35 / 0.7);
 
 /* Dark mode only */
 --token-dark-canvas: var(--palette-dark-bg);

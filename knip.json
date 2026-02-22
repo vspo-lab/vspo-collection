@@ -15,15 +15,13 @@
     },
     "services/web": {
       "entry": [
-        "src/routes/**/*.{ts,tsx}",
-        "src/features/**/api/**/*.{ts,tsx}"
+        "src/routes/**/*.{ts,tsx}"
       ],
       "project": ["**/*.{ts,tsx}"],
       "ignore": [".tanstack/**", "node_modules/**"],
       "ignoreDependencies": [
         "tailwindcss",
-        "@duckdb/duckdb-wasm",
-        "zod"
+        "@duckdb/duckdb-wasm"
       ]
     },
     "services/api": {

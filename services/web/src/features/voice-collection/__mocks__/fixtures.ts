@@ -1,0 +1,23 @@
+import type { Clip, Playlist } from "../types/domain";
+
+export const mockClips: Clip[] = [
+	{ id: "c1", title: "ないないないない！", memberId: "hinano", duration: 5, likeCount: 342, createdAt: "2025-12-01", audioUrl: "https://example.com/c1.mp3" },
+	{ id: "c2", title: "えぇ〜まじで？", memberId: "toto", duration: 3, likeCount: 280, createdAt: "2025-12-02", audioUrl: "https://example.com/c2.mp3" },
+	{ id: "c3", title: "やったー！勝ったー！", memberId: "uruha", duration: 4, likeCount: 256, createdAt: "2025-11-28", audioUrl: "https://example.com/c3.mp3" },
+	{ id: "c4", title: "おはよ〜ございます", memberId: "sumire", duration: 3, likeCount: 198, createdAt: "2025-12-03", audioUrl: "https://example.com/c4.mp3" },
+	{ id: "c5", title: "うわぁぁぁ！こわい！", memberId: "nazuna", duration: 4, likeCount: 187, createdAt: "2025-11-30", audioUrl: "https://example.com/c5.mp3" },
+	{ id: "c6", title: "ありがとう〜！", memberId: "beni", duration: 2, likeCount: 165, createdAt: "2025-12-04", audioUrl: "https://example.com/c6.mp3" },
+	{ id: "c7", title: "ちょっと待ってwww", memberId: "met", duration: 3, likeCount: 143, createdAt: "2025-12-05", audioUrl: "https://example.com/c7.mp3" },
+	{ id: "c8", title: "ふぁ〜ねむい", memberId: "emma", duration: 4, likeCount: 132, createdAt: "2025-12-01", audioUrl: "https://example.com/c8.mp3" },
+	{ id: "c9", title: "なんでやねん！", memberId: "kyupi", duration: 2, likeCount: 121, createdAt: "2025-12-06", audioUrl: "https://example.com/c9.mp3" },
+	{ id: "c10", title: "いくぞー！", memberId: "ren", duration: 2, likeCount: 115, createdAt: "2025-12-02", audioUrl: "https://example.com/c10.mp3" },
+	{ id: "c11", title: "かわいい〜♪", memberId: "noa", duration: 3, likeCount: 108, createdAt: "2025-12-07", audioUrl: "https://example.com/c11.mp3" },
+	{ id: "c12", title: "ぎゃぁぁぁ！", memberId: "lisa", duration: 3, likeCount: 97, createdAt: "2025-12-03", audioUrl: "https://example.com/c12.mp3" },
+];
+
+export const mockPlaylists: Playlist[] = [
+	{ id: "pl-fav", title: "お気に入り", clipIds: ["c1", "c3", "c4", "c6"], createdAt: "2025-11-15" },
+	{ id: "pl-1", title: "朝の挨拶集", clipIds: ["c4", "c8"], createdAt: "2025-12-01" },
+	{ id: "pl-2", title: "面白リアクション", clipIds: ["c1", "c5", "c7", "c9", "c12"], createdAt: "2025-12-03" },
+	{ id: "pl-3", title: "勝利の叫び", clipIds: ["c3", "c10"], createdAt: "2025-12-05" },
+];

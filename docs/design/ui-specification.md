@@ -1,265 +1,234 @@
-# UI Specification
+# UI Specification — ぶいすぽコレクション（音声）
 
 ## 1. Purpose / Scope
 
-- Target: Specification for user-facing UI
+- Target: Voice clip collection app for Vspo fans
 - MVP scope:
-  - Authentication and onboarding
-  - Home screen
-  - Core features
-  - History and results display
-  - Settings and payments
+  - Home (clip browsing, popular/new tabs, member filter)
+  - Member detail (per-member clip list)
+  - Playlist (curated lists, favorites)
+  - Add voice (UGC clip submission from YouTube)
+  - Merge & download (combine clips, export audio)
 
 ## 2. User Personas / Key Scenarios
 
 ### User Personas
-- [Define application-specific user personas]
+
+- **Casual fan**: Browses popular clips, likes favorites, shares with friends
+- **Dedicated oshi fan**: Follows specific member, builds custom playlists
+- **Clip creator**: Submits new voice clips from streams, curates collections
 
 ### Key Scenarios
-- First-time onboarding -> Profile setup -> Start using features
-- Configuration -> Use features -> Review results
 
-### Experience Goals by User Journey Phase
+- Browse popular clips -> Like/save -> Create playlist
+- Search by member -> Play clips -> Download/merge for personal use
+- Find stream moment -> Submit clip (YouTube URL + time range) -> Community curation
+
+### Experience Goals
+
 | Phase | Goal | Emotional Design |
 |-------|------|------------------|
-| First visit | Understand the value within 30 seconds | "This looks easy to get started with" |
-| Onboarding | Complete within 2 minutes | "That was easy, I'm ready to go" |
-| First use | Complete smoothly | "That was easier than I expected" |
-| Reviewing results | Gain tangible value | "I want to try again" |
-| Continued use | Feel growth and build a habit | "I'm definitely improving" |
+| First visit | Understand value within 10 seconds | "I can hear my oshi's voice clips here" |
+| First play | Tap a clip and hear it instantly | "This is fun, let me listen to more" |
+| Building collection | Save favorites, create playlists | "My own voice clip collection" |
+| Contributing | Submit a new clip from a stream | "I found a great moment to share" |
 
 ## 3. Information Architecture / Navigation
 
-### Global Navigation
-- Footer nav (mobile) / Side nav (desktop)
-  - Home
-  - Start feature
-  - History
-  - Pricing / Plans
-  - Settings
+### Mobile Navigation (Tab Bar)
 
-### Screen Structure (MVP)
-1. Landing / Value proposition
-2. Sign up / Log in
-3. Onboarding (profile setup)
-4. Home (dashboard)
-5. Feature configuration
-6. Core feature
-7. Results / Feedback
-8. History list / Details
-9. Plan selection / Payment
-10. Settings (account / notifications)
+| Tab | Icon | Screen |
+|-----|------|--------|
+| Home | `home` | Clip feed with popular/new tabs |
+| Member | `users` | Member list / member detail |
+| Playlist | `list` | Playlist management |
+| Add | `plus` | UGC clip submission form |
 
-### Navigation Design Principles
-- **Shortest path guaranteed**: Any feature can be started within 2 taps from any screen
-- **Context preservation**: Users can resume where they left off after interruption
-- **Progressive disclosure**: Show only essentials at first, reveal advanced settings as users become familiar
+### Desktop Navigation (Sidebar)
 
-## 4. Screen-by-Screen UI Specification
+| Section | Items |
+|---------|-------|
+| Main nav | Home, Member, Add voice |
+| Playlists | Favorites, custom playlists, + New |
 
-### 4.1 Landing
-- Purpose: Value proposition / Sign-up conversion
-- Key elements:
-  - Hero: Value message
-  - Key feature highlights
-  - Pricing table
-  - CTA ("Get started for free")
+### Figma File
 
-### 4.2 Sign Up / Log In
-- Purpose: Account creation / Returning login
-- Key elements:
-  - Email / Password / Social login
-  - Terms of service consent checkbox
-  - Error display (empty fields / invalid format)
+Design mockups: [Figma](https://www.figma.com/design/84XQRkIqqgbIfuILBe7G2E)
 
-### 4.3 Onboarding
+## 4. Screen-by-Screen Specification
 
-#### Step 1: Basic Information (Required)
-- Nickname (display name)
-- Basic profile
+### 4.1 Home
 
-#### Step 2: Goal Setting (Optional, multiple selection)
-- Select usage purpose
+- **Purpose**: Browse and discover voice clips
+- **Layout**: Mobile list / Desktop table with sidebar
+- **Key elements**:
+  - Tabs: Popular / New
+  - Member filter chips (horizontal scroll on mobile)
+  - Clip list: Avatar + title + member name + duration + like count
+  - Playing state: Highlighted row with inline progress bar
+  - Mini player bar (mobile) / Full player bar (desktop)
+- **Interactions**:
+  - Tap clip to play
+  - Tap heart to like/unlike
+  - Swipe chips to filter by member
 
-#### Step 3: Environment Check
-- Required permission requests
-- Functionality verification
+### 4.2 Member Detail
 
-- Behavior:
-  - **Each step is skippable** (labeled "can be configured later")
-  - **CTA to start using features immediately** shown after completion
+- **Purpose**: View all clips for a specific member
+- **Layout**: Hero gradient + clip table
+- **Key elements**:
+  - Hero: Large avatar (member initial on brand color), member name, stats (clip count, total likes)
+  - Action buttons: Play all, Shuffle
+  - Clip table: Numbered list with play icons, dates, like counts
+  - Sort control: Popular / Newest
+- **Hero gradient**: `color-mix(in srgb, var(--c-{member}) 25%-30%, var(--bg))`
 
-### 4.4 Home (Dashboard)
-- Purpose: Clear path to features + motivation for continued use
+### 4.3 Playlist
 
-#### Main CTA Area
-- **Start button**: "Get Started"
-- **Shortcuts**: Select frequently used settings with one tap
+- **Purpose**: Manage curated clip collections
+- **Layout**: Mobile card list / Desktop 2-column grid
+- **Key elements**:
+  - Playlist cards: Title, clip count, duration badge, 3-clip preview
+  - Favorites card: Special warm tint using `--like-bg`
+  - Action buttons per card: Play, Download, Merge
+  - New playlist button
+- **Playlist card preview**: Shows first 3 clips with mini avatars
 
-#### Progress / Statistics Area
-- Total usage count
-- Days used this week
-- **Growth graph**: Historical trends
+### 4.4 Add Voice (UGC)
 
-#### Recommendations / Feedback Area
-- Today's recommendations
-- Recent result highlights
-- "Previous improvement points" reminder
+- **Purpose**: Submit new voice clips from YouTube streams
+- **Layout**: Mobile single form / Desktop two-column (form + preview)
+- **Key elements**:
+  - Source toggle: YouTube URL / File upload
+  - YouTube URL input with hint text
+  - Time range picker: Start / End (format `H:MM:SS`)
+  - Member dropdown with avatar preview
+  - Title input with character count (max 50)
+  - Preview card: Avatar + title + duration + play button
+  - Submit button
+- **Desktop extras**: Tips card with submission guidelines
 
-### 4.5 Feature Configuration
+### 4.5 Merge & Download
 
-**Step 1: Configuration Selection**
-- Mode selection
-- Option selection
+- **Purpose**: Combine multiple clips and export as audio file
+- **Layout**: Mobile sequential / Desktop two-column (drag list + preview)
+- **Key elements**:
+  - Drag-to-reorder clip list with grip handles
+  - Visual connectors between clips
+  - Dragging state: Accent border + shadow
+  - Waveform preview visualization
+  - Playback controls: Prev / Play / Next
+  - Format selector: MP3 / WAV / OGG with estimated file sizes
+  - Action buttons: Download, Save as playlist
+- **Total info bar**: Clip count + total duration
 
-**Step 2: Environment Check (Required on first use only, skippable afterwards)**
-- Verify required settings
-- "Ready to Go" button to start
+## 5. Shared UI Components
 
-### 4.6 Core Feature
-- Purpose: Deliver the core functionality
+### Player Bar (Desktop)
 
-#### Screen Layout
-- Main content display
+Full-width fixed bottom bar with:
 - Progress indicator
-- End button
+- Now-playing info: Avatar + title + member name + like button
+- Controls: Prev / Play-Pause / Next
+- Seek track with dot scrubber
+- Volume control
 
-### 4.7 Results / Feedback
-- Purpose: Help users understand results immediately and guide them to next actions
+### Mini Player (Mobile)
 
-#### Overall Evaluation Area
-- **Score display**: Rating
-- **One-line summary**: Brief overview
+Compact bar above tab bar with:
+- Progress line
+- Avatar + title + member name
+- Pause / Next buttons
 
-#### Key Points
-- Strengths (1-2 points)
-- Areas for improvement (1-2 points)
+### Avatars
 
-#### Next Actions
-- **Try again now**: Retry
-- **Use with different settings**
-- **Return to home**
+Member initial character in a colored circle using the member's brand color.
 
-### 4.8 History List / Details
-- Purpose: Visualize usage and foster a sense of growth
-
-#### List View
-- History list (date/time / settings / results)
-- **Filters**: By setting / By time period
-- **Growth graph**: Visualize trends
-
-#### Detail View
-- Full results
-- Detailed information
-
-### 4.9 Plan Selection / Payment
-- Purpose: Pricing comprehension and upsell
-- Key elements:
-  - Pricing table
-  - Plan comparison
-  - Payment input / Confirmation screen
-
-### 4.10 Settings
-- Purpose: Account / Notification management
-- Key elements:
-  - Profile editing
-  - Notification settings
-  - Account deletion / Data removal
-
-## 5. UI Component Specification (Shared)
+| Size | Usage |
+|------|-------|
+| 28px | Clip preview in playlists |
+| 36px | Mini player, drag items |
+| 44px | Clip list items, player bar |
+| 160px | Member detail hero (desktop) |
+| 80px | Member detail hero (mobile) |
 
 ### Buttons
-- Primary: Start / Submit / Next
-- Secondary: Skip / Later / Cancel
-- Ghost: Supplementary actions
-- Destructive: Delete / Unsubscribe
+
+| Type | Background | Text | Usage |
+|------|-----------|------|-------|
+| Primary | `--accent` | White | Submit, Play all, Download |
+| Secondary | `--accent-bg` | `--accent` | Shuffle, Save as playlist |
+| Ghost | transparent | `--ink-soft` | Sort, filter |
+| Like | transparent | `--like-color` (active) / `--ink-faint` (inactive) | Heart toggle |
+
+### Chips
+
+- Default: `--surface` bg, `--border` stroke, `--ink-soft` text
+- Active: `--accent` bg, white text
 
 ### Cards
-- History / Feedback summary / Suggestions
-- Tone: glass / soft / ink
 
-### Tags and Badges
-- Category
-- Difficulty
-- Status (Complete / In Progress / Not Started)
+- Background: `--surface`
+- Border radius: `--radius-lg` (16px)
+- Shadow: `0 2px 8px rgba(0,0,0,0.04)`
+- Favorites variant: gradient from `--like-bg` to white
 
-### Status Indicators
-- Connection status / In progress
-- Loading / Error / Success
+## 6. State Management (UI)
 
-### Progress Indicators
-- Step indicator
-- Progress bar
+### Playing State
 
-### Modals / Overlays
-- Confirmation dialog
-- Survey modal
-- Error overlay
-
-### Feedback Display
-- Toast notifications (success / error / info)
-- Inline errors (during form input)
-
-## 6. State Management and Error Handling (UI)
-
-### Network Errors
-- Retry button + auto-reconnect indicator
-- Progress indicator during reconnection
-
-### Permission Denied
-- Permission guidance display
-- OS-specific setup instructions
-
-### Interruption
-- Interruption reason selection (optional) + history save
-- "Resume where you left off" feature
+- Clip row: `--accent-bg` background, accent-colored title
+- Animated playing bars (4 bars, staggered animation)
+- Progress bar with `--accent` fill and draggable dot
 
 ### Loading States
-- Skeleton UI (maintains content shape)
-- Descriptive text explaining the ongoing process
 
-## 7. Accessibility / Devices
+- Skeleton UI for clip lists (maintains row height)
+- Shimmer animation on avatar circles
 
-- Mobile-first
-- Focus management and screen reader label support
-- Keyboard navigation support
-- High contrast mode
-- Font size adjustment option
-- Screen reader support (ARIA attributes)
+### Empty States
 
-## 8. Micro-interactions / Animations
+- No clips: Illustration-free message with CTA to add voice
+- No playlists: Prompt to create first playlist
 
-### Purpose
-- Provide clear feedback for user actions
-- Reduce perceived wait time
-- Create a sense of fun and achievement
+### Error States
 
-### Application Points
-- Button hover / tap: Subtle scale change
-- Page transitions: Fade or slide
-- Start: Countdown animation
-- Completion: Achievement effect
-- Score display: Count-up animation
+- Network error: Retry button + "Could not load clips" message
+- Failed upload: Inline error on form with specific message
 
-### Notes
-- Keep animations short (200-300ms)
-- Support reduced motion preference (prefers-reduced-motion)
+## 7. Responsive Behavior
 
-## 9. API Integration Notes (MVP)
+| Aspect | Mobile (390px) | Desktop (1440px) |
+|--------|---------------|-----------------|
+| Navigation | Bottom tab bar | Left sidebar (260px) |
+| Clip display | Vertical list | Table with columns |
+| Player | Mini player above tabs | Full player bar at bottom |
+| Playlists | Stacked cards | 2-column grid |
+| Add voice | Single form | Two-column with preview panel |
+| Merge | Sequential list | Two-column with preview panel |
 
-### User API
-- Get user info: `GET /me`
-- Update user info: `PUT /me`
-- Dashboard: `GET /me/dashboard`
+## 8. Micro-interactions
 
-### Task API
-- Start task: `POST /tasks`
-  - Request: `{ type, config? }`
-  - Response: `{ id, status, ... }`
-- Get task: `GET /tasks/{taskId}`
-- Complete task: `POST /tasks/{taskId}/completion`
+| Element | Animation | Duration |
+|---------|-----------|----------|
+| Like heart | Scale bounce on tap | 200ms |
+| Tab switch | Underline slide | 150ms |
+| Chip select | Background fade | 100ms |
+| Playing bars | Height oscillation | 800ms loop |
+| Drag reorder | Lift with shadow | 150ms |
+| Progress dot | Smooth tracking | 16ms (60fps) |
 
-### Implementation Status
-- Authentication: Implemented (Google OAuth + Better Auth)
-- Session management: Implemented
-- Payments: Implemented (Stripe)
+## 9. Design Constraints
+
+- **No images**: Use text initials in colored circles (no member photos due to copyright)
+- **No emoji**: All icons must be SVG (Lucide-style, 24x24, stroke-width 2)
+- **No AI aesthetic**: Avoid gradients, glows, or effects that look AI-generated
+- **Simple & pop**: Warm, approachable feel with M PLUS Rounded 1c font
+
+## References
+
+- [Color Guidelines](./colors.md)
+- [Design Tokens](./design-tokens.md)
+- [Typography Guidelines](./typography.md)
+- [Icon Guidelines](./icons.md)
+- [Design Patterns](./design-patterns.md)
