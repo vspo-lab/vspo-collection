@@ -9,162 +9,136 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PlaylistRouteImport } from './routes/playlist'
-import { Route as MergeRouteImport } from './routes/merge'
-import { Route as MemberRouteImport } from './routes/member'
-import { Route as AddRouteImport } from './routes/add'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as MemberMemberIdRouteImport } from './routes/member.$memberId'
+import { Route as CollectionRouteImport } from './routes/_collection'
+import { Route as CollectionIndexRouteImport } from './routes/_collection/index'
+import { Route as CollectionListsRouteImport } from './routes/_collection/lists'
+import { Route as CollectionMembersIndexRouteImport } from './routes/_collection/members/index'
+import { Route as CollectionMembersMemberIdRouteImport } from './routes/_collection/members/$memberId'
 
-const PlaylistRoute = PlaylistRouteImport.update({
-  id: '/playlist',
-  path: '/playlist',
+const CollectionRoute = CollectionRouteImport.update({
+  id: '/_collection',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MergeRoute = MergeRouteImport.update({
-  id: '/merge',
-  path: '/merge',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MemberRoute = MemberRouteImport.update({
-  id: '/member',
-  path: '/member',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AddRoute = AddRouteImport.update({
-  id: '/add',
-  path: '/add',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
+const CollectionIndexRoute = CollectionIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => CollectionRoute,
 } as any)
-const MemberMemberIdRoute = MemberMemberIdRouteImport.update({
-  id: '/$memberId',
-  path: '/$memberId',
-  getParentRoute: () => MemberRoute,
+const CollectionListsRoute = CollectionListsRouteImport.update({
+  id: '/lists',
+  path: '/lists',
+  getParentRoute: () => CollectionRoute,
 } as any)
+const CollectionMembersIndexRoute = CollectionMembersIndexRouteImport.update({
+  id: '/members/',
+  path: '/members/',
+  getParentRoute: () => CollectionRoute,
+} as any)
+const CollectionMembersMemberIdRoute =
+  CollectionMembersMemberIdRouteImport.update({
+    id: '/members/$memberId',
+    path: '/members/$memberId',
+    getParentRoute: () => CollectionRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/add': typeof AddRoute
-  '/member': typeof MemberRouteWithChildren
-  '/merge': typeof MergeRoute
-  '/playlist': typeof PlaylistRoute
-  '/member/$memberId': typeof MemberMemberIdRoute
+  '/': typeof CollectionIndexRoute
+  '/lists': typeof CollectionListsRoute
+  '/members/$memberId': typeof CollectionMembersMemberIdRoute
+  '/members/': typeof CollectionMembersIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/add': typeof AddRoute
-  '/member': typeof MemberRouteWithChildren
-  '/merge': typeof MergeRoute
-  '/playlist': typeof PlaylistRoute
-  '/member/$memberId': typeof MemberMemberIdRoute
+  '/lists': typeof CollectionListsRoute
+  '/': typeof CollectionIndexRoute
+  '/members/$memberId': typeof CollectionMembersMemberIdRoute
+  '/members': typeof CollectionMembersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/add': typeof AddRoute
-  '/member': typeof MemberRouteWithChildren
-  '/merge': typeof MergeRoute
-  '/playlist': typeof PlaylistRoute
-  '/member/$memberId': typeof MemberMemberIdRoute
+  '/_collection': typeof CollectionRouteWithChildren
+  '/_collection/lists': typeof CollectionListsRoute
+  '/_collection/': typeof CollectionIndexRoute
+  '/_collection/members/$memberId': typeof CollectionMembersMemberIdRoute
+  '/_collection/members/': typeof CollectionMembersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/add'
-    | '/member'
-    | '/merge'
-    | '/playlist'
-    | '/member/$memberId'
+  fullPaths: '/' | '/lists' | '/members/$memberId' | '/members/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/add' | '/member' | '/merge' | '/playlist' | '/member/$memberId'
+  to: '/lists' | '/' | '/members/$memberId' | '/members'
   id:
     | '__root__'
-    | '/'
-    | '/add'
-    | '/member'
-    | '/merge'
-    | '/playlist'
-    | '/member/$memberId'
+    | '/_collection'
+    | '/_collection/lists'
+    | '/_collection/'
+    | '/_collection/members/$memberId'
+    | '/_collection/members/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AddRoute: typeof AddRoute
-  MemberRoute: typeof MemberRouteWithChildren
-  MergeRoute: typeof MergeRoute
-  PlaylistRoute: typeof PlaylistRoute
+  CollectionRoute: typeof CollectionRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/playlist': {
-      id: '/playlist'
-      path: '/playlist'
-      fullPath: '/playlist'
-      preLoaderRoute: typeof PlaylistRouteImport
+    '/_collection': {
+      id: '/_collection'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof CollectionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/merge': {
-      id: '/merge'
-      path: '/merge'
-      fullPath: '/merge'
-      preLoaderRoute: typeof MergeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/member': {
-      id: '/member'
-      path: '/member'
-      fullPath: '/member'
-      preLoaderRoute: typeof MemberRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/add': {
-      id: '/add'
-      path: '/add'
-      fullPath: '/add'
-      preLoaderRoute: typeof AddRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/_collection/': {
+      id: '/_collection/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof CollectionIndexRouteImport
+      parentRoute: typeof CollectionRoute
     }
-    '/member/$memberId': {
-      id: '/member/$memberId'
-      path: '/$memberId'
-      fullPath: '/member/$memberId'
-      preLoaderRoute: typeof MemberMemberIdRouteImport
-      parentRoute: typeof MemberRoute
+    '/_collection/lists': {
+      id: '/_collection/lists'
+      path: '/lists'
+      fullPath: '/lists'
+      preLoaderRoute: typeof CollectionListsRouteImport
+      parentRoute: typeof CollectionRoute
+    }
+    '/_collection/members/': {
+      id: '/_collection/members/'
+      path: '/members'
+      fullPath: '/members/'
+      preLoaderRoute: typeof CollectionMembersIndexRouteImport
+      parentRoute: typeof CollectionRoute
+    }
+    '/_collection/members/$memberId': {
+      id: '/_collection/members/$memberId'
+      path: '/members/$memberId'
+      fullPath: '/members/$memberId'
+      preLoaderRoute: typeof CollectionMembersMemberIdRouteImport
+      parentRoute: typeof CollectionRoute
     }
   }
 }
 
-interface MemberRouteChildren {
-  MemberMemberIdRoute: typeof MemberMemberIdRoute
+interface CollectionRouteChildren {
+  CollectionListsRoute: typeof CollectionListsRoute
+  CollectionIndexRoute: typeof CollectionIndexRoute
+  CollectionMembersMemberIdRoute: typeof CollectionMembersMemberIdRoute
+  CollectionMembersIndexRoute: typeof CollectionMembersIndexRoute
 }
 
-const MemberRouteChildren: MemberRouteChildren = {
-  MemberMemberIdRoute: MemberMemberIdRoute,
+const CollectionRouteChildren: CollectionRouteChildren = {
+  CollectionListsRoute: CollectionListsRoute,
+  CollectionIndexRoute: CollectionIndexRoute,
+  CollectionMembersMemberIdRoute: CollectionMembersMemberIdRoute,
+  CollectionMembersIndexRoute: CollectionMembersIndexRoute,
 }
 
-const MemberRouteWithChildren =
-  MemberRoute._addFileChildren(MemberRouteChildren)
+const CollectionRouteWithChildren = CollectionRoute._addFileChildren(
+  CollectionRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AddRoute: AddRoute,
-  MemberRoute: MemberRouteWithChildren,
-  MergeRoute: MergeRoute,
-  PlaylistRoute: PlaylistRoute,
+  CollectionRoute: CollectionRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
