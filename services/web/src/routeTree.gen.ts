@@ -9,38 +9,128 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PlaylistRouteImport } from './routes/playlist'
+import { Route as MergeRouteImport } from './routes/merge'
+import { Route as MemberRouteImport } from './routes/member'
+import { Route as AddRouteImport } from './routes/add'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MemberMemberIdRouteImport } from './routes/member.$memberId'
 
+const PlaylistRoute = PlaylistRouteImport.update({
+  id: '/playlist',
+  path: '/playlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MergeRoute = MergeRouteImport.update({
+  id: '/merge',
+  path: '/merge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemberRoute = MemberRouteImport.update({
+  id: '/member',
+  path: '/member',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AddRoute = AddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MemberMemberIdRoute = MemberMemberIdRouteImport.update({
+  id: '/$memberId',
+  path: '/$memberId',
+  getParentRoute: () => MemberRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
+  '/member': typeof MemberRouteWithChildren
+  '/merge': typeof MergeRoute
+  '/playlist': typeof PlaylistRoute
+  '/member/$memberId': typeof MemberMemberIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
+  '/member': typeof MemberRouteWithChildren
+  '/merge': typeof MergeRoute
+  '/playlist': typeof PlaylistRoute
+  '/member/$memberId': typeof MemberMemberIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
+  '/member': typeof MemberRouteWithChildren
+  '/merge': typeof MergeRoute
+  '/playlist': typeof PlaylistRoute
+  '/member/$memberId': typeof MemberMemberIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/add'
+    | '/member'
+    | '/merge'
+    | '/playlist'
+    | '/member/$memberId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/add' | '/member' | '/merge' | '/playlist' | '/member/$memberId'
+  id:
+    | '__root__'
+    | '/'
+    | '/add'
+    | '/member'
+    | '/merge'
+    | '/playlist'
+    | '/member/$memberId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AddRoute: typeof AddRoute
+  MemberRoute: typeof MemberRouteWithChildren
+  MergeRoute: typeof MergeRoute
+  PlaylistRoute: typeof PlaylistRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/playlist': {
+      id: '/playlist'
+      path: '/playlist'
+      fullPath: '/playlist'
+      preLoaderRoute: typeof PlaylistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/merge': {
+      id: '/merge'
+      path: '/merge'
+      fullPath: '/merge'
+      preLoaderRoute: typeof MergeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/member': {
+      id: '/member'
+      path: '/member'
+      fullPath: '/member'
+      preLoaderRoute: typeof MemberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/add': {
+      id: '/add'
+      path: '/add'
+      fullPath: '/add'
+      preLoaderRoute: typeof AddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +138,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/member/$memberId': {
+      id: '/member/$memberId'
+      path: '/$memberId'
+      fullPath: '/member/$memberId'
+      preLoaderRoute: typeof MemberMemberIdRouteImport
+      parentRoute: typeof MemberRoute
+    }
   }
 }
 
+interface MemberRouteChildren {
+  MemberMemberIdRoute: typeof MemberMemberIdRoute
+}
+
+const MemberRouteChildren: MemberRouteChildren = {
+  MemberMemberIdRoute: MemberMemberIdRoute,
+}
+
+const MemberRouteWithChildren =
+  MemberRoute._addFileChildren(MemberRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AddRoute: AddRoute,
+  MemberRoute: MemberRouteWithChildren,
+  MergeRoute: MergeRoute,
+  PlaylistRoute: PlaylistRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -23,7 +23,7 @@ export function Chip({
 				"transition-all duration-[var(--dur-fast)] ease-[var(--ease)]",
 				"focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2 focus-visible:shadow-[var(--shadow-focus)]",
 				isActive
-					? "bg-ink text-white border-ink hover:bg-ink-soft"
+					? "bg-accent text-white border-accent hover:bg-accent-hover"
 					: "bg-background text-ink-soft border-border-strong hover:border-ink-muted hover:bg-surface-warm",
 			)}
 		>
