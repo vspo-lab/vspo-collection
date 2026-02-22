@@ -1,66 +1,26 @@
-# Codex Agent Guide
+<!-- Do not restructure or delete sections. Update individual values in-place when they change. -->
+# Agent Guide
 
-## Language Rule (Highest Priority)
+## Project Overview
+vspo-search is a transcript search system for VTuber content, built as a pnpm monorepo on Cloudflare Workers + Containers.
 
+## Core Principles
 - Write all documentation and code comments in English.
-
-## Repository Snapshot
-
-`vspo-search` currently consists of:
-
-```text
-services/
-└── transcriptor/      # Cloudflare Worker + Container (yt-dlp wrapper)
-
-packages/
-├── dayjs/
-├── errors/
-└── logger/
-```
-
-Primary service entry points:
-- `services/transcriptor/src/index.ts`
-- `services/transcriptor/src/workflow/transcript-workflow.ts`
-
-## Working Rules
-
-- Keep dependency direction aligned with Clean Architecture: `Infra -> UseCase -> Domain`.
-- Use `@vspo/errors` Result-based handling and prefer `wrap` for fallible async calls.
-- Prefer schema-first TypeScript patterns.
-- Keep implementations simple and remove unused code when touched.
-
-## Reference Docs
-
-- `docs/domain/transcript-search.md`
-- `docs/domain/transcript-search-ui.md`
-- `docs/backend/server-architecture.md`
-- `docs/backend/domain-modeling.md`
-- `docs/backend/datetime-handling.md`
-- `docs/web-frontend/error-handling.md`
-- `docs/web-frontend/typescript.md`
-- `docs/security/lint.md`
+- Dependency direction: Infra -> UseCase -> Domain (Clean Architecture).
+- Use Result-based error handling from `@vspo/errors`; prefer `wrap` for fallible async calls. No try-catch.
+- Schema-first TypeScript: derive types from Zod schemas, never duplicate.
 
 ## Commands
-
 ```bash
-# Setup
-pnpm install
-
-# Local development (transcriptor)
-pnpm --filter @vspo/transcriptor dev
-
-# Quality checks
-pnpm build
-pnpm biome
-pnpm knip
-pnpm type-check
-
-# Full post-edit check
-./scripts/post-edit-check.sh
+pnpm install                          # setup
+pnpm --filter @vspo/transcriptor dev  # local dev
+./scripts/post-edit-check.sh          # run after every edit (build + lint + type-check + security)
 ```
 
-## Notes
+## Architecture
+- Domain docs live in `docs/`. Read them before making architectural decisions.
+- Commit format: `<type>(<scope>): <subject>` — see skills/commit-rules for scopes and full convention.
 
-- `./scripts/post-edit-check.sh` currently includes `pnpm security-scan`.
-- Security scan uses Docker-based tools (Trivy, gitleaks, Semgrep).
-- Use commit format: `<type>(<scope>): <subject>`.
+## Maintenance Notes
+<!-- This section is permanent. Do not delete. -->
+- `pnpm security-scan` requires Docker (Trivy + Semgrep). Skip if Docker is unavailable.
