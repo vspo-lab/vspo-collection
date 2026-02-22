@@ -21,10 +21,12 @@
     "test:coverage": "docker compose -f compose.test.yaml run --rm --build test-coverage",
     "test:clean": "docker compose -f compose.test.yaml down --rmi local --remove-orphans",
     "storybook": "pnpm --filter web storybook",
+    "generate:parquet": "tsx scripts/generate-dummy-parquet.ts",
     "security-scan": "./scripts/security-scan.sh",
     "security-scan:docker": "./scripts/security-scan.sh --docker"
   },
   "devDependencies": {
+    "@duckdb/node-api": "1.4.4-r.1",
     "@types/node": "catalog:",
     "dotenv-cli": "^11.0.0",
     "knip": "^5.82.1",

@@ -42,3 +42,6 @@ coverage
 services/web/e2e/__screenshots__/
 services/web/playwright-report/
 services/web/test-results/
+
+# Generated dummy Parquet data (local dev only)
+services/web/public/datasets/
