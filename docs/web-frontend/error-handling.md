@@ -110,7 +110,7 @@ packages/errors/
 ├── domain-context.ts # エラーコードごとのcontext型定義
 └── error.ts          # AppError（ドメインコード対応）
 
-services/api/
+services/transcriptor/
 └── infra/http/hono/error.ts  # contextを含むエラーレスポンス返却
 
 services/web/
@@ -146,7 +146,7 @@ services/web/
 ### サーバー側の使用例
 
 ```typescript
-// services/api/usecase/item.ts
+// services/transcriptor/usecase/item.ts
 import { AppError, Err } from "@vspo/errors";
 
 // リソース上限超過

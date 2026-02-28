@@ -7,7 +7,7 @@
 - SQL Antipatterns（第2版）の構成: 4カテゴリ25アンチパターン
 - 講演: 「SQL アンチパターン第2版 入門」（Developers Summit 2025 Summer）
 
-`services/api/infra/repository/mysql/` および関連する domain/usecase コードの設計時・コードレビュー時のチェックリストとして使用してください。
+`services/transcriptor/src/infra/repository/mysql/` および関連する domain/usecase コードの設計時・コードレビュー時のチェックリストとして使用してください。
 
 ## 4カテゴリ
 

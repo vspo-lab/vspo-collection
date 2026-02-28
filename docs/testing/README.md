@@ -25,7 +25,7 @@
 
 | 対象パッケージ | 最低カバレッジ | CI 強制 |
 | --- | --- | --- |
-| `services/api/domain/**` | 60% | Yes |
+| `services/transcriptor/src/domain/**` | 60% | Yes |
 | `packages/**` | 60% | Yes |
 | `services/web/shared/lib/**` | 50% | No（推奨） |
 

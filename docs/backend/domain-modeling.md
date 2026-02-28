@@ -9,7 +9,7 @@
 ドメインモデルは集約ごとにディレクトリを分割し、各集約のルートエンティティと値オブジェクトを明確に分離しています。
 
 ```
-services/api/domain/
+services/transcriptor/src/domain/
 └── [your-domain]/           # アプリケーション固有の集約
     ├── [aggregate-root].ts  # 集約ルート
     ├── [value-object].ts    # 値オブジェクト

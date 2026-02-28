@@ -14,7 +14,7 @@
 
 ### インストール
 
-`services/api` と `services/web` の両方に既に含まれています。
+`services/transcriptor` と `services/web` の両方に既に含まれています。
 
 ```typescript
 import {

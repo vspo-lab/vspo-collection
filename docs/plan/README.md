@@ -87,7 +87,7 @@ Status: Not started
 - [ ] ドメインモデルのユニットテスト
 
 ### Testing
-pnpm test -- services/api/domain/
+pnpm test -- services/transcriptor/src/domain/
 
 ### Session Notes
 - Done:
@@ -110,7 +110,7 @@ Status: Not started
 - [ ] インテグレーションテスト
 
 ### Testing
-pnpm test -- services/api/infra/repository/
+pnpm test -- services/transcriptor/src/infra/repository/
 
 ### Session Notes
 - Done:
@@ -132,7 +132,7 @@ Status: Not started
 - [ ] ユースケーステスト
 
 ### Testing
-pnpm test -- services/api/usecase/
+pnpm test -- services/transcriptor/src/usecase/
 
 ### Session Notes
 - Done:
@@ -154,7 +154,7 @@ API エンドポイント実装と API テスト
 - [ ] API テスト
 
 ### Testing
-pnpm test -- services/api/infra/http/
+pnpm test -- services/transcriptor/src/infra/http/
 
 ### Session Notes
 - Done:

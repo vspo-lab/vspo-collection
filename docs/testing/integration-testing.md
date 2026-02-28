@@ -7,8 +7,8 @@
 
 ## 対象
 
-- `services/api/usecase/**`
-- `services/api/infra/repository/**`
+- `services/transcriptor/src/usecase/**`
+- `services/transcriptor/src/infra/repository/**`
 - DB を含むアプリケーションフロー
 
 ## 実装ルール
@@ -31,8 +31,8 @@
 
 ## ファイル配置
 
-- `services/api/test/integration/**/*.test.ts`
-- `services/api/vitest.integration.config.ts` の `include` に合わせる
+- `services/transcriptor/src/test/integration/**/*.test.ts`
+- `services/transcriptor/src/vitest.integration.config.ts` の `include` に合わせる
 
 ## 実行コマンド
 

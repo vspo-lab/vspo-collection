@@ -24,11 +24,6 @@
         "@duckdb/duckdb-wasm"
       ]
     },
-    "services/api": {
-      "entry": ["cmd/*.ts", "local/**/*.ts"],
-      "project": ["**/*.ts"],
-      "ignore": ["dist/**", "drizzle/**", "node_modules/**"]
-    },
     "packages/errors": {
       "project": ["*.ts"],
       "ignore": ["dist/**", "node_modules/**"]

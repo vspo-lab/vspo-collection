@@ -36,7 +36,7 @@ user_invocable: true
 
 ## Step 3: 置換ガイド出力
 
-`@my-app` をプロジェクト識別子へ置換する対象を案内する。
+`@vspo` をプロジェクト識別子へ置換する対象を案内する。
 
 - `package.json`（root + packages/* + services/*）
 - `infrastructure/terraform/`

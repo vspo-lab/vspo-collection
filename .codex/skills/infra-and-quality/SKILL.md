@@ -1,6 +1,6 @@
 ---
 name: インフラ・コード品質
-description: Terraform（GCP）、CI/CD（tfaction/GitHub Actions）、セキュリティスキャン、Biome lint、knip。
+description: インフラ・CI/CD（GitHub Actions）・セキュリティスキャン・Biome lint・knip。
 ---
 
 # トリガー条件

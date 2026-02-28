@@ -225,7 +225,7 @@ pnpm add -D vitest @vitest/coverage-v8 --filter server
 
 ### 2. Vitest 設定ファイルの作成
 
-`services/api/vitest.config.ts`:
+`services/transcriptor/src/vitest.config.ts`:
 
 ```typescript
 import { defineConfig } from 'vitest/config'
@@ -257,7 +257,7 @@ export default defineConfig({
 
 ### 3. テストセットアップファイル
 
-`services/api/test/setup.ts`:
+`services/transcriptor/src/test/setup.ts`:
 
 ```typescript
 import { beforeAll, afterAll, afterEach, vi } from 'vitest'
@@ -302,7 +302,7 @@ afterAll(async () => {
 ### ディレクトリ構造
 
 ```
-services/api/
+services/transcriptor/src/
 ├── test/
 │   ├── setup.ts                 # グローバルセットアップ
 │   ├── helpers/
@@ -320,7 +320,7 @@ services/api/
 
 ### 外部サービスモック
 
-`services/api/test/helpers/mockExternal.ts`:
+`services/transcriptor/src/test/helpers/mockExternal.ts`:
 
 ```typescript
 import { vi } from 'vitest'
@@ -371,7 +371,7 @@ export const createMockMessageService = () => ({
 
 ### テスト用コンテナファクトリ
 
-`services/api/test/helpers/createTestContainer.ts`:
+`services/transcriptor/src/test/helpers/createTestContainer.ts`:
 
 ```typescript
 import { vi } from 'vitest'
@@ -458,7 +458,7 @@ export const createTestContainer = (): Container => {
 
 ### テスト用アプリファクトリ
 
-`services/api/test/helpers/createTestApp.ts`:
+`services/transcriptor/src/test/helpers/createTestApp.ts`:
 
 ```typescript
 import { OpenAPIHono } from '@hono/zod-openapi'
@@ -519,7 +519,7 @@ export const createTestApp = (options: TestAppOptions) => {
 
 ### DB ユーティリティ
 
-`services/api/test/helpers/testDb.ts`:
+`services/transcriptor/src/test/helpers/testDb.ts`:
 
 ```typescript
 import { getDb } from '../../infra/repository/mysql/db'
@@ -600,7 +600,7 @@ class RollbackError<T> extends Error {
 
 ### Item API テスト（実 DB）
 
-`services/api/test/integration/routes/item.test.ts`:
+`services/transcriptor/src/test/integration/routes/item.test.ts`:
 
 ```typescript
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
@@ -670,7 +670,7 @@ describe('Item API', () => {
 ### Order API テスト（外部サービスモック）
 
 ```typescript
-// services/api/test/integration/routes/order.test.ts
+// services/transcriptor/src/test/integration/routes/order.test.ts
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { testClient } from 'hono/testing'
 import { createTestApp } from '../../helpers/createTestApp'
@@ -841,7 +841,7 @@ jobs:
         uses: codecov/codecov-action@v4
         if: always()
         with:
-          files: ./services/api/coverage/coverage-final.json
+          files: ./services/transcriptor/src/coverage/coverage-final.json
 ```
 
 ## GitHub Actions 設定
@@ -909,7 +909,7 @@ jobs:
         uses: codecov/codecov-action@v4
         if: always()
         with:
-          files: ./services/api/coverage/coverage-final.json
+          files: ./services/transcriptor/src/coverage/coverage-final.json
           fail_ci_if_error: false
 ```
 
@@ -972,7 +972,7 @@ jobs:
         uses: davelosert/vitest-coverage-report-action@v2
         if: github.event_name == 'pull_request'
         with:
-          working-directory: ./services/api
+          working-directory: ./services/transcriptor
 ```
 
 ## テスト分類と推奨構成
@@ -988,7 +988,7 @@ jobs:
 ### ディレクトリ構造案
 
 ```
-services/api/
+services/transcriptor/src/
 ├── test/
 │   ├── setup.ts           # テストセットアップ
 │   ├── helpers/           # テストヘルパー

@@ -8,7 +8,7 @@
 ## 対象
 
 - `packages/*` の純粋ロジック
-- `services/api/domain/**` のドメインロジック
+- `services/transcriptor/src/domain/**` のドメインロジック
 - `services/web/shared/lib/**` のユーティリティ
 
 ## 実装ルール

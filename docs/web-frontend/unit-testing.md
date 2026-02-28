@@ -30,7 +30,7 @@ pnpm test:coverage
 ### テスト対象となる主要コンポーネント
 
 ```
-services/api/
+services/transcriptor/
 ├── domain/           # ドメインモデル・ビジネスロジック（最優先）
 │   ├── item/         # Item集約
 │   ├── order/        # Order集約
@@ -168,13 +168,13 @@ services/api/
 ### 1. 依存関係のインストール
 
 ```bash
-# services/api ディレクトリで実行
+# services/transcriptor ディレクトリで実行
 pnpm add -D vitest @vitest/coverage-v8
 ```
 
 ### 2. Vitest設定ファイル作成
 
-`services/api/vitest.config.ts`:
+`services/transcriptor/vitest.config.ts`:
 
 ```typescript
 import { defineConfig } from 'vitest/config'
@@ -192,7 +192,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/services/api',
+      '@': '/services/transcriptor',
     },
   },
 })
@@ -212,7 +212,7 @@ export default defineConfig({
 
 ### 4. TypeScript設定（オプション）
 
-`services/api/tsconfig.json` にVitest型を追加:
+`services/transcriptor/tsconfig.json` にVitest型を追加:
 
 ```json
 {
@@ -443,7 +443,7 @@ const container = await new MySQLContainer().start()
 ## ディレクトリ構成案
 
 ```
-services/api/
+services/transcriptor/
 ├── domain/
 │   ├── domain/
 │   │   ├── user.ts
@@ -527,7 +527,7 @@ jobs:
 現在のテストは以下のレイヤーに分かれている：
 
 ```
-services/api/
+services/transcriptor/
 ├── domain/                    # ドメインモデルテスト
 │   ├── item/
 │   │   ├── item.test.ts       # Item集約

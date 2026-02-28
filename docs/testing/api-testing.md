@@ -7,7 +7,7 @@
 
 ## 対象
 
-- `services/api/presentation/**` のルート
+- `services/transcriptor/src/presentation/**` のルート
 - 認証、バリデーション、レスポンス整形
 
 ## 実装ルール
