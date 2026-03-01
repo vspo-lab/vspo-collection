@@ -2,11 +2,12 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A transcript search system for VTuber content. It extracts subtitles from YouTube videos and provides full-text search.
+A voice clip collection app for VTuber (Vspo) fans. Browse curated voice clips, build personal collections, and contribute new clips.
 
 ## Tech Stack
 
-- **Transcriptor**: Cloudflare Workers + Containers (yt-dlp), Hono, R2
+- **Web**: TanStack Router + React, Cloudflare Workers
+- **Storage**: Cloudflare R2 (audio files + catalog metadata)
 - **Shared Packages**: TypeScript, Zod, Vitest
 - **CI/CD**: GitHub Actions, Cloudflare Deploy
 
@@ -14,7 +15,7 @@ A transcript search system for VTuber content. It extracts subtitles from YouTub
 
 ```
 services/
-└── transcriptor/        # Cloudflare Worker + Container (transcript extraction)
+└── web/                 # Voice collection web app (TanStack Router)
 
 packages/
 ├── errors/              # Result-type-based error handling

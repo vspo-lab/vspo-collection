@@ -30,7 +30,7 @@ pnpm test:coverage
 ### Main Components Under Test
 
 ```
-services/transcriptor/
+services/web/
 ├── domain/           # Domain models / business logic (highest priority)
 │   ├── item/         # Item aggregate
 │   ├── order/        # Order aggregate
@@ -168,13 +168,13 @@ services/transcriptor/
 ### 1. Install Dependencies
 
 ```bash
-# Run in the services/transcriptor directory
+# Run in the services/web directory
 pnpm add -D vitest @vitest/coverage-v8
 ```
 
 ### 2. Create Vitest Config File
 
-`services/transcriptor/vitest.config.ts`:
+`services/web/vitest.config.ts`:
 
 ```typescript
 import { defineConfig } from 'vitest/config'
@@ -192,7 +192,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/services/transcriptor',
+      '@': '/services/web',
     },
   },
 })
@@ -212,7 +212,7 @@ export default defineConfig({
 
 ### 4. TypeScript Configuration (Optional)
 
-Add Vitest types to `services/transcriptor/tsconfig.json`:
+Add Vitest types to `services/web/tsconfig.json`:
 
 ```json
 {
@@ -443,7 +443,7 @@ const container = await new MySQLContainer().start()
 ## Proposed Directory Structure
 
 ```
-services/transcriptor/
+services/web/
 ├── domain/
 │   ├── domain/
 │   │   ├── user.ts
@@ -527,7 +527,7 @@ jobs:
 Current tests are organized into the following layers:
 
 ```
-services/transcriptor/
+services/web/
 ├── domain/                    # Domain model tests
 │   ├── item/
 │   │   ├── item.test.ts       # Item aggregate

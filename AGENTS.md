@@ -1,5 +1,5 @@
 <!-- Do not restructure or delete sections. Update individual values in-place when they change. -->
-# vspo-search (Cloudflare Workers + Next.js)
+# vspo-search (Cloudflare Workers + TanStack Router)
 
 ## Guiding Principles
 
@@ -12,13 +12,13 @@
 
 ## Project Overview
 
-vspo-search is a transcript search system for VTuber content, built as a pnpm monorepo on Cloudflare Workers + Containers.
+vspo-search is a voice clip collection app for Vspo fans, built as a pnpm monorepo on Cloudflare Workers.
 
 ## Commands
 
 ```bash
 pnpm install                          # setup
-pnpm --filter @vspo/transcriptor dev  # local dev
+pnpm --filter @vspo/web dev           # local dev
 ./scripts/post-edit-check.sh          # run after every edit (build + lint + type-check + test + security)
 ```
 

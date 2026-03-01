@@ -165,7 +165,7 @@ ETag-based conditional requests for `manifest.json` revalidation.
 2. Validates YouTube URL format and accessibility
 3. Stores submission metadata in R2 `submissions/`
 4. On admin approval, queues audio extraction job
-5. yt-dlp container (existing transcriptor infra) extracts audio segment:
+5. yt-dlp extracts audio segment (run as a manual/admin process):
    ```
    yt-dlp -x --audio-format mp3 \
      --postprocessor-args "-ss {startMs/1000} -to {endMs/1000}" \
@@ -176,7 +176,7 @@ ETag-based conditional requests for `manifest.json` revalidation.
 
 ### Audio Extraction Parameters
 
-- Tool: yt-dlp + ffmpeg (reuses existing Cloudflare Container setup from transcriptor)
+- Tool: yt-dlp + ffmpeg (run as a manual/admin process)
 - Output: MP3, 128kbps, mono channel
 - Max clip duration: 30 seconds
 - Timeout: 60 seconds per extraction

@@ -29,7 +29,7 @@
 
 Use scope to indicate the changed context:
 
-- `transcriptor` - transcript extraction service
+- `web` - voice collection web app
 - `errors` - shared error handling package
 - `dayjs` - shared date-time utilities package
 - `logger` - shared logging package
@@ -63,9 +63,9 @@ Use scope to indicate the changed context:
 ## Examples
 
 ```text
-feat(transcriptor): add subtitle format output option
+feat(web): add category filter to clip browser
 
-Support SRT and VTT formats for transcript export.
+Allow users to filter voice clips by category.
 
 Refs #42
 ```

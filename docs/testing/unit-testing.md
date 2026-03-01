@@ -8,7 +8,7 @@
 ## Scope
 
 - Pure logic in `packages/*`
-- Domain logic in `services/transcriptor/src/domain/**`
+- Domain logic in `services/web/src/domain/**`
 - Utilities in `services/web/shared/lib/**`
 
 ## Implementation Rules

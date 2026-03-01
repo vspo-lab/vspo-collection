@@ -25,7 +25,7 @@ This directory is the Single Source of Truth for implementation policies per tes
 
 | Target Package | Minimum Coverage | CI Enforced |
 | --- | --- | --- |
-| `services/transcriptor/src/domain/**` | 60% | Yes |
+| `services/web/src/domain/**` | 60% | Yes |
 | `packages/**` | 60% | Yes |
 | `services/web/shared/lib/**` | 50% | No (recommended) |
 

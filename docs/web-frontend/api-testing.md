@@ -225,7 +225,7 @@ pnpm add -D vitest @vitest/coverage-v8 --filter server
 
 ### 2. Create Vitest Config File
 
-`services/transcriptor/src/vitest.config.ts`:
+`services/web/src/vitest.config.ts`:
 
 ```typescript
 import { defineConfig } from 'vitest/config'
@@ -257,7 +257,7 @@ export default defineConfig({
 
 ### 3. Test Setup File
 
-`services/transcriptor/src/test/setup.ts`:
+`services/web/src/test/setup.ts`:
 
 ```typescript
 import { beforeAll, afterAll, afterEach, vi } from 'vitest'
@@ -301,7 +301,7 @@ afterAll(async () => {
 ### Directory Structure
 
 ```
-services/transcriptor/src/
+services/web/src/
 ├── test/
 │   ├── setup.ts                 # Global setup
 │   ├── helpers/
@@ -319,7 +319,7 @@ services/transcriptor/src/
 
 ### External Service Mocks
 
-`services/transcriptor/src/test/helpers/mockExternal.ts`:
+`services/web/src/test/helpers/mockExternal.ts`:
 
 ```typescript
 import { vi } from 'vitest'
@@ -370,7 +370,7 @@ export const createMockMessageService = () => ({
 
 ### Test Container Factory
 
-`services/transcriptor/src/test/helpers/createTestContainer.ts`:
+`services/web/src/test/helpers/createTestContainer.ts`:
 
 ```typescript
 import { vi } from 'vitest'
@@ -457,7 +457,7 @@ export const createTestContainer = (): Container => {
 
 ### Test App Factory
 
-`services/transcriptor/src/test/helpers/createTestApp.ts`:
+`services/web/src/test/helpers/createTestApp.ts`:
 
 ```typescript
 import { OpenAPIHono } from '@hono/zod-openapi'
@@ -518,7 +518,7 @@ export const createTestApp = (options: TestAppOptions) => {
 
 ### DB Utilities
 
-`services/transcriptor/src/test/helpers/testDb.ts`:
+`services/web/src/test/helpers/testDb.ts`:
 
 ```typescript
 import { getDb } from '../../infra/repository/mysql/db'
@@ -599,7 +599,7 @@ class RollbackError<T> extends Error {
 
 ### Item API Test (Real DB)
 
-`services/transcriptor/src/test/integration/routes/item.test.ts`:
+`services/web/src/test/integration/routes/item.test.ts`:
 
 ```typescript
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
@@ -669,7 +669,7 @@ describe('Item API', () => {
 ### Order API Test (External Service Mocks)
 
 ```typescript
-// services/transcriptor/src/test/integration/routes/order.test.ts
+// services/web/src/test/integration/routes/order.test.ts
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { testClient } from 'hono/testing'
 import { createTestApp } from '../../helpers/createTestApp'
@@ -840,7 +840,7 @@ jobs:
         uses: codecov/codecov-action@v4
         if: always()
         with:
-          files: ./services/transcriptor/src/coverage/coverage-final.json
+          files: ./services/web/src/coverage/coverage-final.json
 ```
 
 ## GitHub Actions Configuration
@@ -908,7 +908,7 @@ jobs:
         uses: codecov/codecov-action@v4
         if: always()
         with:
-          files: ./services/transcriptor/src/coverage/coverage-final.json
+          files: ./services/web/src/coverage/coverage-final.json
           fail_ci_if_error: false
 ```
 
@@ -971,7 +971,7 @@ jobs:
         uses: davelosert/vitest-coverage-report-action@v2
         if: github.event_name == 'pull_request'
         with:
-          working-directory: ./services/transcriptor
+          working-directory: ./services/web
 ```
 
 ## Test Classification and Recommended Setup
@@ -987,7 +987,7 @@ jobs:
 ### Proposed Directory Structure
 
 ```
-services/transcriptor/src/
+services/web/src/
 ├── test/
 │   ├── setup.ts           # Test setup
 │   ├── helpers/           # Test helpers
