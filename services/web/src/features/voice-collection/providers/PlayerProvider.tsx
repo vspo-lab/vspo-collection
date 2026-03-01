@@ -1,5 +1,9 @@
 import { createContext, useContext } from "react";
-import { type PlayerActions, type PlayerState, usePlayerState } from "../hooks/usePlayerState";
+import {
+	type PlayerActions,
+	type PlayerState,
+	usePlayerState,
+} from "../hooks/usePlayerState";
 import type { Clip } from "../types/domain";
 
 type PlayerContextValue = PlayerState & PlayerActions;

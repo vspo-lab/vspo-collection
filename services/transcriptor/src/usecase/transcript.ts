@@ -1,4 +1,4 @@
-import { type AppError, type Result } from "@vspo/errors";
+import type { AppError, Result } from "@vspo/errors";
 import type { TranscriptParams } from "../domain/transcript";
 
 type Dependencies = Readonly<{

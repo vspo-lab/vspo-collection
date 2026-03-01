@@ -1,12 +1,12 @@
-import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { GripVertical, X, Download, Save } from "lucide-react";
-import { Avatar } from "@/shared/components/ui/Avatar";
-import { cn } from "@/shared/lib/utils";
-import { formatDuration } from "@/shared/lib/format";
-import { getMemberById } from "@/shared/lib/members";
 import { mockClips } from "@/features/voice-collection/__mocks__/fixtures";
 import type { Clip } from "@/features/voice-collection/types/domain";
+import { Avatar } from "@/shared/components/ui/Avatar";
+import { formatDuration } from "@/shared/lib/format";
+import { getMemberById } from "@/shared/lib/members";
+import { cn } from "@/shared/lib/utils";
+import { createFileRoute } from "@tanstack/react-router";
+import { Download, GripVertical, Save, X } from "lucide-react";
+import { useMemo, useState } from "react";
 
 export const Route = createFileRoute("/merge")({ component: MergePage });
 
@@ -19,7 +19,11 @@ function MergePage() {
 
 	const totalDuration = clips.reduce((sum, c) => sum + c.duration, 0);
 	const barHeights = useMemo(
-		() => Array.from({ length: 32 }, (_, i) => 20 + Math.sin(i * 0.5) * 40 + Math.random() * 20),
+		() =>
+			Array.from(
+				{ length: 32 },
+				(_, i) => 20 + Math.sin(i * 0.5) * 40 + Math.random() * 20,
+			),
 		[],
 	);
 

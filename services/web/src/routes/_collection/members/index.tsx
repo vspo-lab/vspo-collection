@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { mockMembers } from "@/features/collection/__mocks__/fixtures";
 import { Avatar } from "@/shared/components/ui/Avatar";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_collection/members/")({
 	component: MembersListPage,

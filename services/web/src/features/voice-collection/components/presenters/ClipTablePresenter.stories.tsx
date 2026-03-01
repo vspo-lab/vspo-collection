@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ClipTablePresenter } from "./ClipTablePresenter";
 import { mockClips } from "../../__mocks__/fixtures";
+import { ClipTablePresenter } from "./ClipTablePresenter";
 
 const meta = {
 	title: "VoiceCollection/ClipTable",

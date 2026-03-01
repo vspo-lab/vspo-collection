@@ -3,6 +3,9 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"type-check": "tsc --noEmit",
+		"biome:check": "biome check .",
+		"biome": "biome check --write .",
 		"dev": "vite dev --port 3000",
 		"build": "vite build",
 		"preview": "pnpm run build && vite preview",
@@ -32,6 +35,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "catalog:",
 		"@storybook/addon-a11y": "^10.2.8",
 		"@storybook/react": "^10.2.8",
 		"@storybook/react-vite": "^10.2.8",

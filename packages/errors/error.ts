@@ -1,5 +1,5 @@
 import { BaseError, type ErrorContext } from "./base";
-import { codeToStatus, type ErrorCode } from "./code";
+import { type ErrorCode, codeToStatus } from "./code";
 import type { DomainErrorCode } from "./domain-code";
 import type { DomainErrorContextMap } from "./domain-context";
 
@@ -9,22 +9,22 @@ import type { DomainErrorContextMap } from "./domain-context";
  * - Generic error code: uses generic ErrorContext
  */
 type ContextForCode<TCode extends ErrorCode> = TCode extends DomainErrorCode
-  ? TCode extends keyof DomainErrorContextMap
-    ? DomainErrorContextMap[TCode] extends undefined
-      ? ErrorContext | undefined
-      : DomainErrorContextMap[TCode]
-    : ErrorContext
-  : ErrorContext;
+	? TCode extends keyof DomainErrorContextMap
+		? DomainErrorContextMap[TCode] extends undefined
+			? ErrorContext | undefined
+			: DomainErrorContextMap[TCode]
+		: ErrorContext
+	: ErrorContext;
 
 /**
  * Type definition for AppError options
  */
 export type AppErrorOptions<TCode extends ErrorCode> = {
-  code: TCode;
-  message: string;
-  cause?: unknown;
-  context?: ContextForCode<TCode>;
-  retry?: boolean;
+	code: TCode;
+	message: string;
+	cause?: unknown;
+	context?: ContextForCode<TCode>;
+	retry?: boolean;
 };
 
 /**
@@ -33,36 +33,36 @@ export type AppErrorOptions<TCode extends ErrorCode> = {
  * - Codes not requiring context: `context` is optional
  */
 export type DomainErrorOptions<TCode extends DomainErrorCode> =
-  DomainErrorContextMap[TCode] extends undefined
-    ? AppErrorOptions<TCode>
-    : Omit<AppErrorOptions<TCode>, "context"> & {
-        context: DomainErrorContextMap[TCode];
-      };
+	DomainErrorContextMap[TCode] extends undefined
+		? AppErrorOptions<TCode>
+		: Omit<AppErrorOptions<TCode>, "context"> & {
+				context: DomainErrorContextMap[TCode];
+			};
 
 export class AppError<TCode extends ErrorCode = ErrorCode> extends BaseError {
-  public readonly name = "AppError";
-  public readonly retry: boolean;
-  public readonly code: TCode;
-  public readonly status: number;
-  public override readonly context: ContextForCode<TCode> | undefined;
+	public readonly name = "AppError";
+	public readonly retry: boolean;
+	public readonly code: TCode;
+	public readonly status: number;
+	public override readonly context: ContextForCode<TCode> | undefined;
 
-  constructor(opts: AppErrorOptions<TCode>) {
-    super({
-      message: opts.message,
-      ...(opts.cause instanceof Error ? { cause: opts.cause } : {}),
-    });
-    this.retry = opts.retry ?? false;
-    this.code = opts.code;
-    this.status = codeToStatus(opts.code);
-    this.context = opts.context;
-  }
+	constructor(opts: AppErrorOptions<TCode>) {
+		super({
+			message: opts.message,
+			...(opts.cause instanceof Error ? { cause: opts.cause } : {}),
+		});
+		this.retry = opts.retry ?? false;
+		this.code = opts.code;
+		this.status = codeToStatus(opts.code);
+		this.context = opts.context;
+	}
 }
 
 /**
  * Factory function for generic AppError creation
  */
 export const createAppError = <TCode extends ErrorCode>(
-  opts: AppErrorOptions<TCode>,
+	opts: AppErrorOptions<TCode>,
 ): AppError<TCode> => new AppError(opts);
 
 /**
@@ -71,5 +71,5 @@ export const createAppError = <TCode extends ErrorCode>(
  * - For codes without context, `context` remains optional
  */
 export const createDomainError = <TCode extends DomainErrorCode>(
-  opts: DomainErrorOptions<TCode>,
+	opts: DomainErrorOptions<TCode>,
 ): AppError<TCode> => new AppError(opts as AppErrorOptions<TCode>);

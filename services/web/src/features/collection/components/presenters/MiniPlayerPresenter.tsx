@@ -1,6 +1,6 @@
-import { cn } from "@/shared/lib/utils";
 import { Avatar } from "@/shared/components/ui/Avatar";
 import { ProgressBar } from "@/shared/components/ui/ProgressBar";
+import { cn } from "@/shared/lib/utils";
 import type { MiniPlayerState } from "../../types/domain";
 
 type MiniPlayerPresenterProps = {

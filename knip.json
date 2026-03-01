@@ -1,36 +1,37 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignoreExportsUsedInFile": {
-    "interface": true,
-    "type": true
-  },
-  "tags": ["-lintignore"],
-  "workspaces": {
-    ".": {},
-    "services/transcriptor": {
-      "entry": ["src/index.ts"],
-      "project": ["src/**/*.ts"],
-      "ignore": [".wrangler/**", "node_modules/**"],
-      "ignoreDependencies": ["cloudflare"]
-    },
-    "services/web": {
-      "entry": [
-        "src/routes/**/*.{ts,tsx}"
-      ],
-      "project": ["**/*.{ts,tsx}"],
-      "ignore": [".tanstack/**", "node_modules/**"],
-      "ignoreDependencies": [
-        "tailwindcss",
-        "@duckdb/duckdb-wasm"
-      ]
-    },
-    "packages/errors": {
-      "project": ["*.ts"],
-      "ignore": ["dist/**", "node_modules/**"]
-    },
-    "packages/logger": {
-      "project": ["*.ts"],
-      "ignore": ["dist/**", "node_modules/**"]
-    }
-  }
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"ignoreExportsUsedInFile": {
+		"interface": true,
+		"type": true
+	},
+	"tags": ["-lintignore"],
+	"workspaces": {
+		".": {
+			"ignoreDependencies": ["@biomejs/biome"]
+		},
+		"services/transcriptor": {
+			"entry": ["src/index.ts"],
+			"project": ["src/**/*.ts"],
+			"ignore": [".wrangler/**", "node_modules/**"],
+			"ignoreDependencies": ["cloudflare"]
+		},
+		"services/web": {
+			"entry": ["src/routes/**/*.{ts,tsx}"],
+			"project": ["**/*.{ts,tsx}"],
+			"ignore": [".tanstack/**", "node_modules/**"],
+			"ignoreDependencies": ["tailwindcss", "@duckdb/duckdb-wasm"]
+		},
+		"packages/dayjs": {
+			"project": ["*.ts"],
+			"ignore": ["dist/**", "node_modules/**"]
+		},
+		"packages/errors": {
+			"project": ["*.ts"],
+			"ignore": ["dist/**", "node_modules/**"]
+		},
+		"packages/logger": {
+			"project": ["*.ts"],
+			"ignore": ["dist/**", "node_modules/**"]
+		}
+	}
 }

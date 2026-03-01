@@ -1,6 +1,6 @@
+import { members } from "@/shared/lib/members";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Avatar } from "./Avatar";
-import { members } from "@/shared/lib/members";
 
 const sumire = members.find((m) => m.id === "sumire")!;
 const sena = members.find((m) => m.id === "sena")!;

@@ -22,14 +22,16 @@ export const TranscriptRepository = {
 		save: async (stage, params, data) => {
 			const key = TranscriptKey.fromStage(stage, params);
 			return wrap(
-				bucket.put(key, data, {
-					httpMetadata: { contentType: "application/json" },
-					customMetadata: {
-						videoId: params.videoId,
-						lang: params.lang,
-						stage,
-					},
-				}).then(() => ({ key })),
+				bucket
+					.put(key, data, {
+						httpMetadata: { contentType: "application/json" },
+						customMetadata: {
+							videoId: params.videoId,
+							lang: params.lang,
+							stage,
+						},
+					})
+					.then(() => ({ key })),
 				(err) =>
 					new AppError({
 						code: "INTERNAL_SERVER_ERROR",

@@ -11,7 +11,7 @@ const asyncLocalStorage = new AsyncLocalStorage<LogContext>();
  * Gets the current log context from AsyncLocalStorage
  */
 export function getLogContext(): LogContext | undefined {
-  return asyncLocalStorage.getStore();
+	return asyncLocalStorage.getStore();
 }
 
 /**
@@ -27,7 +27,7 @@ export function getLogContext(): LogContext | undefined {
  * ```
  */
 export function runWithLogContext<T>(context: LogContext, fn: () => T): T {
-  return asyncLocalStorage.run(context, fn);
+	return asyncLocalStorage.run(context, fn);
 }
 
 /**
@@ -42,10 +42,10 @@ export function runWithLogContext<T>(context: LogContext, fn: () => T): T {
  * ```
  */
 export function runWithLogContextAsync<T>(
-  context: LogContext,
-  fn: () => Promise<T>,
+	context: LogContext,
+	fn: () => Promise<T>,
 ): Promise<T> {
-  return asyncLocalStorage.run(context, fn);
+	return asyncLocalStorage.run(context, fn);
 }
 
 /**
@@ -62,10 +62,10 @@ export function runWithLogContextAsync<T>(
  * ```
  */
 export function updateLogContext(partialContext: Partial<LogContext>): void {
-  const currentContext = asyncLocalStorage.getStore();
-  if (currentContext) {
-    Object.assign(currentContext, partialContext);
-  }
+	const currentContext = asyncLocalStorage.getStore();
+	if (currentContext) {
+		Object.assign(currentContext, partialContext);
+	}
 }
 
 /**
@@ -90,44 +90,44 @@ export function updateLogContext(partialContext: Partial<LogContext>): void {
  * ```
  */
 export async function withRequestContext<T>(
-  context: LogContext,
-  fn: () => T | Promise<T>,
+	context: LogContext,
+	fn: () => T | Promise<T>,
 ): Promise<T> {
-  return asyncLocalStorage.run(context, fn);
+	return asyncLocalStorage.run(context, fn);
 }
 
 /**
  * Extended log context with common request fields
  */
 export interface RequestLogContext extends LogContext {
-  /** Unique request identifier */
-  requestId?: string;
-  /** User ID if authenticated */
-  userId?: string;
-  /** Session ID */
-  sessionId?: string;
+	/** Unique request identifier */
+	requestId?: string;
+	/** User ID if authenticated */
+	userId?: string;
+	/** Session ID */
+	sessionId?: string;
 }
 
 /**
  * Gets the current request ID from context
  */
 export function getRequestId(): string | undefined {
-  const context = asyncLocalStorage.getStore() as RequestLogContext | undefined;
-  return context?.labels?.requestId;
+	const context = asyncLocalStorage.getStore() as RequestLogContext | undefined;
+	return context?.labels?.requestId;
 }
 
 /**
  * Creates a log context with request ID in labels
  */
 export function createRequestContext(
-  requestId: string,
-  additionalContext?: Partial<LogContext>,
+	requestId: string,
+	additionalContext?: Partial<LogContext>,
 ): LogContext {
-  return {
-    ...additionalContext,
-    labels: {
-      ...additionalContext?.labels,
-      requestId,
-    },
-  };
+	return {
+		...additionalContext,
+		labels: {
+			...additionalContext?.labels,
+			requestId,
+		},
+	};
 }

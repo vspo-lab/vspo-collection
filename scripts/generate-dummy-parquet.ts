@@ -1,3 +1,5 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 /**
  * Generate dummy Parquet files for local DuckDB-WASM development.
  *
@@ -9,13 +11,12 @@
  *   services/web/public/datasets/manifest.json
  */
 import { DuckDBInstance } from "@duckdb/node-api";
-import * as fs from "node:fs";
-import * as path from "node:path";
 
 const transcripts = [
 	{
 		video_id: "example1",
-		title: "【VALORANT】CR CUP 本番前日！最後のスクリム練習【花芽すみれ/ぶいすぽっ!】",
+		title:
+			"【VALORANT】CR CUP 本番前日！最後のスクリム練習【花芽すみれ/ぶいすぽっ!】",
 		channel_id: "UCyLGcqYs7RsBb3L0SJfzGYA",
 		channel_name: "花芽すみれ",
 		published_at: "2025-01-14T15:00:00Z",
@@ -25,7 +26,8 @@ const transcripts = [
 	},
 	{
 		video_id: "example2",
-		title: "【APEX】ぶいすぽカスタム大会に向けて猛特訓！！！【橘ひなの/ぶいすぽっ!】",
+		title:
+			"【APEX】ぶいすぽカスタム大会に向けて猛特訓！！！【橘ひなの/ぶいすぽっ!】",
 		channel_id: "UCurEA8YoqFwimJcAuSHU0MQ",
 		channel_name: "橘ひなの",
 		published_at: "2025-01-11T14:00:00Z",
@@ -45,7 +47,8 @@ const transcripts = [
 	},
 	{
 		video_id: "example4",
-		title: "【雑談】最近あったおもしろい話を聞いてくれ〜！！【小森めと/ぶいすぽっ!】",
+		title:
+			"【雑談】最近あったおもしろい話を聞いてくれ〜！！【小森めと/ぶいすぽっ!】",
 		channel_id: "UCzUNASdzI4PV5SlqtYwAkKQ",
 		channel_name: "小森めと",
 		published_at: "2025-01-20T13:00:00Z",
@@ -144,7 +147,7 @@ async function main() {
 
 	for (const t of transcripts) {
 		await conn.run(
-			`INSERT INTO transcripts VALUES ($1, $2, $3, $4, $5::TIMESTAMP, $6, $7, $8)`,
+			"INSERT INTO transcripts VALUES ($1, $2, $3, $4, $5::TIMESTAMP, $6, $7, $8)",
 			[
 				t.video_id,
 				t.title,
@@ -167,19 +170,19 @@ async function main() {
   )`);
 
 	for (const s of segments) {
-		await conn.run(
-			"INSERT INTO transcript_segments VALUES ($1, $2, $3, $4)",
-			[s.video_id, s.start_ms, s.duration_ms, s.text],
-		);
+		await conn.run("INSERT INTO transcript_segments VALUES ($1, $2, $3, $4)", [
+			s.video_id,
+			s.start_ms,
+			s.duration_ms,
+			s.text,
+		]);
 	}
 
 	// Export to Parquet
 	const transcriptsPath = path.join(outDir, "transcripts.parquet");
 	const segmentsPath = path.join(outDir, "transcript_segments.parquet");
 
-	await conn.run(
-		`COPY transcripts TO '${transcriptsPath}' (FORMAT PARQUET)`,
-	);
+	await conn.run(`COPY transcripts TO '${transcriptsPath}' (FORMAT PARQUET)`);
 	await conn.run(
 		`COPY transcript_segments TO '${segmentsPath}' (FORMAT PARQUET)`,
 	);

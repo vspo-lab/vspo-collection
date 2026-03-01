@@ -3,6 +3,7 @@ packages:
   - services/*
 
 catalog:
+  '@biomejs/biome': 1.9.4
   '@types/node': 20.19.25
   dayjs: 1.11.19
   tsup: 8.5.1

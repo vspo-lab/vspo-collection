@@ -1,11 +1,13 @@
 import { AppError, Err, Ok } from "@vspo/errors";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { createTranscriptUseCaseMock, fetchMock, serveMock } = vi.hoisted(() => ({
-	createTranscriptUseCaseMock: vi.fn(),
-	fetchMock: vi.fn(),
-	serveMock: vi.fn(),
-}));
+const { createTranscriptUseCaseMock, fetchMock, serveMock } = vi.hoisted(
+	() => ({
+		createTranscriptUseCaseMock: vi.fn(),
+		fetchMock: vi.fn(),
+		serveMock: vi.fn(),
+	}),
+);
 
 vi.mock("../usecase/transcript", () => ({
 	createTranscriptUseCase: createTranscriptUseCaseMock,
@@ -27,7 +29,7 @@ const createEnv = (workflow: WorkflowBinding) =>
 		YT_CONTAINER: {},
 		TRANSCRIPT_BUCKET: {},
 		TRANSCRIPT_WORKFLOW: workflow,
-	} as unknown as Env);
+	}) as unknown as Env;
 
 describe("createApp integration", () => {
 	beforeEach(() => {
@@ -40,13 +42,19 @@ describe("createApp integration", () => {
 
 	it("handles transcript and workflow endpoints", async () => {
 		fetchMock.mockResolvedValue(
-			Ok(JSON.stringify({ events: [{ tStartMs: 0, segs: [{ utf8: "hello" }] }] })),
+			Ok(
+				JSON.stringify({
+					events: [{ tStartMs: 0, segs: [{ utf8: "hello" }] }],
+				}),
+			),
 		);
 		const create = vi
 			.fn()
-			.mockImplementation(async ({ params }: { params: { videoId: string } }) => ({
-				id: `wf-${params.videoId}`,
-			}));
+			.mockImplementation(
+				async ({ params }: { params: { videoId: string } }) => ({
+					id: `wf-${params.videoId}`,
+				}),
+			);
 		const get = vi.fn().mockResolvedValue({
 			status: vi.fn().mockResolvedValue({ state: "running" }),
 		});

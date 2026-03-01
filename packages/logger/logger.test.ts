@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createLogger, Logger } from "./logger";
+import { Logger, createLogger } from "./logger";
 
 describe("Logger", () => {
 	describe("logger creation", () => {

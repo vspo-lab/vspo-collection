@@ -48,9 +48,7 @@ export function BottomTabBarPresenter({
 							<span
 								className={cn(
 									"text-[22px] leading-[1.2]",
-									isActive
-										? "text-primary"
-										: "text-icon-inactive",
+									isActive ? "text-primary" : "text-icon-inactive",
 								)}
 							>
 								{tab.icon}
@@ -58,9 +56,7 @@ export function BottomTabBarPresenter({
 							<span
 								className={cn(
 									"text-[10px] font-medium leading-[1.2]",
-									isActive
-										? "text-primary"
-										: "text-text-inactive",
+									isActive ? "text-primary" : "text-text-inactive",
 								)}
 							>
 								{tab.label}

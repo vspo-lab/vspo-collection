@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import {
+	RouterProvider,
 	createMemoryHistory,
 	createRootRoute,
 	createRoute,
 	createRouter,
-	RouterProvider,
 } from "@tanstack/react-router";
-import { SidebarPresenter } from "./SidebarPresenter";
 import { mockPlaylists } from "../../__mocks__/fixtures";
+import { SidebarPresenter } from "./SidebarPresenter";
 
 function createStoryRouter() {
 	const rootRoute = createRootRoute();
