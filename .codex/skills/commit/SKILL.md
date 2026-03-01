@@ -45,7 +45,7 @@ Follow the format defined in `docs/common/commit-conventions.md`:
 
 Rules:
 - **type**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`
-- **scope**: `transcriptor`, `web`, `errors`, `logger`, `docs`, `domain`, `usecase`, `infra`
+- **scope**: `web`, `errors`, `logger`, `docs`, `domain`, `usecase`, `infra`
 - **subject**: imperative, lowercase, ≤50 chars, no trailing punctuation
 - **body** (optional): rationale and context, wrapped at 72 chars
 - **footer** (optional): `Closes #123`, `Refs #456`, `BREAKING CHANGE`

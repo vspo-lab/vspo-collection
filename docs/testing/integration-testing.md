@@ -7,8 +7,8 @@
 
 ## Scope
 
-- `services/transcriptor/src/usecase/**`
-- `services/transcriptor/src/infra/repository/**`
+- `services/web/src/usecase/**`
+- `services/web/src/infra/repository/**`
 - Application flows that include DB
 
 ## Implementation Rules
@@ -31,8 +31,8 @@
 
 ## File Placement
 
-- `services/transcriptor/src/test/integration/**/*.test.ts`
-- Match the `include` in `services/transcriptor/src/vitest.integration.config.ts`
+- `services/web/src/test/integration/**/*.test.ts`
+- Match the `include` in `services/web/src/vitest.integration.config.ts`
 
 ## Execution Commands
 

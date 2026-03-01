@@ -7,7 +7,7 @@
 
 ## Scope
 
-- Routes in `services/transcriptor/src/presentation/**`
+- Routes in `services/web/src/presentation/**`
 - Authentication, validation, response formatting
 
 ## Implementation Rules

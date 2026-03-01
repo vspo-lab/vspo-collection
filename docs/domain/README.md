@@ -6,8 +6,6 @@ Project-specific domain knowledge is consolidated here.
 
 | File | Content |
 | --- | --- |
-| `transcript-search.md` | Transcript search system requirements and architecture |
-| `transcript-search-ui.md` | Transcript search UI/UX specification |
 | `voice-collection.md` | Voice collection system requirements |
 | `glossary.md` | Glossary (ubiquitous language) |
 | `decisions.md` | Decision log (why we chose this specification) |

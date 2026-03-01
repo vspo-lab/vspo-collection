@@ -5,7 +5,7 @@ description: Backend development with Hono API + Clean Architecture + DDD. Facto
 
 # Trigger Conditions
 
-- When creating or editing files under `services/transcriptor/`
+- When creating or editing backend service files
 - When creating new domain models, use cases, or repositories
 - When adding or modifying API endpoints
 
@@ -20,10 +20,4 @@ description: Backend development with Hono API + Clean Architecture + DDD. Facto
 
 # Reference Documents
 
-- `docs/backend/server-architecture.md` - Clean Architecture + DDD (Domain/UseCase/Infra layers)
-- `docs/backend/usecase-rules.md` - UseCase implementation rules (sequential execution, prohibitions, idempotency)
-- `docs/backend/domain-modeling.md` - Domain model design (aggregates, Zod Schema First, companion objects)
-- `docs/backend/function-documentation.md` - Function documentation conventions (JSDoc, pre-conditions, post-conditions)
-- `docs/backend/api-design.md` - REST API design principles (resource-oriented URLs, CRUD naming conventions)
-- `docs/backend/pr-guidelines.md` - PR guidelines (required: current state, problem, implementation details)
-- `docs/backend/datetime-handling.md` - UTC/JST datetime handling
+- `docs/domain/` - Domain specifications

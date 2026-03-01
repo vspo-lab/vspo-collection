@@ -87,7 +87,7 @@ Implement the domain model and unit tests
 - [ ] Write domain model unit tests
 
 ### Testing
-pnpm test -- services/transcriptor/src/domain/
+pnpm test -- services/web/src/domain/
 
 ### Session Notes
 - Done:
@@ -110,7 +110,7 @@ Implement repositories and integration tests
 - [ ] Write integration tests
 
 ### Testing
-pnpm test -- services/transcriptor/src/infra/repository/
+pnpm test -- services/web/src/infra/repository/
 
 ### Session Notes
 - Done:
@@ -132,7 +132,7 @@ Implement use cases and tests
 - [ ] Write use case tests
 
 ### Testing
-pnpm test -- services/transcriptor/src/usecase/
+pnpm test -- services/web/src/usecase/
 
 ### Session Notes
 - Done:
@@ -154,7 +154,7 @@ Implement API endpoints and API tests
 - [ ] Write API tests
 
 ### Testing
-pnpm test -- services/transcriptor/src/infra/http/
+pnpm test -- services/web/src/infra/http/
 
 ### Session Notes
 - Done:
