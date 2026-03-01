@@ -70,35 +70,35 @@ Notes
 
 ## Domain Error Handling
 
-Error-handling design for rendering domain-specific errors correctly on the frontend.
+Error handling design for properly displaying domain-specific errors on the frontend.
 
-### Design Principles
+### Design Policy
 
-1. **Domain errors use numeric codes**: `E1001` format (4 digits with domain prefix)
-2. **Generic errors remain unchanged**: Keep `BAD_REQUEST`, `NOT_FOUND`, etc.
-3. **Server-side `message` is for developers**: Do not display it directly to end users
-4. **Frontend controls user messaging**: Manage user-facing copy by error code
-5. **Type-safe context**: Define different context schemas per error code
+1. **Domain errors use numeric codes**: `E1001` format (4 digits, with domain prefix)
+2. **Generic errors remain as-is**: `BAD_REQUEST`, `NOT_FOUND`, etc. are unchanged
+3. **Server messages are for developers**: Not displayed to users (for debugging only)
+4. **Frontend controls the messages**: User-facing messages are managed per error code
+5. **Type-safe context**: Different context schemas defined per error code
 
-### Error Code Structure
+### Error Code System
 
 ```
-E1xxx - Domain
-  E1001: Session expired
-  E1002: Session not started / not in progress
-  E1003: Session already completed
+E1xxx - Resource-related
+  E1001: Resource expired
+  E1002: Resource not created / not in progress
+  E1003: Resource already processed
 
-E2xxx - Billing
-  E2001: Plan limit exceeded
-  E2002: Subscription expired
+E2xxx - Resource limit-related
+  E2001: Resource limit exceeded
+  E2002: Resource usage period expired
 
-E3xxx - Auth
-  E3001: Verification code expired
-  E3002: Invalid verification code
+E3xxx - Auth-related
+  E3001: Authentication code expired
+  E3002: Invalid authentication code
 
-E4xxx - User
-  E4001: Onboarding incomplete
-  E4002: Phone number not verified
+E4xxx - Validation-related
+  E4001: Required settings incomplete
+  E4002: Required fields not verified
 ```
 
 ### Architecture
@@ -106,19 +106,19 @@ E4xxx - User
 ```
 packages/errors/
 ├── code.ts           # Unified ErrorCodeSchema (generic + domain)
-├── domain-code.ts    # Domain error code definitions (E1001-E4002)
-├── domain-context.ts # Context types by error code
-└── error.ts          # AppError with domain-code support
+├── domain-code.ts    # Domain error code definitions (E1xxx-E4xxx)
+├── domain-context.ts # Context type definitions per error code
+└── error.ts          # AppError (domain code support)
 
-services/server/
-└── infra/http/hono/error.ts  # Returns error responses including context
+services/transcriptor/
+└── infra/http/hono/error.ts  # Error response with context
 
 services/web/
 └── shared/lib/
     ├── errors/
-    │   ├── error-messages.ts    # Error code -> user-facing message map
-    │   └── api-error-handler.ts # Error resolution and context interpolation
-    └── parseResponse.ts         # Structured error-response support
+    │   ├── error-messages.ts    # Error code to user-facing message mapping
+    │   └── api-error-handler.ts # Error resolution and context interpolation logic
+    └── parseResponse.ts         # Structured error response handling
 ```
 
 ### Error Response Format
@@ -127,87 +127,87 @@ services/web/
 {
   "error": {
     "code": "E2001",
-    "message": "User xxx exceeded plan limit",
+    "message": "User xxx exceeded resource limit",
     "requestId": "req_xxx",
     "context": {
-      "currentPlan": "free",
-      "limit": 3,
-      "currentUsage": 3
+      "resourceType": "item",
+      "limit": 100,
+      "currentUsage": 100
     }
   }
 }
 ```
 
 - `code`: Error code (generic or domain)
-- `message`: Developer-focused debug message (not for direct user display)
-- `requestId`: Request ID used for tracing
-- `context`: Type-safe context info, included only for domain errors
+- `message`: Developer-facing debug message (not displayed to users)
+- `requestId`: ID for error tracking
+- `context`: Type-safe context information, present only for domain errors
 
-### Server-side Example
+### Server-Side Usage Example
 
 ```typescript
-// services/server/usecase/taskSession.ts
+// services/transcriptor/usecase/item.ts
 import { AppError, Err } from "@vspo/errors";
 
-// Plan limit exceeded
-if (user.usage.count >= plan.limit) {
+// Resource limit exceeded
+if (currentUsage >= resourceLimit) {
   return Err(
     new AppError({
       code: "E2001",
-      message: `User ${userId} exceeded plan limit`,
+      message: `User ${userId} exceeded resource limit`,
       context: {
-        currentPlan: plan.name,
-        limit: plan.limit,
-        currentUsage: user.usage.count,
+        resourceType: "item",
+        limit: resourceLimit,
+        currentUsage,
       },
     }),
   );
 }
 
-// Session expired
-if (session.isExpired()) {
+// Resource expired
+if (resource.isExpired()) {
   return Err(
     new AppError({
       code: "E1001",
-      message: `Session ${sessionId} expired`,
+      message: `Resource ${resourceId} expired`,
       context: {
-        sessionId,
-        expiredAt: session.expiredAt.toISOString(),
+        resourceId,
+        expiredAt: resource.expiredAt.toISOString(),
       },
     }),
   );
 }
 ```
 
-### Frontend Example
+### Frontend Usage Example
 
 ```typescript
-// features/task/hooks/useTask.ts
-const startTask = async () => {
-  const result = await taskApi.start(data);
+// features/item/hooks/useItem.ts
+const createItem = async () => {
+  const result = await itemApi.create(data);
 
   if (result.err) {
-    // userFacingError is generated by parseResponse
+    // userFacingError is automatically generated by parseResponse
     const userError = result.err.context?.userFacingError;
 
     toast.error(userError?.title ?? "Error", {
       description: userError?.description ?? result.err.message,
     });
 
-    // Action by error code
+    // Action based on error code
     if (result.err.code === "E2001") {
-      router.push("/pricing");
+      router.push("/");
     }
     return;
   }
 
-  setSession(result.val);
+  setItem(result.val);
 };
 ```
 
 ### How to Add Error Messages
 
-1. **Add an error code** (`packages/errors/domain-code.ts`)
+1. **Add error code** (`packages/errors/domain-code.ts`)
 ```typescript
 export const DomainErrorCodeSchema = z.enum([
   // ...existing codes
@@ -215,7 +215,7 @@ export const DomainErrorCodeSchema = z.enum([
 ]);
 ```
 
-2. **Define its context type** (`packages/errors/domain-context.ts`)
+2. **Define context type** (`packages/errors/domain-context.ts`)
 ```typescript
 export const DomainErrorContextSchemas = {
   // ...existing definitions
@@ -225,12 +225,12 @@ export const DomainErrorContextSchemas = {
 };
 ```
 
-3. **Add user-facing messages** (`services/web/shared/lib/errors/error-messages.ts`)
+3. **Add user-facing message** (`services/web/shared/lib/errors/error-messages.ts`)
 ```typescript
 export const ERROR_MESSAGES = {
   // ...existing messages
   E1004: {
-    title: "Error title",
+    title: "Error Title",
     description: (ctx) => `Dynamic message: ${ctx.someField}`,
     action: "Recommended action",
   },

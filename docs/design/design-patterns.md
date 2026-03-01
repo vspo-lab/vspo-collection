@@ -2,62 +2,62 @@
 
 ## Overview
 
-Design patterns are proven solutions to recurring UI challenges. This guide defines 8 key design patterns.
+Design patterns are proven solutions to recurring UI challenges. This guideline defines 8 major design patterns.
 
-## Eye Tracking
+## Eye Flow Guidance
 
-Patterns that guide the user's eye movement to lead them naturally to important information.
+A pattern for designing the flow of the user's gaze and naturally guiding them to important information.
 
-### Fundamental Principles
+### Fundamental Rules
 
-#### 1. Eyes move from top to bottom
+#### 1. The eye moves from top to bottom
 
-| Pattern | Characteristics | When to Use |
-|---------|----------------|-------------|
-| F-pattern | Left-to-right, then downward repeatedly | List views, settings screens, vertically stacked content |
-| Z-pattern | Top-left to top-right, bottom-left to bottom-right | Modals, login screens, first-visit or minimal-scroll pages |
+| Pattern | Characteristics | Applicable scenarios |
+|---------|----------------|---------------------|
+| F-pattern | Left-to-right, then downward repeatedly | List screens, settings screens, screens with vertically arranged information |
+| Z-pattern | Top-left to top-right, bottom-left to bottom-right | Modals, login screens, first-time views or screens with minimal scrolling |
 
-#### 2. Eyes move from larger elements to smaller elements
+#### 2. The eye moves from larger elements to smaller elements
 
-Use heading levels in order and keep inner spacing narrower than outer spacing to create a hierarchical visual flow.
+Use heading levels in order and set inner spacing narrower than outer spacing to achieve hierarchical eye flow guidance.
 
 ### Implementation Notes
 
-- Recognize that these patterns break down when users have a clear goal in mind
-- Be aware that multiple patterns interact with each other
-- Use headings and whitespace to establish starting points and boundaries for eye movement
-- Account for variations across devices and screen widths
-- Combine with accessibility support rather than relying on eye tracking alone
+- Recognize that the rules may not apply when users have a clear purpose
+- Be aware that multiple rules interact with each other
+- Use headings and spacing to set "starting points and boundaries for eye movement"
+- Consider the impact of device and screen width variations
+- Use alongside accessibility measures; do not rely on eye flow guidance alone
 
 ## Visual Grouping
 
-Patterns that create visual cohesion among related elements.
+A pattern for giving related elements a visual sense of cohesion.
 
-### 3 Grouping Methods
+### 3 Expression Methods
 
-| Method | Characteristics | When to Use |
-|--------|----------------|-------------|
-| Whitespace | Reduces visual complexity | When elements can be positioned by relevance |
-| Rectangles | Clearly defines group boundaries | When containing multiple sub-groups |
-| Dividers | Shows explicit boundaries | As a last resort when whitespace or rectangles are insufficient |
+| Method | Characteristics | Use case |
+|--------|----------------|----------|
+| Spacing | Reduces screen complexity | When element placement by relatedness is possible |
+| Rectangle | Clarifies group boundaries | When multiple child groups are present |
+| Divider line | Displays clear boundaries | Last resort when spacing and rectangles are insufficient |
 
 ### Hierarchy
 
 ```
 Section (heading + content)
-└── Block (group within a section)
+└── Block (group within section)
     └── Element
 ```
 
 ### Design Guidelines
 
-- **Maintain consistency**: Apply the same grouping method to elements at the same level
-- **Watch hierarchy depth**: Deeper nesting makes it harder to understand relationships
+- **Maintain consistency**: Apply the same grouping method to elements at the same hierarchy level
+- **Watch hierarchy depth**: Deeper hierarchies make it harder to grasp information relationships
 - **Use TabBar/SideNav**: Use dedicated components for switching between multiple sections
 
 ## Page Layout
 
-Patterns for designing overall page structure.
+A pattern for designing the overall page composition.
 
 ### Basic Structure
 
@@ -67,10 +67,10 @@ Patterns for designing overall page structure.
 ├─────────────────────────────┤
 │ Container                   │
 │ ┌─────────────────────────┐ │
-│ │ Page Title + Lead Text  │ │
+│ │ Page title + Lead text  │ │
 │ ├─────────────────────────┤ │
 │ │                         │ │
-│ │     Main Content        │ │
+│ │      Main content       │ │
 │ │                         │ │
 │ └─────────────────────────┘ │
 └─────────────────────────────┘
@@ -78,33 +78,33 @@ Patterns for designing overall page structure.
 
 ### 6 Layout Types
 
-| Type | Description | Usage |
-|------|-------------|-------|
-| Collection (Table/List) | List of objects | Article list, user list |
-| Single (1-Column) | Parallel information sections | Detail pages, settings |
-| Single (2-Column) | Primary/secondary content distinction | Profiles, dashboards |
+| Type | Description | Use case |
+|------|-------------|----------|
+| Collection (Table/List) | List display of objects | Article list, user list |
+| Single (1-Column) | Sections of parallel information | Detail pages, settings screens |
+| Single (2-Column) | Primary/secondary information distinction | Profile, dashboard |
 | Single (Custom View) | 2D interactive content | Maps, charts |
-| Side Navigation + Content | Broad navigation | Settings, documentation |
-| Collection + Single | List-detail pair | Email, chat |
+| Side Navigation + Content | Extensive navigation | Settings, documentation |
+| Collection + Single | List-detail pair display | Email, chat |
 
 ### Lead Text
 
-Include lead text in the header area so users can quickly understand the page's purpose.
+Implement lead text in the header area so users can quickly understand the page's purpose.
 
 ```tsx
 <header>
-  <h1>Articles</h1>
+  <h1>Article List</h1>
   <p className="text-text-secondary">
-    Manage your published articles. Create new articles or edit existing ones.
+    Manage published articles. Create new articles or edit existing ones.
   </p>
 </header>
 ```
 
-### Managing Page Length
+### Page Length Management
 
-Ways to avoid excessive vertical scrolling:
+Methods to avoid excessively long vertical scrolling:
 
-- Collapse content with disclosure widgets
+- Collapse content with disclosures
 - Split pages using TabBar, SideNav, or SideMenu
 - Reduce information density
 
@@ -112,20 +112,20 @@ Ways to avoid excessive vertical scrolling:
 
 UI design patterns for smartphones.
 
-### Core Principles
+### Basic Principles
 
-| Aspect | Desktop | Mobile |
-|--------|---------|--------|
+| Item | Desktop | Mobile |
+|------|---------|--------|
 | Columns | Multi-column possible | Single column recommended |
-| Scrolling | 2D allowed (e.g., maps) | Vertical scrolling only recommended |
-| Information | Detailed display possible | Show only essential information |
-| Interaction | Multiple actions possible | Limit to simple actions |
+| Scrolling | 2D possible (maps, etc.) | Vertical scrolling only recommended |
+| Information density | Detailed display possible | Only essential information |
+| Operations | Multiple operations possible | Limited to simple operations |
 
 ### Design Approach
 
 ```tsx
 // Responsive vs Adaptive
-// Responsive: Same elements, structure, and data — only the layout changes
+// Responsive: Same elements, structure, and data with layout-only changes
 // Adaptive: Structure, data, and presentation change based on screen width or device
 ```
 
@@ -143,19 +143,19 @@ const { isMobile } = useEnvironment();
 
 ## Feedback
 
-Patterns for designing responses to user actions.
+A pattern for designing responses to user actions.
 
-### Core Principles
+### Basic Principles
 
 | Principle | Description |
 |-----------|-------------|
-| Passive awareness | Users can see the result without actively checking |
-| Proximity | Display feedback near the element the user interacted with |
-| Screen reader support | Maintain proper reading order |
+| Passive recognition | Users can see results without actively checking |
+| Proximity display | Display feedback near the operated element |
+| Screen reader support | Maintain appropriate reading order |
 
 ### Feedback Patterns
 
-#### Form Input & Submission
+#### Form Input / Submission
 
 ```tsx
 // Validation error
@@ -166,7 +166,7 @@ Patterns for designing responses to user actions.
 </FormControl>
 ```
 
-#### Loading State
+#### Processing State
 
 ```tsx
 <Button loading={isSubmitting}>
@@ -190,33 +190,33 @@ Patterns for designing responses to user actions.
 
 ## Modal UI
 
-Modal UI patterns for completing specific tasks.
+A modal UI pattern for completing specific tasks.
 
-### When to Use
+### Use Cases
 
 | Scenario | Example |
 |----------|---------|
-| Adding or editing an object | Creating an article, editing a profile |
-| Sorting data | Configuring list sort order |
+| Adding/editing objects | Article creation, profile editing |
+| Sorting data | List sort settings |
 | Importing/exporting data | CSV import/export |
-| Confirming destructive actions | Delete confirmation |
-| Complex multi-step operations | Wizards |
+| Confirming destructive actions | Deletion confirmation |
+| Complex sequential operations | Wizards |
 
 ### Implementation Patterns
 
-| Pattern | Component | Usage |
-|---------|-----------|-------|
+| Pattern | Component | Use case |
+|---------|-----------|----------|
 | Modal dialog | Dialog | Small to medium forms |
-| Full-page mode | FloatArea | When content is extensive |
-| Partial-page mode | Drawer | Preserves awareness of the original layout |
+| Full-page mode | FloatArea | When there is a lot of information |
+| Partial-page mode | Drawer | Maintain awareness of original layout |
 | Step-based | StepFormDialog | Multi-step operations |
 
-### Component Structure
+### Structural Elements
 
 ```tsx
 <Dialog>
   <DialogTitle>Create Article</DialogTitle>
-  <DialogDescription>Enter the details for your new article.</DialogDescription>
+  <DialogDescription>Enter the new article information.</DialogDescription>
 
   <DialogContent>
     <FormControl>
@@ -234,24 +234,24 @@ Modal UI patterns for completing specific tasks.
 
 ### Accessibility
 
-**Avoid disabling the submit button.** Even when there are input errors, let users click the button and then display error feedback.
+**Avoid disabling the submit button**. Even when there are input errors, let the user press the button and then display error feedback.
 
 ## Wizard
 
-Patterns for completing tasks across multiple steps.
+A pattern for completing operations across multiple steps.
 
-### When to Use
+### Use Cases
 
 | Scenario | Example |
 |----------|---------|
-| Complex operations | Searching and selecting objects, editing files |
-| Conditional branching | Subsequent fields change based on previous input |
-| Confirmation with parameter input | Setting conditions before deletion |
+| Complex operations | Object search and selection, file editing |
+| Conditional branching | Subsequent items change based on input content |
+| Confirmation with parameter input | Condition settings before deletion |
 
-### Core Principles
+### Basic Principles
 
-- **Avoid overuse**: Wizards restrict user behavior, so use them only when clearly beneficial
-- **Show progress**: Always display the total number of steps and the current step
+- **Avoid overuse**: Limit to particularly effective cases since it restricts user behavior
+- **Progress display**: Always show the total number of steps and the current step
 
 ### Implementation
 
@@ -281,22 +281,22 @@ Patterns for completing tasks across multiple steps.
 
 ## Permission-Based Display Control
 
-Patterns for showing or hiding UI elements based on user permissions.
+A pattern for controlling UI visibility based on user permissions.
 
 ### 4 Patterns
 
-| Pattern | Behavior | Example |
+| Pattern | Approach | Example |
 |---------|----------|---------|
-| A | Hide UI, no explanation | Do not show the feature at all to unauthorized users |
-| B | Hide UI, explain why | Explain system-default permissions (e.g., cannot delete) |
-| C | Disable UI, explain why | Cannot delete because the resource is in use |
-| D | Show and enable UI | Normal state |
+| A | Hide UI, hide reason | Do not show the feature at all to unauthorized users |
+| B | Hide UI, show reason | Explain system-standard permissions (e.g., cannot delete) |
+| C | Show UI as disabled, show reason | Cannot delete because it is in use |
+| D | Show UI, allow interaction | Normal state |
 
-### How to Show the Reason
+### Displaying the Reason
 
 ```tsx
 // Show reason via Tooltip
-<Tooltip content="This permission is used by the system and cannot be deleted">
+<Tooltip content="This permission cannot be deleted because it is used by the system">
   <Button disabled>Delete</Button>
 </Tooltip>
 
@@ -311,12 +311,12 @@ Patterns for showing or hiding UI elements based on user permissions.
 
 ### Writing Guidelines
 
-| Situation | Phrasing |
-|-----------|----------|
-| User can take action | "You cannot ... because ... is missing" |
-| User cannot take action | "This cannot be done" |
+| Situation | Expression |
+|-----------|------------|
+| User can take action | "Cannot [action] because [reason]" |
+| User cannot take action | "Cannot [action]" |
 
-## References
+## Reference Links
 
 - [Design Principles](./design-principles.md)
 - [Accessibility Guidelines](./accessibility.md)

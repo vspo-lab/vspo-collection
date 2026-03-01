@@ -1,97 +1,111 @@
+# Frontend Architecture
+
 ## Overview
 
-The frontend architecture follows a feature-based approach, organizing code by domain features rather than technical layers. This structure aligns with Domain-Driven Design (DDD) principles while adapting them for frontend development. Within each feature, we implement the Container/Presentational pattern (Container 1st design) to separate business logic from UI presentation.
+The frontend architecture adopts a Feature-based approach, organizing code by domain feature rather than technical layer. This structure aligns with DDD principles while adapting them for frontend development. Each Feature implements the Container/Presentational pattern (Container 1st design), separating business logic from UI presentation.
 
-This architecture is designed for Next.js App Router, where **features and pages are 1:1 mapped**. Each route in `app/` corresponds to a single feature, keeping routing and feature logic tightly coupled.
+This architecture is designed for the Next.js App Router, where **Features and pages have a 1:1 correspondence**. Each route in `app/` maps to a single Feature, keeping routing and Feature logic tightly coupled.
+
+## Rendering Foundation (React Compiler + Cache Components)
+
+The frontend is designed with the following defaults.
+
+- `reactCompiler: true` in `services/web/next.config.ts`
+- `cacheComponents: true` in `services/web/next.config.ts`
+- Server Components by default; Client Components only when interactivity is needed
+
+Design implications:
+
+1. **Memoization is compiler-first**: Do not add `useMemo`/`useCallback` solely for speculative performance reasons
+2. **Rendering is cache-first**: Define cacheable data boundaries with `'use cache'` and invalidate explicitly
+3. **Dynamic boundaries are explicit**: Wrap dynamic parts with `<Suspense>`, keeping the static shell outside
+
+See the following for specific rules:
+
+- `docs/web-frontend/react-hooks.md`
+- `docs/web-frontend/cache-components.md`
 
 ## Directory Structure
 
-Directory structure is as follows:
+The directory structure is as follows.
 
 ```
-app/                          # Next.js App Router (routes & pages)
+app/                          # Next.js App Router (routes and pages)
 ├── layout.tsx                # Root layout
 ├── globals.css               # Global styles
-├── (public)/                 # Public pages (legal, contact)
-├── (auth)/                   # Auth pages (onboarding, phone-verification)
-└── (protected)/              # Protected pages (home, etc.)
+├── (public)/                 # Public pages (terms of service, contact, etc.)
+├── (auth)/                   # Auth pages ([feature-name])
+└── (protected)/              # Authenticated pages (home, etc.)
 │
 features/                     # Feature modules (business logic)
-├── [your-feature]/           # Core feature module
+├── [your-feature]/           # Core Feature module
 │   ├── api/                  # Feature API module
 │   ├── components/
 │   │   ├── containers/       # Business logic containers
 │   │   └── presenters/       # UI presenters
-│   ├── hooks/                # Custom hooks
+│   ├── hooks/                # Custom Hooks
 │   └── types/                # Type definitions
-├── home/                     # Dashboard feature
-├── history/                  # History feature
-├── onboarding/               # User onboarding flow
-├── phone-verification/       # Phone/SMS verification
-├── settings/                 # User settings
-├── pricing/                  # Pricing page
-├── plan-select/              # Plan selection
-├── contact/                  # Contact form
-├── landing/                  # Landing page
-└── legal/                    # Legal pages (terms, privacy)
+├── [feature-name]/           # Individual Feature modules
 │
-shared/                       # Shared code across the app
+shared/                       # Application-wide shared code
 ├── components/               # Shared UI building blocks
 │   ├── ui/                   # Base design system (Button, Input, Card, etc.)
-│   ├── presenters/           # Reusable presentational components
+│   ├── presenters/           # Reusable presentation components
 │   └── containers/           # Shared container components (AppShell, AuthGuard)
-├── lib/                      # Shared libs (apiConfig, audio device key)
+├── lib/                      # Shared libraries (apiConfig, etc.)
 └── utils/
 ```
 
 ## Container/Presentational Pattern
 
-We adopt the Container 1st approach to separate concerns within components:
+We adopt a Container 1st approach to separate concerns within components.
 
 ### Container Components
+
 - Responsible for "what to do":
   - Data fetching and state management
   - Business logic
   - Event handling
   - Data transformation
-- Pass data and callbacks to presentational components
-- Don't contain significant markup or styling
+- Pass data and callbacks to presentation components
+- Do not contain large markup or styling
 
 ### Presentational Components
-- Responsible for "how to look":
+
+- Responsible for "how things look":
   - UI rendering
   - Styling
   - Animation
   - Accessibility
 - Receive data and callbacks via props
-- Typically pure functional components
+- Typically pure function components
 - Reusable across different containers
 
 ### Example
 
-**Container** (`MicCheckPage.tsx`):
+**Container** (`ItemPage.tsx`):
 
 ```tsx
 "use client";
 
-import { fetchMicCheckData } from "../api/micCheckApi";
-import { MicCheckPagePresenter } from "../presenters/MicCheckPagePresenter";
+import { fetchItemData } from "../api/itemApi";
+import { ItemPagePresenter } from "../presenters/ItemPagePresenter";
 
-export const MicCheckPage = () => {
-  // Data fetching + device selection logic lives here.
-  return <MicCheckPagePresenter /* props */ />;
+export const ItemPage = () => {
+  // Data fetching + device selection logic goes here
+  return <ItemPagePresenter /* props */ />;
 };
 ```
 
-**Presenter** (`MicCheckPagePresenter.tsx`):
+**Presenter** (`ItemPagePresenter.tsx`):
 
 ```tsx
 type Props = {
-  checklist: Array<{ title: string; detail: string }>;
+  items: Array<{ id: string; name: string; status: string }>;
 };
 
-export const MicCheckPagePresenter = ({ checklist }: Props) => {
-  return <section>{/* render checklist */}</section>;
+export const ItemPagePresenter = ({ items }: Props) => {
+  return <section>{/* Render items */}</section>;
 };
 ```
 
@@ -100,22 +114,23 @@ export const MicCheckPagePresenter = ({ checklist }: Props) => {
 | Container | Presenter |
 |-----------|-----------|
 | `useState`, `useEffect` | Props only |
-| Business logic (filtering) | Pure rendering |
+| Business logic (filtering, etc.) | Pure rendering |
 | Event handler logic | `onClick={onXxx}` |
-| Minimal JSX | Rich JSX & styling |
+| Minimal JSX | Rich JSX and styling |
 
 ## API Access
 
-- Feature-specific API modules live under `features/<feature>/api/`
+- Place Feature-specific API modules in `features/<feature>/api/`
 - Use `shared/lib/apiConfig.ts` for the base URL
-- API functions return `Result` with `@vspo/errors`
-- Feature-specific endpoints are defined per module
+- API functions return `Result` from `@vspo/errors`
+- Define Feature-specific endpoints per module
 
 ## Component Organization
 
-Components are organized in three ways:
+Components are organized in three ways.
 
-1. **Page-specific components** (`_components/`): Located within each route, used only in that page. Prefixed with `_` to indicate they are private to the route and excluded from routing.
+1. **Page-specific components** (`_components/`): Placed inside each route, used only by that page. The `_` prefix indicates privacy to the route and excludes it from routing.
+
    ```
    app/feature/
    ├── page.tsx
@@ -125,18 +140,20 @@ Components are organized in three ways:
        └── ...
    ```
 
-2. **Feature-specific components**: Located within each feature module, reusable within that feature
+2. **Feature-specific components**: Placed inside each Feature module, reused within that Feature.
+
    ```
-   features/mic-check/components/
+   features/item/components/
    ├── containers/
-   │   ├── MicCheckPage.tsx
+   │   ├── ItemPage.tsx
    │   └── ...
    └── presenters/
-       ├── MicCheckPagePresenter.tsx
+       ├── ItemPagePresenter.tsx
        └── ...
    ```
 
-3. **Shared components**: Located in `shared/components/`, reused across features
+3. **Shared components**: Placed in `shared/components/`, reused across Features.
+
    ```
    shared/components/
    ├── containers/
@@ -151,7 +168,7 @@ Components are organized in three ways:
 
 ## App Router Structure
 
-In Next.js App Router, features and pages are **1:1 mapped**. Each route corresponds to a single feature.
+In the Next.js App Router, Features and pages have a **1:1 correspondence**. Each route maps to a single Feature.
 
 ### Route Structure
 
@@ -168,71 +185,73 @@ app/feature/
 
 ### Naming Conventions
 
-- **`_` prefix**: Page-specific folders (e.g., `_components/`, `_hooks/`) are prefixed with underscore to:
-  - Indicate they are private to the route
-  - Prevent Next.js from treating them as route segments
-  - Clearly distinguish page-specific code from shared code
+- **`_` prefix**: Page-specific folders (e.g., `_components/`, `_hooks/`) use an underscore because:
+  - It indicates privacy to the route
+  - It prevents Next.js from treating them as route segments
+  - It clearly distinguishes page-specific code from shared code
 
 ### Page Component Pattern
 
 ```tsx
-// app/users/page.tsx (Server Component)
-import { getUsers } from '@/features/users/api'
-import { UserList } from './_components/UserList'
+// app/items/page.tsx (Server Component)
+import { getItems } from '@/features/items/api'
+import { ItemList } from './_components/UserList'
 
-export default async function UsersPage() {
-  const users = await getUsers()
-  return <UserList users={users} />
+export default async function ItemsPage() {
+  const items = await getItems()
+  return <ItemList items={items} />
 }
 ```
 
 ```tsx
-// app/users/_components/UserList.tsx (Client or Server Component)
-import { UserCard } from './UserCard'
-import type { User } from '@/features/users/types'
+// app/items/_components/ItemList.tsx (Client or Server Component)
+import { ItemCard } from './ItemCard'
+import type { Item } from '@/features/items/types'
 
 type Props = {
-  users: User[]
+  items: Item[]
 }
 
-export function UserList({ users }: Props) {
+export function ItemList({ users }: Props) {
   return (
     <div>
-      {users.map(user => (
-        <UserCard key={user.id} user={user} />
+      { items.map(item => (
+        <ItemCard key={item.id} item={item} />
       ))}
     </div>
   )
 }
 ```
 
-## Principles
+## Design Principles
 
-1. **Feature-Page 1:1 Mapping**: Each route in `app/` corresponds to exactly one feature. This keeps routing and business logic tightly coupled.
-2. **Feature Isolation**: Each feature should be self-contained with minimal dependencies on other features. Avoid cross-feature imports.
-3. **Shared Components**: Common UI elements are placed in `shared/components/` for reuse.
-4. **Domain-Driven**: Features should align with business domains rather than technical concerns.
-5. **Container 1st Design**: Always start with containers that define what needs to be done, then create presenters.
-6. **Separation of Concerns**: 
+1. **Feature-Page 1:1 correspondence**: Each route in `app/` maps to exactly one Feature. Keeps routing and business logic tightly coupled.
+2. **Feature isolation**: Each Feature is self-contained, minimizing dependencies on other Features. Avoid cross-Feature imports.
+3. **Shared components**: Common UI elements are placed in `shared/components/` for reuse.
+4. **Domain-driven**: Features are designed around business domains, not technical concerns.
+5. **Container 1st design**: Always start with the container to define what needs to be done, then create the presenter.
+6. **Separation of concerns**:
    - Containers handle logic and data
    - Presenters handle UI and styling
-7. **Layered Approach Within Features**:
+7. **Layered approach within Features**:
    - UI Layer: Presenters
-   - Application Layer: Containers, hooks
+   - Application Layer: Containers, Hooks
    - Domain Layer: Business logic, data transformation
-   - Infrastructure Layer: API calls, external services integration
-8. **Colocation**: Keep related code close together. Page-specific components live in `_components/` within the route.
+   - Infrastructure Layer: API calls, external service integration
+8. **Colocation**: Place related code nearby. Page-specific components go in `_components/` within the route.
+9. **Compiler-first Hooks**: Start with plain computations and event handlers; use memoization Hooks only when behavior/control is needed.
+10. **Cache-first App Router**: Treat cache boundaries (`'use cache'`, `cacheLife`, `cacheTag`) as part of Feature design, not an afterthought.
 
 ## Data Flow
 
 1. Container components fetch and manage data
-2. Data flows down to presentational components via props
-3. User events in presentational components trigger callbacks defined in container components
-4. Container components update state based on these events
+2. Data flows to Presentational components via props
+3. User events in Presentational components trigger callbacks defined in the Container
+4. Container components update state based on events
 
 ## Dependency Direction
 
-Dependencies should flow unidirectionally:
+Dependencies flow unidirectionally.
 
 ```
       shared/
@@ -244,63 +263,64 @@ Dependencies should flow unidirectionally:
 
 ### Rules
 
-- **Shared → Features**: Shared code can be used by any feature
+- **Shared → Features**: Shared code is available to all Features
 - **Features → App**: Features can be imported by app routes
-- **Never**: Features should not import from other features
-- **Never**: Shared code should not import from features or app
-- Within features: Container → Presenter (one-way)
+- **Forbidden**: A Feature must not import from another Feature
+- **Forbidden**: Shared code must not import from features or app
+- Within a Feature: Container → Presenter (unidirectional)
 
 ### Cross-Feature Communication
 
-Instead of importing across features, compose them at the app level:
+Compose at the app level instead of cross-Feature imports.
 
 ```tsx
-// ❌ Bad: Cross-feature import
-// features/comments/components/CommentList.tsx
-import { UserAvatar } from '@/features/users/components'
+// ❌ Bad: Cross-Feature import
+// features/reviews/components/ReviewList.tsx
+import { Avatar } from '@/shared/components'
 
-// ✅ Good: Compose at app level
-// app/posts/[slug]/_components/PostComments.tsx
-import { CommentList } from '@/features/comments/components'
-import { UserAvatar } from '@/features/users/components'
+// ✅ Good: Compose at the app level
+// app/items/[id]/_components/ItemReviews.tsx
+import { ReviewList } from '@/features/reviews/components'
+import { Avatar } from '@/shared/components'
 ```
 
 ## Testing Strategy
 
 - Container tests: Test business logic and state management
 - Presenter tests: Test UI rendering and interactions
-- Integration tests: Test container-presenter pairs working together
-- End-to-end tests: Test complete user flows
+- Integration tests: Test the integration of Container and Presenter pairs
+- E2E tests: Test entire user flows
 
 ## Implementation Guidelines
 
-- Use TypeScript for type safety across the application
-- Follow consistent naming conventions for files and components
+- Use TypeScript throughout the application for type safety
+- Keep `reactCompiler` and `cacheComponents` enabled unless a proven blocker exists
+- Maintain consistent naming conventions for files and components
   - ContainerName.tsx and NamePresenter.tsx
   - Use `_` prefix for page-specific folders (`_components/`, `_hooks/`)
-- Keep presenters as pure functions when possible
-- Document component APIs using JSDoc or Storybook
-- Use custom hooks to extract and reuse complex logic from containers
-- Prefer Server Components by default; use `'use client'` only when necessary
-- Import files directly instead of using barrel files (better for tree shaking)
+- Keep Presenters as pure functions whenever possible
+- Document component APIs with JSDoc or Storybook
+- Use custom Hooks to extract and reuse complex logic from Containers
+- Default to Server Components; use `'use client'` only when necessary
+- Import files directly instead of barrel files (better for tree shaking)
 
 ## State Management
 
-- Feature-specific state should be contained within the feature module
-- Cross-feature state should be managed through a central store or context
-- Prefer Server Components and URL state over client-side state when possible
+- Keep Feature-specific state within the Feature module
+- Manage cross-Feature state with a central store or context
+- Prefer Server Components and URL state over client-side state whenever possible
 
 ## Feature Structure
 
-A feature should only include the folders that are necessary:
+Include only the necessary folders in a Feature.
 
 ```
 features/awesome-feature/
-├── api/          # API request declarations and hooks
-├── components/   # Components scoped to this feature
+├── api/          # API request declarations and Hooks
+├── components/   # Components scoped to this Feature
 │   ├── containers/
 │   └── presenters/
-├── hooks/        # Hooks scoped to this feature
-├── types/        # TypeScript types for this feature
-└── utils/        # Utility functions for this feature
+├── hooks/        # Hooks scoped to this Feature
+├── types/        # TypeScript type definitions for this Feature
+└── utils/        # Utility functions for this Feature
 ```

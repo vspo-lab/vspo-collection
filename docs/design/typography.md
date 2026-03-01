@@ -2,45 +2,46 @@
 
 ## Overview
 
-This project uses fonts that convey a soft and approachable feel.
+Select fonts that match the project's purpose and brand.
 
-## Fonts
+## Font Selection Principles
 
-### Body Font: M PLUS Rounded 1c
+### Body Font
 
-A rounded gothic typeface that gives a soft and friendly impression.
+Choose a font with high readability that is comfortable to read even in long text.
 
 ```css
---font-body: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic",
-  "Noto Sans JP", sans-serif;
+--font-body: "your-body-font", system-ui, sans-serif;
 ```
 
-### Heading Font: Shippori Mincho B1
+### Heading Font
 
-A serif (Mincho) typeface that adds elegance and sophistication to headings.
+Choose a font that expresses the brand's personality. Create contrast with the body font for visual distinction.
 
 ```css
---font-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho",
-  serif;
+--font-display: "your-display-font", system-ui, serif;
 ```
 
-## Google Fonts Import
+## Google Fonts Loading
 
 ```css
-@import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&family=Shippori+Mincho+B1:wght@600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=YOUR_FONT:wght@400;500;700&display=swap");
 ```
 
 ## Weights
 
-| Font | 400 | 500 | 600 | 700 |
-|------|-----|-----|-----|-----|
-| M PLUS Rounded 1c | ✓ | ✓ | - | ✓ |
-| Shippori Mincho B1 | - | - | ✓ | ✓ |
+Prepare at least the following weights:
+
+| Use case | Recommended weight |
+|----------|-------------------|
+| Body text | 400 (Regular) |
+| Emphasis | 500 (Medium) or 700 (Bold) |
+| Headings | 600 (SemiBold) or 700 (Bold) |
 
 ## Application Rules
 
-- `h1` through `h4`: `--font-display` (Shippori Mincho B1)
-- Everything else: `--font-body` (M PLUS Rounded 1c)
+- `h1` through `h4`: `--font-display`
+- Everything else: `--font-body`
 
 ```css
 h1, h2, h3, h4 {
@@ -50,7 +51,7 @@ h1, h2, h3, h4 {
 
 ## Text Size Utilities
 
-| Class | Size | Use Case |
+| Class | Size | Use case |
 |-------|------|----------|
 | `text-3xs` | 0.65rem (10.4px) | Extra-small text |
 | `text-2xs` | 0.7rem (11.2px) | Small labels |
@@ -60,11 +61,5 @@ h1, h2, h3, h4 {
 
 ## Prohibited Practices
 
-- Using a font size below 10px (to ensure readability)
-- Setting line height below 1.4 (for readability of Japanese text)
-
-## References
-
-- [M PLUS Rounded 1c - Google Fonts](https://fonts.google.com/specimen/M+PLUS+Rounded+1c)
-- [Shippori Mincho B1 - Google Fonts](https://fonts.google.com/specimen/Shippori+Mincho+B1)
-- [CSS Guidelines](../css.md)
+- Using font sizes smaller than 10px (to ensure readability)
+- Setting line-height below 1.4 (for readability of text, especially CJK)

@@ -1,24 +1,27 @@
 # TypeScript Type System Usage Instructions
 
-## Core Guidelines
-1. Use Zod schemas as the source of truth for type definitions
-2. Infer types from schemas instead of writing explicit interfaces
-3. Use generics in utilities to keep app code JavaScript-like
-4. Ensure types flow via inference, avoiding redundant annotations
-5. Restrict 'as' to library boundaries, never in app logic
-6. Isolate unavoidable 'as' in utils with comments
+## Basic Policy
+
+1. Use Zod schemas as the Single Source of Truth for type definitions
+2. Infer types from schemas instead of using explicit interfaces
+3. Use generics in utilities, keeping application code JavaScript-like
+4. Ensure type flow through inference, avoiding redundant annotations
+5. Restrict `as` to library boundaries; do not use in application logic
+6. Isolate unavoidable `as` casts in utils with accompanying comments
 
 ## TypeScript Implementation
 
 ### Schema-First Development
-- Define Zod schemas as the source of truth for data structures
+
+- Define Zod schemas as the Single Source of Truth for data structures
 - Infer TypeScript types from schemas using `z.infer<typeof schemaName>`
 - When extending schemas, import the base schema and use `z.extend()` or union types
 - Use schema composition for complex types
 
 Example:
+
 ```typescript
-// Base schema (source of truth)
+// Base schema (Single Source of Truth)
 const baseSchema = z.object({
   id: z.string(),
   createdAt: z.date()
@@ -35,51 +38,53 @@ type Extended = z.infer<typeof extendedSchema>;
 ```
 
 ### Type Safety
-- Enable `strict` in `tsconfig.json` for maximum type safety
+
+- Enable `strict` in `tsconfig.json` to maximize type safety
 - Leverage `Partial`, `Pick`, `Omit` for schema/type variations
-- Use mapped types for dynamic transformations in libraries
-- Isolate `as` to utils, never in app logic
-- Use control flow analysis with early returns for type narrowing
-- **Use `satisfies` for object literal type checking** (see below)
+- Use mapping types for dynamic transformations within libraries
+- Isolate `as` in utils; do not use in application logic
+- Narrow types through control flow analysis with early returns
+- **Use `satisfies` for type checking object literals** (see below)
 
-### `satisfies` Operator for Object Literals
+### Type Checking Object Literals with the `satisfies` Operator
 
-Always use `satisfies` instead of type annotations (`: Type`) when defining object literals. This prevents type widening while maintaining compile-time type checking.
+When defining object literals, always use `satisfies` instead of type annotations (`: Type`). This prevents type widening while maintaining compile-time type checking.
 
-**Why `satisfies`?**
-1. Validates object shape at compile time (catches missing/extra properties)
-2. Preserves literal types (e.g., `"candidate"` stays as `"candidate"`, not widened to `string`)
-3. Enables exhaustiveness checking for discriminated unions
-4. Prevents API response transformation bugs where fields are accidentally omitted
+**Why use `satisfies`:**
 
-**Pattern: Use `satisfies` instead of type annotation**
+1. Validates the shape of objects at compile time (detects missing or excess properties)
+2. Preserves literal types (e.g., `"candidate"` does not widen to `string`)
+3. Enables exhaustiveness checking for Discriminated Unions
+4. Prevents field omission bugs during API response transformations
+
+**Pattern: Use `satisfies` instead of type annotations**
 
 ```typescript
-// ❌ BAD: Type annotation widens literal types
+// ❌ BAD: Type annotations widen literal types
 const turn: LiveTranscript = {
-  role: "candidate",  // type becomes string, not "candidate"
+  role: "candidate",  // Type becomes string (not "candidate")
   text: "Hello"
 };
 
 // ✅ GOOD: satisfies preserves literal types
 const turn = {
-  role: "candidate",  // type is "candidate" (literal)
+  role: "candidate",  // Type is "candidate" (literal)
   text: "Hello"
 } satisfies LiveTranscript;
 ```
 
-**Pattern: Function return with `satisfies`**
+**Pattern: `satisfies` in function return values**
 
 ```typescript
-// ❌ BAD: Missing properties not caught at definition site
+// ❌ BAD: Missing properties are not detected at the definition site
 function createProfile(): UserProfile {
   return {
     name: "John",
-    // oops, forgot 'email' - error appears at call site, not here
+    // Forgot 'email' - error surfaces at the call site
   };
 }
 
-// ✅ GOOD: satisfies catches errors immediately
+// ✅ GOOD: satisfies catches the error immediately
 function createProfile(): UserProfile {
   return {
     name: "John",
@@ -88,10 +93,10 @@ function createProfile(): UserProfile {
 }
 ```
 
-**Pattern: Discriminated unions**
+**Pattern: Discriminated Union**
 
 ```typescript
-// ✅ GOOD: satisfies ensures literal type is preserved for discrimination
+// ✅ GOOD: satisfies preserves literal types, enabling discrimination
 function processResult(success: boolean) {
   if (success) {
     return { isMerged: true, data: result } satisfies MergeResult;
@@ -103,7 +108,7 @@ function processResult(success: boolean) {
 **Pattern: Configuration objects**
 
 ```typescript
-// ✅ GOOD: Validates config shape while preserving inference
+// ✅ GOOD: Validates the config shape while preserving inference
 const config = {
   apiEndpoint: "/api/v1",
   timeout: 5000,
@@ -112,19 +117,23 @@ const config = {
 ```
 
 **When to use `satisfies`:**
+
 - All object literal assignments: `const x = {...} satisfies Type`
 - Return statements with object literals: `return {...} satisfies Type`
 - Configuration objects and constants
 - API response transformations
-- Objects with discriminated union types
+- Discriminated Union typed objects
 
-**When type annotation is still appropriate:**
-- Variable declarations without initializer: `let x: Type;`
+**When type annotations are appropriate:**
+
+- Variable declarations without initial values: `let x: Type;`
 - Function parameters: `function foo(x: Type)`
 - Generic type parameters: `useState<Type>()`
 
 ### Schema Patterns
-1. **Field Selection Pattern**:
+
+1. **Field selection pattern**:
+
 ```typescript
 // Base schema
 const dataSchema = z.object({ /* ... */ });
@@ -138,7 +147,8 @@ const selectionSchema = z.object({
 type Selection = z.infer<typeof selectionSchema>;
 ```
 
-2. **Metadata Pattern**:
+2. **Metadata pattern**:
+
 ```typescript
 const MetadataSchema = z.object({
   total: z.number(),
@@ -152,13 +162,15 @@ type Metadata = z.infer<typeof MetadataSchema>;
 ```
 
 ### Best Practices
-1. Always import base schemas from their source of truth
-2. Use schema composition over type composition
-3. Leverage Zod's built-in validation
-4. Keep validation logic in the schema definition
-5. Use discriminated unions for complex state handling
 
-Example of Complex Pattern:
+1. Always import base schemas from their Single Source of Truth
+2. Prefer schema composition over type composition
+3. Leverage Zod's built-in validations
+4. Include validation logic within schema definitions
+5. Use Discriminated Unions for complex state handling
+
+Example of a complex pattern:
+
 ```typescript
 // Task result pattern
 const TaskResultSchema = z.discriminatedUnion("ok", [
@@ -177,4 +189,3 @@ const TaskResultSchema = z.discriminatedUnion("ok", [
 
 type TaskResult = z.infer<typeof TaskResultSchema>;
 ```
-

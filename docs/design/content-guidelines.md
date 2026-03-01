@@ -2,44 +2,44 @@
 
 ## Overview
 
-The content guidelines provide direction for creating user-facing text content consistently. This document defines how to write error messages, help pages, and release notes.
+Content guidelines provide direction for creating user-facing text content with consistency. This guideline defines how to create error messages, help pages, and release notes.
 
 ## Error Messages
 
 ### Purpose
 
-The role of an error message is to **help users understand the problem and take the next action to resolve it**.
+The role of error messages is to **enable users to resolve the problem and proceed to the next action upon reading the message**.
 
-### 3 Core Elements
+### 3 Basic Elements
 
 | Element | Description | Example |
 |---------|-------------|---------|
 | Event | What happened (from the user's perspective) | "Could not save the article" |
-| Cause | Why it happened | "Title is required" |
-| Resolution | How to fix it | "Please enter a title" |
+| Cause | Why it happened | "Title has not been entered" |
+| Resolution | How to resolve it | "Please enter a title" |
 
 ### Priority
 
-When there is not enough space to display all elements, prioritize in this order:
+When all elements cannot be displayed, show them in the following priority order:
 
 ```
-1. Cause -> 2. Resolution -> 3. Event
+1. Cause → 2. Resolution → 3. Event
 ```
 
-**Rationale**: The user's top priority is completing their task, so resolution information is the most important.
+**Reason**: The user's top priority is "completing the operation," making resolution information the most important.
 
 ### Implementation Examples
 
-#### Full Message (when sufficient space is available)
+#### Full Message (When Sufficient Space Is Available)
 
 ```tsx
 <ErrorMessage>
   <p>Could not save the article.</p>
-  <p>Title is required. Please enter a title.</p>
+  <p>Title has not been entered. Please enter a title.</p>
 </ErrorMessage>
 ```
 
-#### Concise Message (when space is limited)
+#### Concise Message (When Space Is Limited)
 
 ```tsx
 <ErrorMessage>
@@ -51,66 +51,66 @@ When there is not enough space to display all elements, prioritize in this order
 
 #### Input Errors
 
-| Type | Example Message |
+| Type | Example message |
 |------|----------------|
 | Required field empty | "Please enter [field name]" |
-| Format error | "[Field name] format is invalid" |
-| Character limit | "[Field name] must be [N] characters or fewer" |
+| Format error | "[field name] format is incorrect" |
+| Character limit | "Please enter [field name] within [N] characters" |
 | Duplicate error | "This [field name] is already in use" |
 
 #### System Errors
 
-| Type | Example Message |
+| Type | Example message |
 |------|----------------|
-| Network error | "Connection failed. Please try again later" |
+| Communication error | "Communication failed. Please try again later" |
 | Permission error | "You do not have permission to perform this action" |
 | Resource not found | "The page you are looking for could not be found" |
 
 ### Prohibited Practices
 
 - Displaying only technical error codes (e.g., `Error: 500`)
-- Blaming the user (e.g., "You made an input mistake")
-- Vague messages (e.g., showing only "An error occurred")
-- Warnings without a resolution
+- Blaming the user (e.g., "Input mistake")
+- Ambiguous expressions (e.g., only "An error occurred")
+- Warnings without resolution guidance
 
 ## Help Pages
 
-### 5 Page Types
+### 5 Types of Structure
 
-Prepare 5 types of help pages aligned with what users want to know.
+Prepare 5 types of help pages aligned with what users "want to know."
 
 | Type | Purpose | Content |
 |------|---------|---------|
-| Feature Overview | Explain what a feature is | Feature definition, design intent, capabilities |
-| How-To Guide | Explain how to use it | Step-by-step instructions, notes |
-| Specifications | Organize settings and limitations | Configuration values, constraints, supported formats |
-| FAQ | Answer specific questions | Error troubleshooting, specification questions, common inquiries |
-| Glossary | Define technical terms | App-specific terms, industry terminology |
+| Feature overview | Explain what the feature is | Feature definition, design philosophy, capabilities |
+| Step-by-step guide | Explain how to operate | Step-by-step instructions, notes |
+| Specifications list | Organize settings and limitations | Setting values, restrictions, supported formats |
+| FAQ | Answer specific questions | Error handling, specification questions, common questions |
+| Glossary | Define technical terms | App-specific terms, industry terms |
 
 ### Feature Overview Page Structure
 
 ```markdown
 # Feature Name
 
-## What This Feature Does
-[Describe the feature overview in 1-2 sentences]
+## What You Can Do with This Feature
+[Explain the feature overview in 1-2 sentences]
 
-## Key Characteristics
-- [Characteristic 1]
-- [Characteristic 2]
-- [Characteristic 3]
+## Key Features
+- [Feature 1]
+- [Feature 2]
+- [Feature 3]
 
 ## Related Features
 - [Link to related feature]
 ```
 
-### How-To Guide Page Structure
+### Step-by-Step Guide Page Structure
 
 ```markdown
-# How to [Do Something]
+# How to [Action]
 
 ## Prerequisites
-[Required settings or permissions]
+[Required settings or permissions beforehand]
 
 ## Steps
 1. [Step 1]
@@ -121,8 +121,8 @@ Prepare 5 types of help pages aligned with what users want to know.
 - [Note 1]
 - [Note 2]
 
-## Related Actions
-- [Link to related action]
+## Related Operations
+- [Link to related operation]
 ```
 
 ### FAQ Page Structure
@@ -145,24 +145,24 @@ A. [Answer]
 ### Writing Tips
 
 - Consider the user's mental model
-- Judge the appropriate depth of information needed
-- Remove unnecessary information (noise)
-- Add explanations for technical terms when needed
+- Appropriately judge the depth of information needed
+- Eliminate unnecessary information (noise)
+- Add explanations for technical terms as needed
 
 ## Release Notes
 
 ### Purpose
 
-Release notes communicate updates such as new features and bug fixes to users.
+Release notes are documents that communicate updates such as feature additions and bug fixes to users.
 
-### Core Principle
+### Basic Principle
 
-Describe **"what users can now do"** rather than **"what changed"**.
+Describe **"how users can now use it"** rather than **"what changed."**
 
 | Approach | Example |
 |----------|---------|
-| Bad: List feature changes | "Added filter feature to notifications" |
-| Good: Describe the user experience | "You can now filter notifications by type" |
+| NG: List feature changes | "Added filter function to notifications" |
+| OK: Describe user experience | "You can now filter notifications by type" |
 
 ### Structure
 
@@ -188,38 +188,38 @@ Describe **"what users can now do"** rather than **"what changed"**.
 
 | Category | Description | Example |
 |----------|-------------|---------|
-| New Features | Newly added functionality | "You can now export articles as CSV" |
-| Improvements | Enhancements to existing features | "Search result loading speed has improved" |
+| New Features | Newly added features | "You can now export articles as CSV" |
+| Improvements | Enhancements to existing features | "Search result loading speed has been improved" |
 | Fixes | Bug fixes | "Fixed an issue where images could not be uploaded under certain conditions" |
 
 ### Writing Tips
 
 | Tip | Description |
 |-----|-------------|
-| Be specific | Instead of "improved," describe what changed and how |
+| Be specific | Instead of "improved," describe what improved and how |
 | Write from the user's perspective | Focus on user impact, not technical changes |
-| Be concise | Keep each item to 1-2 sentences |
-| Use positive framing | Prefer "you can now..." over "fixed a problem where you couldn't..." |
+| Keep it concise | About 1-2 sentences per item |
+| Use positive expressions | Prefer "You can now [do X]" over "[X] was broken" |
 
 ### Prohibited Practices
 
 - Listing only technical changes
-- Including internal changes irrelevant to users
-- Using vague wording (e.g., only "various improvements" or "performance improvements")
+- Including internal changes unrelated to users
+- Ambiguous expressions (only "various improvements" or "performance enhancements")
 
-## Accessibility Considerations in Writing
+## Accessibility-Related Writing
 
-### Categories
+### Classification
 
-User-support text is also important from an accessibility perspective.
+Text related to user support is also important from an accessibility perspective.
 
-| Target | Considerations |
+| Target | Consideration |
 |--------|---------------|
-| Error messages | Consider that screen readers will read the text aloud |
-| Help pages | Use proper heading structure to facilitate navigation |
-| Release notes | Write clearly and concisely so all users can understand |
+| Error messages | Consider that they will be read aloud by screen readers |
+| Help pages | Set heading structure appropriately to facilitate navigation |
+| Release notes | Write in clear, concise language that all users can understand |
 
-## References
+## Reference Links
 
 - [Writing Guidelines](./writing.md)
 - [Accessibility Checklist](./accessibility.md)

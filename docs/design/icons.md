@@ -2,19 +2,19 @@
 
 ## Overview
 
-Icons are key visual elements that improve UI visibility and usability. This guideline establishes the policy of using Lucide React as the primary icon source and creating custom icons when needed.
+Icons are important visual elements that enhance UI visibility and usability. This guideline establishes a policy of using Lucide React as the primary icon source and creating original icons when needed.
 
-## Core Principles
+## Basic Policy
 
-Icons should primarily be selected from **Lucide React**. If no suitable icon is available, create a custom one that matches the overall tone and style.
+Icons are primarily selected from **Lucide React**. When a suitable icon is not available, create an original icon that matches the visual style.
 
 ### Using Lucide React
 
 | Item | Recommendation |
 |------|----------------|
 | Package | lucide-react |
-| Style | Outline (default) as the standard |
-| Size | 16px to 24px as the standard, depending on use case |
+| Style | Use outline (default) as the baseline |
+| Size | Use 16px to 24px as the baseline depending on the use case |
 | Color | Follow semantic colors |
 
 ```tsx
@@ -27,7 +27,7 @@ import { Search, User, Menu } from "lucide-react";
 
 ### Using the NavIcon Component
 
-In this project, icons are used through the `NavIcon` component. This ensures icon name consistency while leveraging Lucide React icons.
+In the project, icons are used through the `NavIcon` component. This allows utilizing Lucide React icons while maintaining consistent icon naming.
 
 ```tsx
 import { NavIcon } from "@/shared/components/presenters/NavIcon";
@@ -52,17 +52,17 @@ import { NavIcon } from "@/shared/components/presenters/NavIcon";
 | target | Target | Target |
 | chart-bar | Bar chart | BarChart3 |
 
-## Custom Icon Creation Rules
+## Original Icon Creation Rules
 
-When Lucide React does not have a suitable icon, create a custom one following these rules.
+When a suitable icon is not available in Lucide React, create original icons following these rules.
 
 ### Artboard and Size
 
 | Item | Value |
 |------|-------|
 | Artboard size | 128 x 128 px |
-| Padding (all sides) | 8px each |
-| Actual drawing area | 112 x 112 px |
+| Margin (all sides) | 8px each |
+| Drawing area | 112 x 112 px |
 
 ```
 +---------------------+
@@ -70,7 +70,7 @@ When Lucide React does not have a suitable icon, create a custom one following t
 |   +-----------+     |
 |8px|  112x112  |8px  |
 |   |  Drawing  |     |
-|   |   Area    |     |
+|   |   area    |     |
 |   +-----------+     |
 |        8px          |
 +---------------------+
@@ -79,24 +79,24 @@ When Lucide React does not have a suitable icon, create a custom one following t
 
 ### Stroke and Border Radius
 
-| Item | Default Value | Notes |
-|------|---------------|-------|
+| Item | Base value | Notes |
+|------|-----------|-------|
 | Stroke width | 10px | Adjustable |
-| Border radius (standard) | 8px radius | - |
-| Border radius (small) | 4px radius | Can be combined with standard |
+| Border radius (base) | radius 8px | - |
+| Border radius (small) | radius 4px | Can be combined with base |
 
-### Solid Style Creation
+### When Creating Solid Style
 
-When creating solid style icons, the recommended spacing between adjacent colors is **6px**.
+When creating a solid style, the recommended spacing between adjacent colors is **6px**.
 
 ## Style Variations
 
-Following Lucide React conventions, outline style is used as the default.
+Following Lucide React's specification, the outline style is the default.
 
 ### Outline (Default)
 
 - Icons composed of strokes only
-- Recommended for normal/default states
+- Recommended for normal state usage
 - strokeWidth: 2 (default)
 
 ### Customization
@@ -111,9 +111,9 @@ Following Lucide React conventions, outline style is used as the default.
 
 ## Creation Workflow
 
-1. **Search Lucide React**: First look for a suitable icon in Lucide React
-2. **Duplicate master data**: When creating custom icons, always duplicate the master data before starting
-3. **Align to keylines**: Design along keylines for visual consistency
+1. **Search Lucide React**: First look for an appropriate icon in Lucide React
+2. **Duplicate master data**: When creating original icons, always duplicate the master data before starting work
+3. **Align to keyline**: Align to the keyline for visual consistency
 4. **Request review**: After completion, request a review from the design team
 
 ## Icon Usage Patterns
@@ -143,7 +143,7 @@ import { Plus } from "lucide-react";
 </button>
 ```
 
-### Status Indicators
+### Status Display
 
 ```tsx
 // Status icon
@@ -151,28 +151,28 @@ import { CheckCircle } from "lucide-react";
 
 <span className="flex items-center gap-1">
   <CheckCircle className="w-4 h-4 text-success" />
-  <span>Complete</span>
+  <span>Completed</span>
 </span>
 ```
 
 ## Size Guide
 
-| Use Case | Size | Class |
+| Use case | Size | Class |
 |----------|------|-------|
 | Inline text | 14px | `w-3.5 h-3.5` |
-| Small button / badge | 16px | `w-4 h-4` |
-| Standard button | 18px | `w-4.5 h-4.5` |
+| Small buttons/badges | 16px | `w-4 h-4` |
+| Standard buttons | 18px | `w-4.5 h-4.5` |
 | Navigation | 20px | `w-5 h-5` |
-| Large heading / hero | 24px | `w-6 h-6` |
+| Large headings/hero | 24px | `w-6 h-6` |
 
 ## Prohibited Practices
 
-- Deforming or altering Lucide React icons
-- Creating custom icons with a style significantly different from Lucide React
-- Conveying information with icons alone (always pair with a text label)
-- Excessive use of icons for purely decorative purposes
+- Modifying or altering Lucide React icons
+- Creating original icons with a style significantly different from Lucide React
+- Conveying information through icons alone (use text labels alongside)
+- Excessive use of icons for decorative purposes
 
-## References
+## Reference Links
 
 - [Lucide Icons](https://lucide.dev/icons/)
 - [Lucide React Documentation](https://lucide.dev/guide/packages/lucide-react)

@@ -1,6 +1,11 @@
 # Unit Testing Guide
 
-This document covers the research findings and recommendations for optimal unit testing tools for the project.
+This document summarizes the research results and recommendations for the optimal unit testing tools for the project.
+
+## Related Documents
+
+- `docs/testing/unit-testing.md` - Latest unit test implementation policy (minimal mocking + table-driven)
+- `docs/web-frontend/twada-tdd.md` - TDD operational rules based on t_wada
 
 ## Quick Start
 
@@ -20,17 +25,16 @@ pnpm test:coverage
 ### Project Status
 - **Test files**: 23 files (354 tests)
 - **Test framework**: Vitest v4.0.16
-- **Test configuration file**: `vitest.config.ts`
+- **Test config file**: `vitest.config.ts`
 
-### Key Components Under Test
+### Main Components Under Test
 
 ```
-services/server/
-├── domain/           # Domain models and business logic (highest priority)
-│   ├── user/         # User aggregate
-│   ├── task/         # Task aggregate
-│   ├── report/       # Report aggregate
-│   └── billing/      # Subscription aggregate
+services/transcriptor/
+├── domain/           # Domain models / business logic (highest priority)
+│   ├── item/         # Item aggregate
+│   ├── order/        # Order aggregate
+│
 ├── usecase/          # Application use cases
 ├── pkg/              # Utility functions
 └── infra/repository/ # Repository layer
@@ -47,25 +51,25 @@ services/server/
 
 ## Test Framework Comparison
 
-### 1. Vitest -- **Recommended**
+### 1. Vitest ⭐ **Recommended**
 
-| Criteria | Rating |
-|----------|--------|
-| ESM support | Excellent - Native |
-| TypeScript support | Excellent - Zero config |
-| Performance | Excellent - 10-20x faster than Jest (watch mode) |
-| Hono integration | Excellent - Official support |
-| Ease of configuration | Excellent - Zero config |
-| Ecosystem | Good - Mature |
+| Item | Rating |
+|------|--------|
+| ESM support | ◎ Native support |
+| TypeScript support | ◎ Zero configuration |
+| Performance | ◎ 10-20x faster than Jest (watch mode) |
+| Hono integration | ◎ Official support |
+| Ease of setup | ◎ Zero config |
+| Ecosystem | ○ Highly mature |
 
 **Features:**
-- Vite-based for fast startup and HMR
+- Fast startup and HMR based on Vite
 - Jest-compatible API (easy migration)
-- Vitest 3.0 released January 2025 (7M+ weekly downloads)
+- Vitest 3.0 released January 2025 (over 7 million weekly downloads)
 - Test filtering by line number
 
-**References:**
-- [Vitest](https://vitest.dev/)
+**Reference Links:**
+- [Vitest Official](https://vitest.dev/)
 - [Vitest 3.0 Release Notes](https://vitest.dev/blog/vitest-3)
 - [Migration Guide](https://vitest.dev/guide/migration.html)
 
@@ -73,43 +77,43 @@ services/server/
 
 ### 2. Jest
 
-| Criteria | Rating |
-|----------|--------|
-| ESM support | Fair - Experimental (complex configuration) |
-| TypeScript support | Fair - Requires ts-jest |
-| Performance | Fair - Slower than Vitest |
-| Hono integration | Good - Possible |
-| Ease of configuration | Fair - Extra config needed for ESM/TS |
-| Ecosystem | Excellent - Most mature |
+| Item | Rating |
+|------|--------|
+| ESM support | △ Experimental (complex setup) |
+| TypeScript support | △ Requires ts-jest |
+| Performance | △ Slower than Vitest |
+| Hono integration | ○ Possible |
+| Ease of setup | △ Additional config needed for ESM/TS |
+| Ecosystem | ◎ Most mature |
 
 **Features:**
 - Long-standing de facto standard
 - Jest 30 released June 2025 (ESM improvements)
-- Recommended if React Native is a must
+- Recommended when React Native is required
 
-**References:**
-- [Jest](https://jestjs.io/)
+**Reference Links:**
+- [Jest Official](https://jestjs.io/)
 - [Jest vs Vitest Comparison (Medium)](https://medium.com/@ruverd/jest-vs-vitest-which-test-runner-should-you-use-in-2025-5c85e4f2bda9)
 
 ---
 
 ### 3. Bun Test
 
-| Criteria | Rating |
-|----------|--------|
-| ESM support | Excellent - Native |
-| TypeScript support | Excellent - No transpilation needed |
-| Performance | Excellent - Fastest (sync tests) |
-| Hono integration | Good - Possible |
-| Ease of configuration | Excellent - Zero config |
-| Ecosystem | Fair - Still developing |
+| Item | Rating |
+|------|--------|
+| ESM support | ◎ Native |
+| TypeScript support | ◎ No transpilation needed |
+| Performance | ◎ Fastest (synchronous tests) |
+| Hono integration | ○ Possible |
+| Ease of setup | ◎ Zero config |
+| Ecosystem | △ Still developing |
 
 **Features:**
-- 2x faster than Node.js (sync tests)
-- Performance drops for async tests due to single-threaded nature
-- Requires adopting the Bun runtime entirely
+- 2x faster than Node.js (synchronous tests)
+- Performance degrades for async tests due to single thread
+- Requires adopting the Bun runtime as a whole
 
-**References:**
+**Reference Links:**
 - [Bun Test Runner](https://bun.sh/docs/cli/test)
 - [Node vs Bun Test Runner](https://dev.to/boscodomingo/node-test-runner-vs-bun-test-runner-with-typescript-and-esm-44ih)
 
@@ -117,35 +121,35 @@ services/server/
 
 ### 4. Node.js Native Test Runner
 
-| Criteria | Rating |
-|----------|--------|
-| ESM support | Good - Supported |
-| TypeScript support | Poor - Requires loader (tsx) |
-| Performance | Good |
-| Hono integration | Good - Possible |
-| Ease of configuration | Fair - TypeScript config required |
-| Ecosystem | Fair - Still developing |
+| Item | Rating |
+|------|--------|
+| ESM support | ○ Supported |
+| TypeScript support | × Requires a loader (tsx) |
+| Performance | ○ Good |
+| Hono integration | ○ Possible |
+| Ease of setup | △ TypeScript config required |
+| Ecosystem | △ Still developing |
 
 **Features:**
 - Zero dependencies (built into Node.js)
 - No snapshot testing or timer mock support
-- Best for simple projects
+- Suited for simple projects
 
-**References:**
+**Reference Links:**
 - [Node.js Test Runner](https://nodejs.org/api/test.html)
-- [Better Stack Comparison](https://betterstack.com/community/guides/testing/best-node-testing-libraries/)
+- [Better Stack Comparison Article](https://betterstack.com/community/guides/testing/best-node-testing-libraries/)
 
 ---
 
 ## Recommendation: Vitest
 
-### Selection Rationale
+### Reasons for Selection
 
 1. **Native ESM support**: The project uses `"type": "module"`
-2. **TypeScript zero config**: No need for additional setup like ts-jest
-3. **Official Hono support**: Test helpers and client provided
-4. **Fast feedback**: Fast test execution in CI and during development
-5. **Jest-compatible API**: Low learning curve
+2. **Zero-config TypeScript**: No additional setup like ts-jest needed
+3. **Official Hono support**: Provides test helpers and clients
+4. **Fast feedback**: Quick test execution during CI and development
+5. **Jest-compatible API**: Low learning cost
 
 ### Performance Comparison
 
@@ -153,24 +157,24 @@ services/server/
 |-----------|--------|------|
 | Cold start | 4x faster | Baseline |
 | Watch mode | 10-20x faster | Baseline |
-| Memory usage | 30% reduction | Baseline |
+| Memory usage | 30% less | Baseline |
 
 *Reference: [Vitest vs Jest (Better Stack)](https://betterstack.com/community/guides/scaling-nodejs/vitest-vs-jest/)*
 
 ---
 
-## Installation Steps
+## Setup Steps
 
 ### 1. Install Dependencies
 
 ```bash
-# Run in the services/server directory
+# Run in the services/transcriptor directory
 pnpm add -D vitest @vitest/coverage-v8
 ```
 
-### 2. Create Vitest Configuration File
+### 2. Create Vitest Config File
 
-`services/server/vitest.config.ts`:
+`services/transcriptor/vitest.config.ts`:
 
 ```typescript
 import { defineConfig } from 'vitest/config'
@@ -188,7 +192,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/services/server',
+      '@': '/services/transcriptor',
     },
   },
 })
@@ -208,7 +212,7 @@ export default defineConfig({
 
 ### 4. TypeScript Configuration (Optional)
 
-Add Vitest types to `services/server/tsconfig.json`:
+Add Vitest types to `services/transcriptor/tsconfig.json`:
 
 ```json
 {
@@ -220,9 +224,9 @@ Add Vitest types to `services/server/tsconfig.json`:
 
 ---
 
-## Testing Strategy
+## Test Strategy
 
-### Table-driven Tests (Go-style)
+### Table-Driven Tests (Go-like)
 
 This project adopts **Go-style table-driven tests**.
 
@@ -234,12 +238,12 @@ import { describe, expect, it } from "vitest";
 describe("functionName", () => {
   const testCases = [
     {
-      name: "case 1 description",
+      name: "Description of case 1",
       input: { /* input values */ },
       expected: { /* expected values */ },
     },
     {
-      name: "case 2 description",
+      name: "Description of case 2",
       input: { /* input values */ },
       expected: { /* expected values */ },
     },
@@ -252,39 +256,39 @@ describe("functionName", () => {
 });
 ```
 
-#### Practical Example: User.new
+#### Practical Example: Item.create
 
 ```typescript
-describe("User.new", () => {
+describe("Item.create", () => {
   const testCases = [
     {
-      name: "basic user creation",
-      input: { name: "Taro Yamada", email: "yamada@example.com" },
+      name: "Basic item creation",
+      input: { name: "Sample item", status: "active" },
       expected: {
-        name: "Taro Yamada",
-        email: "yamada@example.com",
-        emailVerified: false,
-        image: null,
+        name: "Sample item",
+        status: "active",
+        createdAt: new Date(),
+        quantity: 1,
       },
     },
     {
-      name: "user creation with image",
+      name: "Item creation with metadata",
       input: {
-        name: "Hanako Sato",
-        email: "sato@example.com",
-        image: "https://example.com/avatar.png",
+        name: "Another item",
+        status: "draft",
+        metadata: { key: "value" },
       },
       expected: {
-        name: "Hanako Sato",
-        email: "sato@example.com",
-        image: "https://example.com/avatar.png",
+        name: "Another item",
+        status: "draft",
+        metadata: { key: "value" },
       },
     },
   ];
 
   it.each(testCases)("$name", ({ input, expected }) => {
-    const user = User.new(input);
-    expect(user).toMatchObject(expected);
+    const item = Item.create(input);
+    expect(item).toMatchObject(expected);
   });
 });
 ```
@@ -292,36 +296,36 @@ describe("User.new", () => {
 #### Type Guard Tests
 
 ```typescript
-describe("UserProfile.isAdmin", () => {
+describe("ItemStatus.isActive", () => {
   const testCases = [
     {
-      name: "returns true for admin profile",
-      profile: adminProfile,
+      name: "Returns true for an active item",
+      profile: activeItem,
       expected: true,
     },
     {
-      name: "returns false for regular user profile",
-      profile: userProfile,
+      name: "Returns false for an archived item",
+      profile: archivedItem,
       expected: false,
     },
   ];
 
   it.each(testCases)("$name", ({ profile, expected }) => {
-    expect(UserProfile.isAdmin(profile)).toBe(expected);
+    expect(ItemStatus.isActive(profile)).toBe(expected);
   });
 });
 ```
 
-### Benefits of Table-driven Tests
+### Benefits of Table-Driven Tests
 
-1. **Coverage**: Manage input patterns in a list, preventing omissions
-2. **Readability**: Test cases are organized as data
-3. **Maintainability**: Adding new cases is easy (just append to the array)
-4. **Debugging**: `$name` makes it clear which case failed
+1. **Comprehensiveness**: Input patterns managed as a list, preventing omissions
+2. **Readability**: Test cases organized as data
+3. **Maintainability**: Easy to add new cases (just add to the array)
+4. **Debugging**: On failure, `$name` clearly identifies which case failed
 
 ### Domain Model Tests (Highest Priority)
 
-The domain layer contains pure functions and deterministic logic, making it testable without mocks.
+The domain layer mostly contains pure functions and deterministic logic, making it testable without mocks.
 
 ### Use Case Tests
 
@@ -335,15 +339,15 @@ import { createUser } from "./user";
 describe("createUser", () => {
   const testCases = [
     {
-      name: "successfully creates a user",
+      name: "Successfully creates a user",
       mockReturn: { isOk: () => true },
-      input: { name: "Test", email: "test@example.com" },
+      input: { name: "Test", status: "active" },
       expectedOk: true,
     },
     {
-      name: "fails on repository error",
+      name: "Fails on repository error",
       mockReturn: { isOk: () => false, error: "DB_ERROR" },
-      input: { name: "Test", email: "test@example.com" },
+      input: { name: "Test", status: "active" },
       expectedOk: false,
     },
   ];
@@ -373,12 +377,12 @@ import { app } from "./app";
 describe("GET /api/users/:id", () => {
   const testCases = [
     {
-      name: "retrieves an existing user",
+      name: "Retrieves an existing user",
       path: "/api/users/123",
       expectedStatus: 200,
     },
     {
-      name: "returns 404 for non-existent user",
+      name: "Returns 404 for a non-existent user",
       path: "/api/users/999",
       expectedStatus: 404,
     },
@@ -395,7 +399,7 @@ describe("GET /api/users/:id", () => {
 
 ---
 
-## Database Testing Strategy
+## Database Test Strategy
 
 ### Option 1: Repository Mocks (Recommended)
 
@@ -406,7 +410,7 @@ const mockUserRepo = {
 }
 ```
 
-**Pros**: Fast, no external dependencies, ideal for unit tests
+**Advantages**: Fast, no external dependencies, ideal for unit tests
 
 ### Option 2: PGlite (In-memory Postgres)
 
@@ -418,7 +422,7 @@ const client = new PGlite()
 const db = drizzle(client)
 ```
 
-**Pros**: Can test actual SQL
+**Advantages**: Can test actual SQL
 **Note**: Full compatibility is not guaranteed since the project uses MySQL
 
 *Reference: [Drizzle + PGlite Testing](https://github.com/rphlmr/drizzle-vitest-pg)*
@@ -431,17 +435,17 @@ import { MySQLContainer } from '@testcontainers/mysql'
 const container = await new MySQLContainer().start()
 ```
 
-**Pros**: Production-equivalent MySQL environment
-**Cons**: Requires Docker, slower test execution
+**Advantages**: Production-equivalent MySQL environment
+**Disadvantages**: Requires Docker, slower test execution
 
 ---
 
 ## Proposed Directory Structure
 
 ```
-services/server/
+services/transcriptor/
 ├── domain/
-│   ├── user/
+│   ├── domain/
 │   │   ├── user.ts
 │   │   └── user.test.ts      # Co-location
 │   └── task/
@@ -454,7 +458,7 @@ services/server/
 └── vitest.setup.ts            # Global setup
 ```
 
-**Co-location approach**: Test files are placed in the same directory as source files
+**Co-location approach**: Place test files in the same directory as their source files
 
 ---
 
@@ -486,10 +490,10 @@ jobs:
 
 ---
 
-## References
+## Reference Links
 
 ### Official Documentation
-- [Vitest](https://vitest.dev/)
+- [Vitest Official](https://vitest.dev/)
 - [Hono Testing Guide](https://hono.dev/docs/guides/testing)
 - [Hono Testing Helper](https://hono.dev/docs/helpers/testing)
 
@@ -518,56 +522,46 @@ jobs:
 
 ## Test Implementation Guide
 
-### Layer-based Test Structure
+### Test Structure by Layer
 
-Current tests are divided into the following layers:
+Current tests are organized into the following layers:
 
 ```
-services/server/
-├── domain/                    # Domain model tests (172 tests)
-│   ├── user/
-│   │   ├── user.test.ts       # User aggregate
-│   │   └── user-profile.test.ts
-│   ├── task/
-│   │   ├── task.test.ts
-│   │   ├── task-status.test.ts
-│   │   └── step.test.ts
-│   ├── report/
-│   │   ├── report.test.ts
-│   │   └── report-item.test.ts
-│   ├── billing/
-│   │   └── subscription.test.ts
-│   ├── highlight/
-│   │   └── highlight.test.ts
-│   ├── survey/
-│   │   └── survey.test.ts
-│   └── focused-topic.test.ts
-├── usecase/                   # Use case tests (36 tests)
-│   ├── user.test.ts
-│   ├── highlight.test.ts
-│   ├── survey.test.ts
-│   └── focusedTopic.test.ts
-├── pkg/                       # Utility tests (49 tests)
+services/transcriptor/
+├── domain/                    # Domain model tests
+│   ├── item/
+│   │   ├── item.test.ts       # Item aggregate
+│   │   └── item-status.test.ts
+│   ├── order/
+│   │   ├── order.test.ts
+│   │   └── line-item.test.ts
+│   └── report/
+│       ├── report.test.ts
+│       └── report-item.test.ts
+├── usecase/                   # Use case tests
+│   ├── item.test.ts
+│   └── order.test.ts
+├── pkg/                       # Utility tests
 │   ├── date.test.ts
 │   ├── uuid.test.ts
 │   └── textNormalizer.test.ts
 ├── infra/
-│   └── stripe/                # Infra layer tests (22 tests)
-│       ├── stripe-service.test.ts
-│       └── price-mapping.test.ts
+│   └── external-api/          # Infra layer tests
+│       ├── external-api-service.test.ts
+│       └── config-mapping.test.ts
 └── test/
     └── integration/           # Integration tests (run separately)
         └── routes/
 
-packages/errors/               # Error handling tests (75 tests)
+packages/errors/               # Error handling tests
 ├── result.test.ts
 ├── error.test.ts
 └── code.test.ts
 ```
 
-### Mock Patterns for UseCase Layer Tests
+### Mock Patterns for the Use Case Layer
 
-UseCase layer tests mock the Repository and TxManager.
+In use case layer tests, Repository and TxManager are mocked.
 
 #### 1. TxManager Mock
 
@@ -579,7 +573,7 @@ const mockTxManager: TxManager = {
 };
 ```
 
-`runTx` executes a callback within a transaction. The mock invokes the callback immediately.
+`runTx` executes a callback within a transaction. The mock immediately invokes the callback.
 
 #### 2. Repository Mock
 
@@ -618,13 +612,13 @@ Since the `from()` pattern is used, the mock follows the same structure.
 describe("getById", () => {
   const testCases = [
     {
-      name: "returns Ok when user is found",
+      name: "Returns Ok when user is found",
       userId: "user-123",
-      repoResult: () => Ok(createMockUser()),
+      repoResult: () => Ok(createMockItem()),
       expectOk: true,
     },
     {
-      name: "returns Err when user is not found",
+      name: "Returns Err when user is not found",
       userId: "not-found",
       repoResult: () =>
         Err(new AppError({ message: "User not found", code: "NOT_FOUND" })),
@@ -656,47 +650,41 @@ describe("getById", () => {
 ```
 
 **Key points:**
-- Making `repoResult` a function ensures a new Result instance is created for each test case
+- Making `repoResult` a function generates a new Result instance for each test case
 - `expectedCode` is only set for error cases
 
-### Mock Patterns for Infra Layer Tests
+### Mock Patterns for the Infra Layer
 
-Mock patterns for external services (Stripe, etc.).
+Mock patterns for external API services.
 
 ```typescript
-const createMockStripe = () => ({
-  customers: {
+const createMockExternalAPI = () => ({
+  resources: {
     create: vi.fn(),
     retrieve: vi.fn(),
+    list: vi.fn(),
   },
-  checkout: {
-    sessions: {
-      create: vi.fn(),
-    },
-  },
-  billingPortal: {
-    sessions: {
-      create: vi.fn(),
-    },
+  actions: {
+    execute: vi.fn(),
   },
   webhooks: {
-    constructEvent: vi.fn(),
+    verifySignature: vi.fn(),
   },
 });
 
-describe("StripeService", () => {
-  describe("createCustomer", () => {
+describe("ExternalAPIService", () => {
+  describe("createResource", () => {
     const testCases = [
       {
-        name: "can create a customer",
-        input: { userId: "user-123", email: "test@example.com", name: "Test" },
-        mockResult: { id: "cus_123", email: "test@example.com" },
+        name: "Can create a resource",
+        input: { userId: "user-123", status: "active", name: "Test" },
+        mockResult: { id: "res_123", status: "active" },
         expectOk: true,
       },
       {
-        name: "returns Err on Stripe API error",
-        input: { userId: "user-123", email: "test@example.com", name: "Test" },
-        mockError: new Error("Stripe API Error"),
+        name: "Returns Err on external API error",
+        input: { userId: "user-123", status: "active", name: "Test" },
+        mockError: new Error("External API Error"),
         expectOk: false,
         expectedCode: "INTERNAL_SERVER_ERROR",
       },
@@ -709,15 +697,15 @@ describe("StripeService", () => {
       expectOk,
       expectedCode,
     }) => {
-      const mockStripe = createMockStripe();
+      const mockAPI = createMockExternalAPI();
       if (mockResult) {
-        mockStripe.customers.create.mockResolvedValue(mockResult);
+        mockAPI.resources.create.mockResolvedValue(mockResult);
       } else if (mockError) {
-        mockStripe.customers.create.mockRejectedValue(mockError);
+        mockAPI.resources.create.mockRejectedValue(mockError);
       }
 
-      const service = createStripeService(mockStripe as never, "secret");
-      const result = await service.createCustomer(input);
+      const service = createExternalAPIService(mockAPI as never, "secret");
+      const result = await service.createResource(input);
 
       if (expectOk) {
         expect(result.err).toBeUndefined();
@@ -734,35 +722,24 @@ describe("StripeService", () => {
 Create factory functions for domain objects and reuse them.
 
 ```typescript
-// Mock user factory
-const createMockUser = (overrides: Partial<User> = {}): User => ({
-  id: "user-123",
-  name: "Test User",
-  email: "test@example.com",
-  emailVerified: false,
-  image: null,
-  usage: {
-    plan: "free",
-    taskCount: 0,
-    lastLoginAt: undefined,
-    planExpiresAt: undefined,
+// Mock item factory
+const createMockItem = (overrides: Partial<Item> = {}): User => ({
+  id: "item-123",
+  name: "Test Item",
+  status: "active",
+  createdAt: new Date(),
+  quantity: 1,
+  // ...
   },
-  settings: {
-    theme: "system",
-    notificationsEnabled: true,
-    emailNotificationsEnabled: true,
-    soundEnabled: true,
-    language: "ja",
   },
-  profile: {
-    careerType: null,
-    displayName: null,
-    birthYear: null,
-    graduationExpectedYear: null,
-    simpleJobHuntingStatus: null,
-    practiceGoals: [],
-    onboardingCompleted: false,
-    onboardingStep: 0,
+    category: null,
+    description: null,
+    price: null,
+    quantity: 1,
+    tags: [],
+    metadata: {},
+    ,
+    ,
   },
   createdAt: new Date("2025-01-01T00:00:00.000Z"),
   updatedAt: new Date("2025-01-01T00:00:00.000Z"),
@@ -770,18 +747,18 @@ const createMockUser = (overrides: Partial<User> = {}): User => ({
 });
 ```
 
-### Testing Environment Variables
+### Environment Variable Tests
 
 ```typescript
-describe("price-mapping", () => {
+describe("config", () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
     vi.resetModules();
     process.env = {
       ...originalEnv,
-      STRIPE_PRICE_LIGHT: "price_light_123",
-      STRIPE_PRICE_STANDARD: "price_standard_456",
+      API_BASE_URL: "https://api.example.com",
+      API_TIMEOUT: "5000",
     };
   });
 
@@ -789,26 +766,26 @@ describe("price-mapping", () => {
     process.env = originalEnv;
   });
 
-  it.each(testCases)("$name", ({ priceId, expected }) => {
-    expect(mapPriceIdToPlanType(priceId)).toBe(expected);
+  it.each(testCases)("$name", ({ input, expected }) => {
+    expect(getConfig(input)).toBe(expected);
   });
 });
 ```
 
 ### Test Naming Conventions
 
-Write test case names descriptively in English:
+Write test case names in Japanese:
 
 ```typescript
 const testCases = [
-  { name: "returns Ok when user is found", ... },
-  { name: "returns Err when user is not found", ... },
-  { name: "returns Err when update fails", ... },
-  { name: "returns Err when survey is already answered", ... },
+  { name: "Returns Ok when user is found", ... },
+  { name: "Returns Err when user is not found", ... },
+  { name: "Returns Err when update fails", ... },
+  { name: "Returns Err when already processed", ... },
 ];
 ```
 
 **Naming patterns:**
-- Success cases: `"can ...", "returns ..."`
-- Error cases: `"returns Err when ..."`
-- Conditional: `"when ... then ..."`
+- Success cases: "Can do X" / "Returns X"
+- Error cases: "Returns Err when X"
+- Conditional: "When X is Y, then Z"

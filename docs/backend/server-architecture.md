@@ -7,77 +7,19 @@ It adopts the Hexagonal Architecture (Ports & Adapters) pattern to isolate busin
 
 ## Directory Structure
 
-### API Server (Hono)
-
 ```
-services/api/
+services/transcriptor/src/
 ├── domain/              # Domain layer - Business logic
-├── usecase/             # Use case layer - Application logic
+├── usecase/             # UseCase layer - Application logic
 ├── infra/               # Infrastructure layer - External system connections
 │   ├── di/              # Dependency injection container
 │   ├── repository/      # Data access layer
 │   ├── http/            # HTTP/REST API
 │   ├── ai/              # AI service integration
-│   ├── pubsub/          # Messaging (Google Cloud Pub/Sub)
-│   ├── email/           # Email service (Resend)
-│   ├── firebase/        # Firebase authentication
-│   └── stripe/          # Stripe payments
-├── cmd/                 # Entry point
+│   ├── external/        # External API integration
+│   └── auth/            # Authentication
+├── cmd/                 # Entry points
 └── pkg/                 # Shared utilities
-```
-
-### Transcriptor Service (Cloudflare Worker)
-
-The same layered structure is applied for the Cloudflare Worker.
-The shared package `@vspo/errors` is used to provide unified error handling via the Result type.
-
-```
-services/transcriptor/
-├── ytdlp/                  # Go server inside the container
-│   └── main.go            # Command execution + JSON response
-└── src/
-    ├── domain/
-    │   └── transcript.ts       # Zod Schema + TranscriptKey Companion Object
-    ├── usecase/
-    │   └── transcript.ts       # TranscriptUseCase.from(ports) → fetch / saveRaw
-    ├── infra/
-    │   ├── container/
-    │   │   └── ytdlp.ts        # YtdlpContainer DO + TranscriptFetcher
-    │   ├── http/
-    │   │   ├── app.ts          # Hono app composition
-    │   │   ├── route-inngest.ts
-    │   │   ├── route-transcript.ts
-    │   │   └── route-workflow.ts
-    │   ├── inngest/
-    │   │   ├── client.ts       # Inngest client + Hono bindings middleware
-    │   │   └── functions/
-    │   │       └── process-transcript.ts # Event-driven transcript processing
-    │   ├── repository/
-    │   │   ├── job.ts          # D1 JobRepository for processing status
-    │   │   └── transcript.ts   # R2 TranscriptRepository (wrapped with Result via wrap)
-    │   ├── usecase/
-    │   │   └── transcript.ts   # Infra adapters wired into usecase ports
-    │   └── workflow/
-    │       └── transcript-workflow.ts  # Cloudflare Workflow (step-based execution)
-    └── index.ts                # Entry point + HTTP routes
-```
-
-**Worker-specific design principles:**
-
-- **UseCase depends on ports**: `TranscriptUseCase.from(ports)` has no infra imports
-- **Infra composes dependencies**: `createTranscriptUseCase()` wires fetcher + repository
-- **Workflow calls UseCase**: Executes usecase `fetch()` + `saveRaw()` within steps
-- **HTTP handler also calls UseCase**: Shares the same business logic
-- **Env bindings replace DI**: `this.env.YT_CONTAINER`, `this.env.TRANSCRIPT_BUCKET`
-- **Repository uses factory pattern**: `TranscriptRepository.from(bucket)` injects the R2 bucket
-- **Unified via Result type**: `@vspo/errors` `Result<T, AppError>` + `wrap()` used across all layers
-- **Domain layer is pure**: Zod Schema + Companion Object, no external dependencies
-
-```typescript
-// Example of Result chaining through usecase ports
-const fetchResult = await usecase.fetch(params);
-if (fetchResult.err) return fetchResult;  // Propagate AppError
-return usecase.saveRaw(params, fetchResult.val);
 ```
 
 ## Layer Structure
@@ -90,17 +32,17 @@ return usecase.saveRaw(params, fetchResult.val);
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
 │                    Use Case Layer                            │
-│                (Application logic)                           │
+│                (Application Logic)                           │
 └───────────────────────┬─────────────────────────────────────┘
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
 │                    Domain Layer                              │
-│                 (Business logic)                             │
+│                 (Business Logic)                             │
 └───────────────────────┬─────────────────────────────────────┘
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
 │                 Infrastructure Layer                         │
-│        (Repository, AI Service, Pub/Sub, etc.)              │
+│     (Repository, AI Service, Message Queue, etc.)           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -108,38 +50,38 @@ return usecase.saveRaw(params, fetchResult.val);
 
 ### 1. Dependency Inversion Principle (DIP)
 
-- Higher layers do not depend on lower layers
+- Upper layers do not depend on lower layers
 - Depend on abstractions (type definitions), not on concrete implementations
-- The domain layer has no dependencies on other layers
+- The domain layer does not depend on any other layer
 
 ```typescript
-// UseCase depends on Repository types (abstractions)
+// UseCase depends on the Repository type (abstraction)
 type Dependencies = Readonly<{
-  userRepository: UserRepository;  // Type definition
+  itemRepository: ItemRepository;  // Type definition
   txManager: TxManager;
 }>;
 
 // Concrete implementations are injected via the DI container
-const userUseCase = UserUseCase.from({
-  userRepository: UserRepository,  // Implementation
+const itemUseCase = ItemUseCase.from({
+  itemRepository: ItemRepository,  // Implementation
   txManager: TxManager,
 });
 ```
 
 ### 2. Error Handling with Result Type
 
-Instead of `try-catch`, all errors are expressed using `Result<T, E>`.
+Instead of using `try-catch`, all errors are expressed using the `Result<T, E>` type.
 
 ```typescript
 // Result type definition
 type Result<T, E extends BaseError> = OkResult<T> | ErrResult<E>;
 
 // Usage example
-const userResult = await userRepository.from({ tx }).getById(userId);
-if (userResult.err) {
-  return userResult;  // Propagate the error
+const itemResult = await itemRepository.from({ tx }).getById(itemId);
+if (itemResult.err) {
+  return itemResult;  // Propagate the error
 }
-const user = userResult.val;  // Value on success
+const item = itemResult.val;  // Value on success
 ```
 
 **Benefits:**
@@ -153,15 +95,15 @@ All type definitions are derived from Zod schemas.
 
 ```typescript
 // The schema is the source of truth for types
-const userSchema = z.object({
+const itemSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.string().email(),
   // ...
 });
 
-// Types are inferred from schemas
-type User = z.infer<typeof userSchema>;
+// Types are inferred from the schema
+type Item = z.infer<typeof itemSchema>;
 ```
 
 ### 4. Immutable Updates
@@ -170,8 +112,8 @@ Domain objects are immutable, and update operations return new objects.
 
 ```typescript
 // Update the current user and return a new user
-const updatedUser = User.update(user, { displayName: "New Name" });
-const completedTask = Task.complete(task);
+const updatedUser = Item.update(item, { name: "New Name" });
+const completedTask = Item.archive(item);
 ```
 
 ---
@@ -180,40 +122,28 @@ const completedTask = Task.complete(task);
 
 ### Aggregates
 
-The DDD aggregate pattern is used to group related entities.
+The DDD aggregate pattern is adopted to group related entities together.
 
 ```
 domain/
-├── user/                    # User aggregate
-│   ├── user.ts             # User (aggregate root)
-│   ├── user-profile.ts     # UserProfile (value object)
-│   ├── user-usage.ts       # UserUsage (value object)
-│   └── user-settings.ts    # UserSettings (value object)
-├── [your-domain]/           # Application-specific aggregate
+├── [your-domain]/           # Application-specific aggregates
 │   ├── [aggregate-root].ts  # Aggregate root
-│   ├── [entity].ts          # Child entity
-│   └── [value-object].ts    # Value object
-├── billing/                 # Billing aggregate
-│   ├── subscription.ts     # Subscription (aggregate root)
-│   └── payment-history.ts  # PaymentHistory (entity)
-├── inquiry/                 # Inquiry aggregate
-│   └── inquiry.ts          # Inquiry (aggregate root)
-├── email/                   # Email aggregate
-│   └── email.ts            # Email (entity)
+│   ├── [entity].ts          # Child entities
+│   └── [value-object].ts    # Value objects
 └── [reference-data].ts     # Reference data (master data, etc.)
 ```
 
 ### Companion Object Pattern
 
-Domain models have a companion object with the same name that holds factory methods and business logic.
+Domain models have factory methods and business logic in a companion object with the same name.
 
 ```typescript
 // Type definition
-const userSchema = z.object({ ... });
-export type User = z.infer<typeof userSchema>;
+const itemSchema = z.object({ ... });
+export type Item = z.infer<typeof itemSchema>;
 
 // Companion object (domain logic)
-export const User = {
+export const Item = {
   new: (props: CreateUserProps): User => { ... },
   update: (user: User, props: UpdateProps): User => { ... },
   recordLogin: (user: User): User => { ... },
@@ -225,28 +155,34 @@ export const User = {
 Value objects with complex state are expressed using Discriminated Unions.
 
 ```typescript
-// UserProfile has different types based on role
-type AdminProfile = {
-  role: "admin";
-  permissions: string[];
-  department: string | null;
+// ItemStatus has different types based on status
+type ActiveItem = {
+  status: "active";
+  publishedAt: Date;
+  viewCount: number;
   // ...
 };
 
-type RegularUserProfile = {
-  role: "user";
-  preferences: Record<string, unknown>;
+type ArchivedItem = {
+  status: "archived";
+  archivedAt: Date;
   // ...
 };
 
-type UserProfile = AdminProfile | RegularUserProfile | GuestProfile;
+type DraftItem = {
+  status: "draft";
+  lastEditedAt: Date;
+  // ...
+};
+
+type ItemStatus = ActiveItem | ArchivedItem | DraftItem;
 
 // Type guards
-export const UserProfile = {
-  isAdmin: (profile: UserProfile): profile is AdminProfile =>
-    profile.role === "admin",
-  isRegularUser: (profile: UserProfile): profile is RegularUserProfile =>
-    profile.role === "user",
+export const ItemStatus = {
+  isActive: (item: ItemStatus): item is ActiveItem =>
+    item.status === "active",
+  isArchived: (item: ItemStatus): item is ArchivedItem =>
+    item.status === "archived",
 } as const;
 ```
 
@@ -254,74 +190,76 @@ export const UserProfile = {
 
 ## UseCase Layer
 
+For detailed implementation rules, see [UseCase Implementation Rules](./usecase-rules.md).
+
 ### Dependency Injection via Factory Pattern
 
 ```typescript
 type Dependencies = Readonly<{
-  userRepository: UserRepository;
+  itemRepository: ItemRepository;
   txManager: TxManager;
 }>;
 
-type UserUseCaseType = Readonly<{
+type ItemUseCaseType = Readonly<{
   from: (deps: Dependencies) => Readonly<{
-    getUserById: (input: GetUserInput) => Promise<Result<User, AppError>>;
-    updateUser: (input: UpdateUserInput) => Promise<Result<User, AppError>>;
+    getById: (input: GetItemInput) => Promise<Result<Item, AppError>>;
+    update: (input: UpdateItemInput) => Promise<Result<Item, AppError>>;
   }>;
 }>;
 
-export const UserUseCase = {
-  from: ({ userRepository, txManager }: Dependencies) => ({
-    getUserById: async ({ userId }) => {
+export const ItemUseCase = {
+  from: ({ orderRepository, txManager }: Dependencies) => ({
+    getById: async ({ itemId }) => {
       return await txManager.runTx(async (tx) => {
-        return await userRepository.from({ tx }).getById(userId);
+        return await itemRepository.from({ tx }).getById(itemId);
       });
     },
     // ...
   }),
-} as const satisfies UserUseCaseType;
+} as const satisfies ItemUseCaseType;
 ```
 
 ### Transaction Management
 
-All database operations are wrapped in transactions using `txManager.runTx()`.
+All database operations are wrapped in a transaction using `txManager.runTx()`.
 
 ```typescript
 return await txManager.runTx(async (tx) => {
   // Multiple repository operations execute within the same transaction
-  const taskRepo = taskRepository.from({ tx });
-  const userRepo = userRepository.from({ tx });
+  const itemRepo = itemRepository.from({ tx });
+  const orderRepo = itemRepository.from({ tx });
 
-  const taskResult = await taskRepo.complete(task);
-  if (taskResult.err) return taskResult;
+  const itemResult = await itemRepo.complete(task);
+  if (itemResult.err) return taskResult;
 
-  const userResult = await userRepo.incrementUsageCount(user);
-  if (userResult.err) return userResult;
+  const itemResult = await orderRepo.incrementCount(user);
+  if (itemResult.err) return itemResult;
 
   return Ok(result);
 });
 ```
 
-### Orchestrating Composite Operations
+### Orchestration of Composite Operations
 
-The UseCase coordinates multiple domain and repository operations.
+UseCases coordinate multiple domain operations and repository operations.
 
 ```typescript
-// TaskUseCase.completeTask
+// OrderUseCase.completeTask
 return await txManager.runTx(async (tx) => {
-  // 1. Update the task to completed status
-  const completedTask = Task.complete(task);
-  await taskRepo.update(completedTask);
+  // 1. Update the task to completed state
+  const completedTask = Item.archive(item);
+  await itemRepo.update(completedTask);
 
   // 2. Increment the user's usage count
-  const updatedUser = User.incrementUsageCount(user);
-  await userRepo.update(updatedUser);
+  const updatedUser = User.incrementCount(user);
+  await orderRepo.update(updatedUser);
 
-  // 3. Create a placeholder for results
+  // 3. Create a result placeholder
   const pendingResult = Result.createPending({ taskId });
   await resultRepo.create(pendingResult);
 
   // 4. Publish an async processing task
-  await pubsubClient.publishProcessingTask({ taskId, resultId });
+  await messageQueue.publishProcessingTask({ taskId, resultId });
 
   return Ok(result);
 });
@@ -338,12 +276,12 @@ Repositories receive transactions via the factory pattern.
 ```typescript
 type Dependencies = Readonly<{ tx: Transaction }>;
 
-export type UserRepository = Readonly<{
+export type ItemRepository = Readonly<{
   from: (deps: Dependencies) => Readonly<{
-    create: (user: User) => Promise<Result<User, AppError>>;
-    getById: (id: string) => Promise<Result<User, AppError>>;
-    update: (user: User) => Promise<Result<User, AppError>>;
-    delete: (id: string) => Promise<Result<User, AppError>>;
+    create: (item: Item) => Promise<Result<Item, AppError>>;
+    getById: (id: string) => Promise<Result<Item, AppError>>;
+    update: (item: Item) => Promise<Result<Item, AppError>>;
+    delete: (id: string) => Promise<Result<Item, AppError>>;
   }>;
 }>;
 ```
@@ -354,13 +292,13 @@ Use **primitive, short method names** when the context makes the operation self-
 
 #### Principle
 
-Since the repository/usecase is already scoped to a specific domain (e.g., `FeedbackRepository`, `UserUseCase`), method names should not redundantly include the domain name.
+Since the repository/usecase is already scoped to a specific domain (e.g., `OrderRepository`, `ItemUseCase`), method names should not redundantly include the domain name.
 
 #### Good Examples
 
 ```typescript
-// FeedbackRepository - domain context is clear
-export type FeedbackRepository = Readonly<{
+// OrderRepository - domain context is clear
+export type OrderRepository = Readonly<{
   from: (deps: Dependencies) => Readonly<{
     create: (feedback: Feedback) => Promise<Result<Feedback, AppError>>;
     getById: (id: string) => Promise<Result<Feedback, AppError>>;
@@ -369,11 +307,11 @@ export type FeedbackRepository = Readonly<{
   }>;
 }>;
 
-// UserUseCase - domain context is clear
-const UserUseCase = {
+// ItemUseCase - domain context is clear
+const ItemUseCase = {
   from: (deps: Dependencies) => ({
-    getById: async (userId: string) => { ... },  // ✅ Not "getUserById"
-    update: async (user: User) => { ... },       // ✅ Not "updateUser"
+    getById: async (userId: string) => { ... },  // ✅ Not "getById"
+    update: async (user: User) => { ... },       // ✅ Not "update"
     delete: async (userId: string) => { ... },   // ✅ Not "deleteUser"
   }),
 };
@@ -383,13 +321,13 @@ const UserUseCase = {
 
 ```typescript
 // ❌ Redundant - "Feedback" is already in the repository name
-FeedbackRepository.updateFeedback(feedback);
-FeedbackRepository.getFeedbackById(id);
-FeedbackRepository.deleteFeedback(id);
+OrderRepository.updateFeedback(feedback);
+OrderRepository.getFeedbackById(id);
+OrderRepository.deleteFeedback(id);
 
 // ❌ Redundant - "User" is already in the usecase name
-UserUseCase.getUserById(id);
-UserUseCase.updateUser(user);
+ItemUseCase.getById(id);
+ItemUseCase.update(user);
 ```
 
 #### Exceptions
@@ -397,14 +335,14 @@ UserUseCase.updateUser(user);
 When methods operate on **related but different entities**, include the entity name for clarity:
 
 ```typescript
-// TaskRepository may also manage Steps
-export type TaskRepository = Readonly<{
+// OrderRepository may also manage LineItems
+export type OrderRepository = Readonly<{
   from: (deps: Dependencies) => Readonly<{
-    getById: (id: string) => Promise<Result<Task, AppError>>;
-    update: (task: Task) => Promise<Result<Task, AppError>>;
-    // Steps are related entities - include name for clarity
-    getStepsByTaskId: (taskId: string) => Promise<Result<Step[], AppError>>;
-    saveSteps: (taskId: string, steps: Step[]) => Promise<Result<void, AppError>>;
+    getById: (id: string) => Promise<Result<Order, AppError>>;
+    update: (order: Order) => Promise<Result<Order, AppError>>;
+    // LineItems are related entities - include name for clarity
+    getLineItemsByOrderId: (orderId: string) => Promise<Result<LineItem[], AppError>>;
+    saveLineItems: (orderId: string, items: LineItem[]) => Promise<Result<void, AppError>>;
   }>;
 }>;
 ```
@@ -454,34 +392,34 @@ export type PaymentHistoryRepository = Readonly<{
 
 ### Using drizzle-zod Schemas
 
-For converting DB data to domain models, drizzle-zod generated schemas are used as DTOs.
+drizzle-zod generated schemas are used as DTOs for converting from DB to domain models.
 
 ```typescript
 import { selectHighlightsSchema } from "./mysql/schema";
 
-// Use drizzle-zod schema directly
+// Use the drizzle-zod schema directly
 return Ok(selectItemsSchema.parse(result.val[0]));
 
-// Also used for child entities of aggregates
+// Also used for aggregate child entities
 const toTaskAggregate = (task, steps) => ({
   ...task,
   steps: steps.map((row) => selectStepsSchema.parse(row)),
 });
 ```
 
-### Avoiding N+1 Queries
+### Avoiding the N+1 Problem
 
-Related entities are fetched in bulk and grouped on the client side.
+Multiple related entities are fetched in bulk and grouped on the client side.
 
 ```typescript
-// Good: Batch retrieval
+// Good: Bulk fetch
 const taskIds = tasks.map((t) => t.id);
 const stepsResult = await tx
   .select()
   .from(stepsTable)
   .where(inArray(stepsTable.taskId, taskIds));
 
-// Grouping
+// Group by taskId
 const stepsByTaskId = new Map<string, SelectStep[]>();
 for (const step of stepsResult.val) {
   const existing = stepsByTaskId.get(step.taskId) ?? [];
@@ -527,33 +465,33 @@ saveAggregate: async (task: Task) => {
 
 ## Dependency Injection (DI)
 
-### Manual Factory-based DI
+### Manual Factory-Based DI
 
-The container is built manually without external DI frameworks.
+The container is built manually without using an external DI framework.
 
 ```typescript
 // infra/di/container.ts
 export const createContainer = (): Container => {
-  // 1. Instantiate infrastructure layer
+  // 1. Instantiate the infrastructure layer
   const txManager = TxManager;
-  const userRepository = UserRepository;
-  const feedbackRepository = FeedbackRepository;
+  const orderRepository = UserRepository;
+  const orderRepository = OrderRepository;
 
-  // 2. Instantiate use case layer (inject dependencies)
-  const userUseCase = UserUseCase.from({
-    userRepository,
+  // 2. Instantiate the usecase layer (inject dependencies)
+  const itemUseCase = ItemUseCase.from({
+    orderRepository,
     txManager,
   });
 
-  const taskUseCase = TaskUseCase.from({
-    taskRepository,
+  const orderUseCase = OrderUseCase.from({
+    itemRepository,
     txManager,
   });
 
   // 3. Return the container
   return {
     userUseCase,
-    taskUseCase,
+    orderUseCase,
     // ...
   };
 };
@@ -562,7 +500,7 @@ export const createContainer = (): Container => {
 ### Injection via Hono Middleware
 
 ```typescript
-// Inject the container per HTTP request
+// Inject the container for each HTTP request
 app.use("*", async (c, next) => {
   const container = createContainer();
   c.set("container", container);
@@ -572,7 +510,7 @@ app.use("*", async (c, next) => {
 // Use in handlers
 app.openapi(route, async (c) => {
   const container = c.get("container");
-  const result = await container.userUseCase.getUserById({ userId });
+  const result = await container.userUseCase.getById({ itemId });
   // ...
 });
 ```
@@ -603,15 +541,15 @@ type ErrorCode =
   | "INTERNAL_SERVER_ERROR";
 ```
 
-### wrap Utility
+### The wrap Utility
 
 Converts a Promise into a Result type.
 
 ```typescript
 const result = await wrap(
-  tx.select().from(usersTable).where(eq(usersTable.id, id)).limit(1),
+  tx.select().from(itemsTable).where(eq(itemsTable.id, id)).limit(1),
   (err) => new AppError({
-    message: "Failed to get user",
+    message: "Failed to get item",
     code: "INTERNAL_SERVER_ERROR",
     cause: err,
   }),
@@ -623,7 +561,7 @@ const result = await wrap(
 A global error handler converts AppError to HTTP responses.
 
 ```typescript
-// Mapping from error codes to HTTP status codes
+// Mapping from error codes to HTTP statuses
 const statusMap: Record<ErrorCode, number> = {
   NOT_FOUND: 404,
   NOT_UNIQUE: 409,
@@ -637,7 +575,7 @@ const statusMap: Record<ErrorCode, number> = {
 {
   "error": {
     "code": "NOT_FOUND",
-    "message": "User not found",
+    "message": "Item not found",
     "requestId": "req_abc123"
   }
 }
@@ -647,58 +585,58 @@ const statusMap: Record<ErrorCode, number> = {
 
 ## External Service Integration
 
-### AI Service (Gemini)
+### AI Service
 
 ```typescript
-// infra/ai/feedbackGenerator.ts
-export const FeedbackGenerator = {
-  generate: async (params: GenerateParams): Promise<Result<FeedbackOutput, AppError>> => {
+// infra/ai/contentGenerator.ts
+export const ContentGenerator = {
+  generate: async (params: GenerateParams): Promise<Result<ContentOutput, AppError>> => {
     // 1. Build the prompt
     const prompt = buildPrompt(params);
 
-    // 2. Call Gemini API
-    const response = await geminiClient.generateContent(prompt);
+    // 2. Call the AI service API
+    const response = await aiClient.generateContent(prompt);
 
     // 3. Parse and validate the response
-    const parsed = geminiFeedbackOutputSchema.safeParse(response);
+    const parsed = contentOutputSchema.safeParse(response);
     if (!parsed.success) {
       return Err(new AppError({ ... }));
     }
 
     // 4. Convert to domain objects
-    const items = FeedbackItem.fromGeminiOutput(parsed.data);
+    const items = ContentItem.fromAIOutput(parsed.data);
     return Ok({ items, ... });
   },
 };
 ```
 
-### Pub/Sub Messaging
+### Message Queue
 
-Google Cloud Pub/Sub is used for asynchronous processing.
+A message queue is used for asynchronous processing.
 
 ```typescript
 // Publish a task
-await pubsubClient.publishFeedbackTask({
-  sessionId,
-  feedbackId,
+await messageQueue.publishProcessingTask({
+  itemId,
+  requestId,
 });
 
 // Subscribe in a worker
-await pubsubClient.subscribe(async (message) => {
-  const task = feedbackTaskSchema.parse(message.data);
-  await feedbackGenerator.generate(task);
+await messageQueue.subscribe(async (message) => {
+  const task = processingTaskSchema.parse(message.data);
+  await contentGenerator.generate(task);
   message.ack();
 });
 ```
 
 ---
 
-## Testing Strategy
+## Test Strategy
 
 ### Testing by Layer
 
-| Layer | Target | Approach |
-|-------|--------|----------|
+| Layer | Test Target | Approach |
+|---------|-----------|-----------|
 | Domain | Business logic | Pure unit tests |
 | UseCase | Orchestration | Using mock repositories |
 | Repository | Data access | Using a test DB |
@@ -706,18 +644,18 @@ await pubsubClient.subscribe(async (message) => {
 
 ### Mocking Dependencies
 
-The factory pattern allows dependencies to be swapped during testing.
+The factory pattern allows dependencies to be swapped out during testing.
 
 ```typescript
-const mockUserRepository = {
+const mockItemRepository = {
   from: () => ({
-    getById: async () => Ok(mockUser),
-    update: async (user) => Ok(user),
+    getById: async () => Ok(mockItem),
+    update: async (item) => Ok(item),
   }),
 };
 
-const useCase = UserUseCase.from({
-  userRepository: mockUserRepository,
+const useCase = ItemUseCase.from({
+  orderRepository: mockItemRepository,
   txManager: mockTxManager,
 });
 ```
@@ -730,8 +668,8 @@ Key characteristics of this architecture:
 
 1. **Clear layer separation**: Responsibilities of Domain/UseCase/Infrastructure are well-defined
 2. **Type safety**: Full type inference through Zod schemas and TypeScript
-3. **Error handling**: Explicit error flow via the Result type
-4. **Testability**: Dependencies can be swapped via the factory pattern
+3. **Error handling**: Explicit error flow via Result types
+4. **Testability**: Dependencies can be swapped out via the factory pattern
 5. **Transaction management**: Atomicity of multiple operations is guaranteed
 6. **Immutable updates**: Predictable state management
-7. **Aggregate pattern**: Clearly defined consistency boundaries
+7. **Aggregate pattern**: Clear consistency boundaries

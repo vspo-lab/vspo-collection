@@ -4,15 +4,15 @@
 
 This document defines the RESTful design principles for the API.
 
-## Core Principles
+## Design Principles
 
 ### 1. Resource-Oriented URLs
 
-URLs represent resources (nouns), and operations (verbs) are expressed through HTTP methods.
+URLs represent resources (nouns), and operations (verbs) are expressed via HTTP methods.
 
 ```
 # Good
-GET    /items                # Get item list
+GET    /items                # List items
 POST   /items                # Create item
 GET    /items/{id}           # Get item
 PUT    /items/{id}           # Update item
@@ -27,25 +27,25 @@ GET    /users/me/home       # "home" is not a resource
 ### 2. HTTP Methods
 
 | Method | Description | Idempotent | Safe |
-|--------|-------------|------------|------|
+|---------|------|-------|-------|
 | GET    | Retrieve resource | Yes | Yes |
 | POST   | Create resource, execute action | No | No |
 | PUT    | Update resource (including partial updates) | Yes | No |
 | DELETE | Delete resource | Yes | No |
 
-**Note**: PATCH is not used. Partial updates are done via PUT by sending the entire domain model, with the server calculating the diff.
+**Note**: PATCH is not used. For partial updates, send the entire domain model via PUT and let the server compute the diff.
 
 ### 3. Resource Naming Conventions
 
 - **Use plural forms**: `/items`, `/users`, `/orders`
 - **Use snake_case**: `/api_tokens`, `/user_settings` (no hyphens)
-- **Limit nesting to 2 levels**: `/orders/{id}/items` (OK), `/orders/{id}/items/{itemId}/comments` (avoid)
+- **Nesting up to 2 levels**: `/orders/{id}/items` (OK), `/orders/{id}/items/{itemId}/comments` (avoid)
 - **Resource identifiers as path parameters**: `/items/{id}`
 - **Filtering via query parameters**: `/items?status=completed&limit=10`
 
-### 4. Filtering, Sorting, Pagination
+### 4. Filtering, Sorting, and Pagination
 
-Use query parameters:
+Use query parameters.
 
 ```
 # Filtering
@@ -63,7 +63,7 @@ GET /items?cursor={lastId}         # Cursor-based
 
 ### 5. Current User Resources
 
-Use `/me` for current user resources, but always tie to a specific resource:
+Use `/me` for current user resources, but always associate them with a specific resource.
 
 ```
 # Good
@@ -76,26 +76,26 @@ GET  /users/me/home         # "home" is not a resource
 GET  /users/me/history      # "history" is not a resource
 ```
 
-### 6. Sub-Resources vs Query Parameters
+### 6. Sub-resources vs Query Parameters
 
-Use sub-resources for strong relationships, query parameters for weak ones:
+Use sub-resources for strong associations and query parameters for weak associations.
 
 ```
-# Strong relationship (sub-resource)
+# Strong association (sub-resource)
 GET  /orders/{id}/items
 GET  /orders/{id}/summary
 POST /orders/{id}/items
 
-# Weak relationship (query parameter)
+# Weak association (query parameter)
 GET  /reports?order_id={id}
 GET  /notifications?user_id={id}
 ```
 
 ### 7. Actions on Resources
 
-Express actions (state transitions) as explicit sub-resources:
+Actions (state transitions) are expressed as explicit sub-resources.
 
 ```
-# Good - sub-resource representing state
-POST /orders/{id}/completion       # Complete the order
+# Good - Sub-resource representing state
+POST /orders/{id}/completion       # Complete an order
 ```

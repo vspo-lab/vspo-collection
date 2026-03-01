@@ -1,20 +1,20 @@
 # Date/Time Handling Guidelines
 
-This document describes the datetime handling conventions for this application.
+This document defines the date/time handling conventions for the application.
 
 ## Core Principles
 
-1. **UTC as the Standard**: All server-side timestamps and stored dates use UTC
-2. **JST for Display**: Frontend displays dates in Japan Standard Time (JST/Asia/Tokyo) for Japanese users
-3. **Use `@vspo/dayjs`**: Always use the shared dayjs package instead of native `Date` objects
+1. **UTC as the standard**: All server-side timestamps and stored dates use UTC
+2. **Display in JST**: The frontend displays dates in JST (Asia/Tokyo) for Japanese users
+3. **Use `@vspo/dayjs`**: Always use the shared dayjs package instead of the native `Date` object
 
 ## Package: `@vspo/dayjs`
 
-The `@vspo/dayjs` package provides consistent datetime utilities across the application.
+The `@vspo/dayjs` package provides consistent date/time utilities across the application.
 
 ### Installation
 
-The package is already included in both `services/server` and `services/my-app`.
+Already included in both `services/transcriptor` and `services/web`.
 
 ```typescript
 import {
@@ -27,26 +27,26 @@ import {
 
 ## Server-Side (Backend)
 
-### Getting Current Time
+### Getting the Current Time
 
 ```typescript
 import { getCurrentUTCDate, getCurrentTimestamp } from "@vspo/dayjs";
 
-// Get current time as Date object (UTC)
+// Get the current time as a Date object (UTC)
 const now = getCurrentUTCDate();
 
-// Get current timestamp in milliseconds (replaces Date.now())
+// Get the current timestamp in milliseconds (alternative to Date.now())
 const timestamp = getCurrentTimestamp();
 ```
 
 ### Database Operations
 
-All database timestamps should be stored in UTC:
+All database timestamps are stored in UTC.
 
 ```typescript
 import { getCurrentUTCDate } from "@vspo/dayjs";
 
-// Creating records
+// When creating a record
 await db.insert(table).values({
   createdAt: getCurrentUTCDate(),
   updatedAt: getCurrentUTCDate(),
@@ -58,14 +58,14 @@ await db.insert(table).values({
 ```typescript
 import { addMillisecondsFromNow, convertToUTC } from "@vspo/dayjs";
 
-// Create expiration time
+// Creating an expiration time
 const TOKEN_EXPIRE_MS = 30 * 60 * 1000; // 30 minutes
 const expireTime = convertToUTC(addMillisecondsFromNow(TOKEN_EXPIRE_MS));
 ```
 
 ## Frontend (Client-Side)
 
-### Getting Current Time
+### Getting the Current Time
 
 ```typescript
 import { getCurrentUTCDate, getCurrentTimestamp } from "@vspo/dayjs";
@@ -78,19 +78,19 @@ const elapsed = getCurrentTimestamp() - startTime;
 
 ### Displaying Dates to Users
 
-For Japanese users, use JST formatting:
+Use JST formatting for Japanese users.
 
 ```typescript
 import { formatToJST, formatToJSTShort } from "@vspo/dayjs";
 
-// Full format example: "January 15, 2024, 10:30:00"
+// Full format: "2024年1月15日 10時30分00秒"
 const fullDate = formatToJST(utcDate);
 
 // Short format: "2024/01/15"
 const shortDate = formatToJSTShort(utcDate);
 ```
 
-For multi-language support:
+For multilingual support:
 
 ```typescript
 import { formatToLocalizedDate } from "@vspo/dayjs";
@@ -100,16 +100,16 @@ const localizedDate = formatToLocalizedDate(utcDate, "ja"); // Japanese
 const localizedDate = formatToLocalizedDate(utcDate, "en"); // English
 ```
 
-### Filename Generation
+### Generating Filenames
 
 ```typescript
 import { formatToISODate, formatToFilenameSafeISO, getCurrentUTCDate } from "@vspo/dayjs";
 
-// For date-only filenames: "2024-01-15"
+// Date-only filename: "2024-01-15"
 const dateStr = formatToISODate(getCurrentUTCDate());
 const filename = `export-${sessionId}-${dateStr}.webm`;
 
-// For timestamp filenames: "2024-01-15T10-30-00-000Z"
+// Filename with timestamp: "2024-01-15T10-30-00-000Z"
 const timestamp = formatToFilenameSafeISO(getCurrentUTCDate());
 const filename = `recording-${timestamp}.webm`;
 ```
@@ -124,7 +124,7 @@ import {
   isBefore,
 } from "@vspo/dayjs";
 
-// Filter items from last 7 days
+// Filter items from the last 7 days
 const now = getCurrentUTCDate();
 const cutoffDate = subtractDays(now, 7);
 const filteredItems = items.filter(
@@ -134,47 +134,47 @@ const filteredItems = items.filter(
 
 ## Available Functions
 
-### Time Getters
+### Time Retrieval
 
 | Function | Return Type | Description |
 |----------|-------------|-------------|
-| `getCurrentUTCDate()` | `Date` | Current UTC time as Date object |
-| `getCurrentUTCString()` | `string` | Current UTC time as ISO string |
-| `getCurrentTimestamp()` | `number` | Current UTC timestamp in milliseconds |
-| `getCurrentYear()` | `number` | Current year in UTC |
+| `getCurrentUTCDate()` | `Date` | Returns the current UTC time as a Date object |
+| `getCurrentUTCString()` | `string` | Returns the current UTC time as an ISO string |
+| `getCurrentTimestamp()` | `number` | Returns the current UTC timestamp in milliseconds |
+| `getCurrentYear()` | `number` | Returns the current year (UTC) |
 
 ### Conversion Functions
 
 | Function | Return Type | Description |
 |----------|-------------|-------------|
-| `convertToUTC(input)` | `string` | Convert to UTC ISO string |
-| `convertToUTCDate(input)` | `Date` | Convert to UTC Date object |
-| `convertToUTCTimestamp(input, tz)` | `string` | Convert from timezone to UTC |
+| `convertToUTC(input)` | `string` | Converts to a UTC ISO string |
+| `convertToUTCDate(input)` | `Date` | Converts to a UTC Date object |
+| `convertToUTCTimestamp(input, tz)` | `string` | Converts from a timezone to UTC |
 
 ### Formatting Functions
 
 | Function | Return Type | Description |
 |----------|-------------|-------------|
-| `formatToISODate(input)` | `string` | Format as "YYYY-MM-DD" |
-| `formatToFilenameSafeISO(input)` | `string` | Format as "YYYY-MM-DDTHH-mm-ss-SSSZ" |
-| `formatToJST(input)` | `string` | Format for JST display (full) |
-| `formatToJSTShort(input)` | `string` | Format for JST display (YYYY/MM/DD) |
-| `formatToLocalizedDate(input, lang)` | `string` | Format based on language |
+| `formatToISODate(input)` | `string` | Formats as "YYYY-MM-DD" |
+| `formatToFilenameSafeISO(input)` | `string` | Formats as "YYYY-MM-DDTHH-mm-ss-SSSZ" |
+| `formatToJST(input)` | `string` | Formats for JST display (full) |
+| `formatToJSTShort(input)` | `string` | Formats for JST display (YYYY/MM/DD) |
+| `formatToLocalizedDate(input, lang)` | `string` | Formats based on language |
 
 ### Date Arithmetic
 
 | Function | Return Type | Description |
 |----------|-------------|-------------|
-| `addMillisecondsFromNow(ms)` | `Date` | Add milliseconds to current time |
-| `addMinutes(input, minutes)` | `Date` | Add minutes to date |
-| `subtractDays(input, days)` | `Date` | Subtract days from date |
-| `subtractMinutes(input, minutes)` | `Date` | Subtract minutes from date |
+| `addMillisecondsFromNow(ms)` | `Date` | Adds milliseconds to the current time |
+| `addMinutes(input, minutes)` | `Date` | Adds minutes to a date |
+| `subtractDays(input, days)` | `Date` | Subtracts days from a date |
+| `subtractMinutes(input, minutes)` | `Date` | Subtracts minutes from a date |
 
 ### Comparison Functions
 
 | Function | Return Type | Description |
 |----------|-------------|-------------|
-| `isBefore(date1, date2)` | `boolean` | Check if date1 is before date2 |
+| `isBefore(date1, date2)` | `boolean` | Determines whether date1 is before date2 |
 
 ## Supported Languages/Timezones
 
@@ -190,12 +190,12 @@ const filteredItems = items.filter(
 | `es` | es-ES | Europe/Madrid |
 | `default` | ja-JP | Asia/Tokyo |
 
-## Migration from Native Date
+## Migrating from Native Date
 
 ### Before
 
 ```typescript
-// Don't use these
+// Do not use these
 const now = new Date();
 const timestamp = Date.now();
 const year = new Date().getFullYear();
@@ -220,7 +220,7 @@ const isoString = getCurrentUTCString();
 
 ## Testing
 
-When testing time-dependent code, use Vitest's fake timers:
+When testing time-dependent code, use Vitest's fake timers.
 
 ```typescript
 import { beforeEach, afterEach, vi } from "vitest";
@@ -235,4 +235,4 @@ afterEach(() => {
 });
 ```
 
-Note: `@vspo/dayjs` functions work correctly with Vitest's fake timers since they use dayjs internally, which respects the mocked system time.
+Note: Functions from `@vspo/dayjs` use dayjs internally, which respects the mocked system time, so they work correctly with Vitest's fake timers.

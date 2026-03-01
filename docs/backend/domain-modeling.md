@@ -2,76 +2,65 @@
 
 ## Overview
 
-This document defines the design principles and structure for domain modeling. All application-specific domain models should be implemented following these guidelines.
+This document defines the design policies and structure for domain modeling. Application-specific domain models should be implemented following these policies.
 
 ## File Structure
 
-Domain models are organized into directories by aggregate. Each aggregate clearly separates its root entity and value objects.
+Domain models are divided into directories by aggregate, with a clear separation between each aggregate's root entity and value objects.
 
 ```
-services/server/domain/
-├── user/                    # User aggregate
-│   ├── user.ts             # User (aggregate root)
-│   ├── user-profile.ts     # UserProfile (value object, Discriminated Union)
-│   ├── user-usage.ts       # UserUsage (value object)
-│   ├── user-settings.ts    # UserSettings (value object)
-│   └── index.ts            # Barrel file
-├── [your-domain]/           # Application-specific aggregate
-│   ├── [aggregate-root].ts  # Aggregate root
-│   ├── [entity].ts          # Child entity
-│   └── index.ts
-├── billing/                 # Billing aggregate
-│   ├── subscription.ts     # Subscription (aggregate root)
-│   └── payment-history.ts  # PaymentHistory (entity)
-├── inquiry/                 # Inquiry aggregate
-│   └── inquiry.ts          # Inquiry (aggregate root)
-└── email/                   # Email aggregate
-    └── email.ts            # Email (entity)
+services/transcriptor/src/domain/
+└── [your-domain]/           # Application-specific aggregates
+    ├── [aggregate-root].ts  # Aggregate root
+    ├── [value-object].ts    # Value objects
+    ├── [entity].ts          # Child entities
+    └── index.ts             # Barrel file
 ```
 
-## Domain Model Design Principles
+## Domain Model Design Policy
 
 ### 1. Zod Schema First
 
 All type definitions are derived from Zod schemas:
 
 ```typescript
-// user-usage.ts
-export const userUsageSchema = z.object({
-  plan: planTypeSchema,
-  usageCount: z.number().int().nonnegative(),
-  lastLoginAt: z.date().optional(),
-  planExpiresAt: z.date().optional(),
+// item.ts
+export const itemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  status: z.enum(["active", "inactive"]),
+  createdAt: z.date(),
 });
-export type UserUsage = z.infer<typeof userUsageSchema>;
+export type Item = z.infer<typeof itemSchema>;
 ```
 
-### 2. Companion Object Pattern for Domain Methods
+### 2. Domain Methods Use the Companion Object Pattern
 
-Each domain model has a companion object with the same name that holds factory methods and business logic:
+Each domain model has factory methods and business logic in a companion object with the same name.
+Public functions should have JSDoc with pre-conditions and post-conditions. See [Function Documentation Conventions](./function-documentation.md) for details.
 
 ```typescript
-// user.ts
-export const User = {
-  new: (props: CreateUserProps): User => { ... },
-  update: (user: User, props: UpdateProps): User => { ... },
-  recordLogin: (user: User): User => { ... },
-  incrementUsageCount: (user: User): User => { ... },
+// item.ts
+export const Item = {
+  new: (props: CreateItemProps): Item => { ... },
+  update: (item: Item, props: UpdateProps): Item => { ... },
+  activate: (item: Item): Item => { ... },
+  deactivate: (item: Item): Item => { ... },
 } as const;
 ```
 
 ### 3. Type Guards and Utilities
 
-When using Discriminated Unions, provide type guard functions:
+When using Discriminated Unions, also provide type guard functions:
 
 ```typescript
-// user-profile.ts
-export const UserProfile = {
-  isTypeA: (profile: UserProfile): profile is TypeAProfile =>
-    profile.type === "type_a",
-  isTypeB: (profile: UserProfile): profile is TypeBProfile =>
-    profile.type === "type_b",
-  defaultUndecided: (): UndecidedProfile => ({ ... }),
+// item-detail.ts (Discriminated Union example)
+export const ItemDetail = {
+  isTypeA: (detail: ItemDetail): detail is TypeADetail =>
+    detail.type === "type_a",
+  isTypeB: (detail: ItemDetail): detail is TypeBDetail =>
+    detail.type === "type_b",
+  default: (): DefaultDetail => ({ type: "default" }),
 } as const;
 ```
 
@@ -80,35 +69,35 @@ export const UserProfile = {
 All update operations return new objects:
 
 ```typescript
-const updatedUser = User.update(user, { displayName: "New Name" });
-const completedTask = Task.complete(task);
+const updatedItem = Item.update(item, { name: "New Name" });
+const activatedItem = Item.activate(item);
 ```
 
-## Repository Design Principles
+## Repository Design Policy
 
 ### 1. Using drizzle-zod Schemas as DTOs
 
-The repository layer uses Drizzle-generated `select*Schema` as DTOs to minimize manual mapping:
+In the repository layer, Drizzle-generated `select*Schema` are used as DTOs to minimize manual mapping:
 
 ```typescript
 import {
-  type SelectTask,
-  type SelectStep,
-  tasksTable,
-  selectStepsSchema,  // drizzle-zod schema
-  stepsTable,
+  type SelectItem,
+  type SelectItemDetail,
+  itemsTable,
+  selectItemDetailsSchema,  // drizzle-zod schema
+  itemDetailsTable,
 } from "./mysql/schema";
 
-// Helper to convert DB task + steps to domain aggregate
-const toTaskAggregate = (
-  task: SelectTask,
-  steps: SelectStep[],
-): Task => ({
-  id: task.id,
-  userId: task.userId,
+// Helper to convert DB item + details to domain aggregate
+const toItemAggregate = (
+  item: SelectItem,
+  details: SelectItemDetail[],
+): Item => ({
+  id: item.id,
+  name: item.name,
   // ... direct mapping
   // Use drizzle-zod schema as DTO for child entities
-  steps: steps.map((row) => selectStepsSchema.parse(row)),
+  details: details.map((row) => selectItemDetailsSchema.parse(row)),
 });
 
 // For simple entities, use schema directly
@@ -117,171 +106,139 @@ return Ok(selectItemsSchema.parse(result.val[0]));
 
 ### 2. Simple Mapping
 
-Keep helper functions that convert DB rows to domain models simple:
+Helper functions that convert DB rows to domain models should be kept simple:
 
 ```typescript
 // Good: Simple mapping
-const toTaskAggregate = (
-  task: SelectTask,
-  steps: SelectStep[],
-): Task => ({
-  id: task.id,
-  userId: task.userId,
+const toItemAggregate = (
+  item: SelectItem,
+  details: SelectItemDetail[],
+): Item => ({
+  id: item.id,
+  name: item.name,
   // ... direct mapping
-  steps: steps.map(toStep),
+  details: details.map(toItemDetail),
 });
 
 // Bad: Verbose expansion
-const tasks = tasksResult.val.map((task) => ({
-  id: task.id,
-  userId: task.userId,
-  // ... enumerating the same fields every time
+const items = itemsResult.val.map((item) => ({
+  id: item.id,
+  name: item.name,
+  // ... listing the same fields every time
 }));
 ```
 
-### 3. Avoiding N+1 Queries
+### 3. N+1 Problem Prevention
 
-When fetching child entities of an aggregate, use `inArray` for batch retrieval:
+When fetching aggregate child entities, use `inArray` to fetch them in bulk:
 
 ```typescript
-// Good: Batch retrieval
-const taskIds = tasks.map((t) => t.id);
-const stepsResult = await tx
+// Good: Bulk fetch
+const itemIds = items.map((i) => i.id);
+const detailsResult = await tx
   .select()
-  .from(stepsTable)
-  .where(inArray(stepsTable.taskId, taskIds));
+  .from(itemDetailsTable)
+  .where(inArray(itemDetailsTable.itemId, itemIds));
 
-// Group by taskId
-const stepsByTaskId = new Map<string, SelectStep[]>();
-for (const step of stepsResult) {
-  const existing = stepsByTaskId.get(step.taskId) ?? [];
-  existing.push(step);
-  stepsByTaskId.set(step.taskId, existing);
+// Group by itemId
+const detailsByItemId = new Map<string, SelectItemDetail[]>();
+for (const detail of detailsResult) {
+  const existing = detailsByItemId.get(detail.itemId) ?? [];
+  existing.push(detail);
+  detailsByItemId.set(detail.itemId, existing);
 }
 
 // Bad: N+1 queries
-for (const task of tasks) {
-  const steps = await tx
+for (const item of items) {
+  const details = await tx
     .select()
-    .from(stepsTable)
-    .where(eq(stepsTable.taskId, task.id));
+    .from(itemDetailsTable)
+    .where(eq(itemDetailsTable.itemId, item.id));
 }
 ```
 
-### 4. Aligning Domain Models with DB Models
+### 4. Domain Model and DB Model Alignment
 
-Avoid excessive normalization and keep domain models aligned with DB models as closely as possible:
+Avoid excessive normalization and keep domain models aligned with DB models as much as possible:
 
 ```typescript
 // Good: Flat structure matching the DB
-const surveySchema = z.object({
+const itemMetricsSchema = z.object({
   id: z.string(),
-  taskId: z.string(),
-  rating1: z.number(),
-  rating2: z.number(),
-  rating3: z.number(),
-  rating4: z.number(),
+  itemId: z.string(),
+  metric1: z.number(),
+  metric2: z.number(),
+  metric3: z.number(),
   // ...
 });
 
-// Bad: Unnecessary normalization (converting to arrays)
-const surveySchema = z.object({
-  responses: z.array(
+// Bad: Unnecessary normalization (converting to an array)
+const itemMetricsSchema = z.object({
+  metrics: z.array(
     z.object({
-      questionType: z.string(),
-      rating: z.number(),
+      type: z.string(),
+      value: z.number(),
     })
   ),
 });
 ```
 
-When backward compatibility is needed for the API, perform the conversion in the DTO layer.
+When backward compatibility for the API is needed, perform the conversion in the DTO layer.
 
 ## Naming Conventions
 
 ### Database
-- Table names: plural snake_case (`users`, `tasks`, `orders`)
-- Column names: snake_case (`user_id`, `created_at`, `task_id`)
-- Foreign keys: `{referenced_table_singular}_id` (`user_id`, `task_id`, `order_id`)
+- Table names: Plural snake_case (`users`, `items`, `orders`)
+- Column names: snake_case (`user_id`, `created_at`, `item_id`)
+- Foreign keys: `{referenced_table_singular}_id` (`user_id`, `item_id`, `order_id`)
 
 ### Application
-- Domain models: PascalCase (`User`, `Task`, `Order`)
-- Type definitions: PascalCase (`TaskStatus`, `OrderType`)
-- Type aliases (for export): `{Model}Type` (`UserType`, `TaskType`)
-- Variables/properties: camelCase (`taskId`, `createdAt`)
-- Repositories: `{Model}Repository` (`TaskRepository`)
-- Use cases: `{Model}UseCase` (`TaskUseCase`)
+- Domain models: PascalCase (`User`, `Item`, `Order`)
+- Type definitions: PascalCase (`ItemStatus`, `OrderType`)
+- Type aliases (for export): `{Model}Type` (`UserType`, `ItemType`)
+- Variables/Properties: camelCase (`itemId`, `createdAt`)
+- Repositories: `{Model}Repository` (`ItemRepository`)
+- UseCases: `{Model}UseCase` (`ItemUseCase`)
 
-## Data Persistence Principles
+## Data Storage Policy
 
-- **Per-user storage**: All data is stored in association with a User
-- **Transaction management**: Operations spanning multiple repositories are managed with transactions at the use case layer
+- **Per-user storage**: All data is stored associated with a User
+- **Transaction management**: Operations spanning multiple repositories are managed with transactions at the UseCase layer
 - **Error handling with Result type**: All errors are handled uniformly using the Result type
-- **Aggregate-level updates**: Each aggregate is independently managed by its repository and use case, and persisted at the aggregate level
+- **Per-aggregate updates**: Each aggregate is managed independently through its repository and UseCase, and is saved per aggregate unit
 
 ## Aggregate Boundaries
 
-Each aggregate is managed by its own use case and repository.
+Each aggregate is managed with an independent UseCase and Repository.
 
-### User Aggregate
-- **Root entity**: User
-- **Value objects**: UserUsage, UserSettings, UserProfile (Discriminated Union)
-- **Files**: `domain/user/`
-- **Use case**: `UserUseCase`
-- **Repository**: `UserRepository`
-- **Operations**: Create, update, retrieve, delete users
-- **Key methods**:
-  - `User.new()` - Create user
-  - `User.update()` - Update profile/settings
-  - `User.recordLogin()` - Record login
-  - `User.incrementUsageCount()` - Increment usage count
-  - `UserProfile.isTypeA()` / `isTypeB()` - Type guards
-
-### Billing Aggregate
-- **Root entity**: Subscription
-- **Child entity**: PaymentHistory
-- **Files**: `domain/billing/`
-- **Use case**: `BillingUseCase`
-- **Repositories**: `SubscriptionRepository`, `PaymentHistoryRepository`
-- **Operations**: Create/update subscriptions, manage payment history
-- **Note**: Integrates with Stripe for payment processing
-
-### Inquiry Aggregate
-- **Root entity**: Inquiry
-- **Files**: `domain/inquiry/`
-- **Use case**: `InquiryUseCase`
-- **Repository**: `InquiryRepository`
-- **Operations**: Create and retrieve inquiries
-
-### Transcript Aggregate (Cloudflare Worker)
-- **Service**: `services/transcriptor/`
-- **Domain models**: `TranscriptParams`, `TranscriptStage`, `TranscriptKey`
-- **Use case**: `TranscriptUseCase` (`fetch`, `fetchAndSave`)
-- **Repository**: `TranscriptRepository` (R2 storage)
-- **Infrastructure**: `TranscriptFetcher` (Cloudflare Container + yt-dlp)
-- **Orchestration**: `TranscriptWorkflow` (Cloudflare Workflow)
-- **Stages**: `raw` -> `chunked` -> `proofread`
-- **Storage path**: `transcripts/{stage}/{videoId}/{lang}.json`
-- **Shared package**: `@vspo/errors` (Result type)
+### [YourAggregate] (Example)
+- **Root Entity**: [AggregateRoot]
+- **Value Objects**: [ValueObject1], [ValueObject2]
+- **Child Entities**: [ChildEntity]
+- **Files**: `domain/[your-domain]/`
+- **UseCase**: `[YourAggregate]UseCase`
+- **Repository**: `[YourAggregate]Repository`
+- **Operations**: Create, Update, Get, Delete
+- **Key Methods**:
+  - `[AggregateRoot].new()` - Create
+  - `[AggregateRoot].update()` - Update
+  - `[AggregateRoot].[businessMethod]()` - Business logic
 
 ## Use Case Diagram (Example)
 
 ```mermaid
 flowchart LR
   C[User]
-  UC1([Sign Up / Log In])
-  UC2([Complete Onboarding])
-  UC3([Home])
-  UC4([Use Feature])
-  UC5([View Results])
-  UC6([View History])
-  UC7([Manage Plan])
-  UC8([Change Settings])
+  UC1([Login])
+  UC2([Item List])
+  UC3([Create Item])
+  UC4([Edit Item])
+  UC5([Delete Item])
 
-  C --> UC1 --> UC2 --> UC3 --> UC4 --> UC5
-  UC3 --> UC6
-  UC3 --> UC7
-  UC3 --> UC8
+  C --> UC1 --> UC2
+  UC2 --> UC3
+  UC2 --> UC4
+  UC2 --> UC5
 ```
 
 ## Class Diagram (Example)
@@ -290,131 +247,82 @@ flowchart LR
 classDiagram
 direction LR
 
-class User {
+class Item {
   +string id
   +string name
-  +string email
-  +boolean emailVerified
-  +string image
-  +UserUsage usage
-  +UserSettings settings
-  +UserProfile profile
+  +ItemStatus status
+  +ItemDetail[] details
   +DateTime createdAt
   +DateTime updatedAt
-  +new(props) User
-  +update(user, props) User
-  +recordLogin(user) User
-  +incrementUsageCount(user) User
+  +new(props) Item
+  +update(item, props) Item
+  +activate(item) Item
+  +deactivate(item) Item
 }
 
-class UserUsage {
-  +PlanType plan
-  +int usageCount
-  +DateTime lastLoginAt
-  +DateTime planExpiresAt
-}
-
-class UserSettings {
-  +ThemeType theme
-  +boolean notificationsEnabled
-  +boolean emailNotificationsEnabled
-  +boolean soundEnabled
-  +string language
-}
-
-class UserProfile {
-  +ProfileType type
-  +string displayName
-  ...
-  +isTypeA(profile) boolean
-  +isTypeB(profile) boolean
-}
-
-class Task {
+class ItemDetail {
   +string id
-  +string userId
-  +TaskStatus status
-  +Step[] steps
-  +DateTime startedAt
-  +DateTime endedAt
-  +start(props) Task
-  +addStep(task, step) Result
-  +complete(task) Task
-}
-
-class Step {
-  +string id
-  +StepRole role
+  +string itemId
+  +DetailType type
   +string content
-  +new(props) Step
+  +DateTime createdAt
+  +new(props) ItemDetail
+  +isTypeA(detail) boolean
+  +isTypeB(detail) boolean
 }
 
-User "1" --> "1" UserUsage : has
-User "1" --> "1" UserSettings : has
-User "1" --> "1" UserProfile : has
-User "1" --> "*" Task : owns
-Task "1" --> "*" Step : contains
+Item "1" --> "*" ItemDetail : contains
 ```
 
 ## ER Diagram (Example)
 
 ```mermaid
 erDiagram
-    users ||--|| user_usages : has
-    users ||--|| user_settings : has
-    users ||--|| user_profiles : has
-    users ||--o{ tasks : owns
-    tasks ||--o{ steps : contains
+    user ||--o{ account : has
+    user ||--o{ session : has
+    user ||--o{ verification : has
+    user ||--o{ your_table : owns
 
-    users {
+    user {
         varchar id PK
         varchar email UK
-        datetime created_at
-        datetime updated_at
+        varchar name
+        boolean emailVerified
+        varchar image
+        datetime createdAt
+        datetime updatedAt
     }
 
-    user_usages {
-        varchar user_id PK,FK
-        enum plan
-        int usage_count
-        datetime last_login_at
-        datetime plan_expires_at
+    account {
+        varchar id PK
+        varchar userId FK
+        varchar accountId
+        varchar providerId
+        varchar accessToken
+        varchar refreshToken
     }
 
-    user_settings {
-        varchar user_id PK,FK
-        enum theme
-        boolean notifications_enabled
-        boolean email_notifications_enabled
-        boolean sound_enabled
-        varchar language
+    session {
+        varchar id PK
+        varchar userId FK
+        datetime expiresAt
+        varchar token
+        varchar ipAddress
+        varchar userAgent
     }
 
-    user_profiles {
-        varchar user_id PK,FK
-        enum profile_type
-        varchar display_name
-        boolean onboarding_completed
-        int onboarding_step
-        datetime created_at
-        datetime updated_at
+    verification {
+        varchar id PK
+        varchar identifier
+        varchar value
+        datetime expiresAt
     }
 
-    tasks {
+    your_table {
         varchar id PK
         varchar user_id FK
+        varchar name
         enum status
-        datetime started_at
-        datetime ended_at
-        datetime created_at
-        datetime updated_at
-    }
-
-    steps {
-        varchar id PK
-        varchar task_id FK
-        enum role
-        longtext content
         datetime created_at
         datetime updated_at
     }
@@ -422,38 +330,26 @@ erDiagram
 
 ## Enums (Examples)
 
-### PlanType
-- `free` - Free plan
-- `basic` - Basic plan
-- `pro` - Pro plan
-- `enterprise` - Enterprise plan
+### ItemStatus
+- `active` - Active
+- `inactive` - Inactive
+- `archived` - Archived
 
-### ThemeType
-- `light` - Light mode
-- `dark` - Dark mode
-- `system` - Follow system setting
-
-### TaskStatus
-- `in_progress` - In progress
-- `completed` - Completed
-- `failed` - Failed
-
-### StepRole
-- `system` - System
-- `user` - User
+### DetailType
+- `type_a` - Type A
+- `type_b` - Type B
+- `default` - Default
 
 ## API Endpoints (Examples)
 
-### User API
-- `GET /me` - Get user information (includes usage, settings, profile)
-- `PUT /me` - Update user information (partial updates to usage, settings, profile)
-- `GET /me/dashboard` - Get dashboard data
-
-### Task API
-- `POST /tasks` - Start a task
-  - Request: `{ type, config? }`
-  - Response: `{ id, userId, status, steps, startedAt, ... }`
-- `GET /tasks/{taskId}` - Get a task
-- `POST /tasks/{taskId}/steps` - Add a step
-  - Request: `{ role, content }`
-- `POST /tasks/{taskId}/completion` - Complete a task
+### Item API
+- `GET /items` - Get item list
+  - Response: `{ items: [{ id, name, status, createdAt, ... }] }`
+- `POST /items` - Create item
+  - Request: `{ name, status? }`
+  - Response: `{ id, name, status, createdAt, updatedAt }`
+- `GET /items/{itemId}` - Get item
+  - Response: `{ id, name, status, details, createdAt, updatedAt }`
+- `PUT /items/{itemId}` - Update item
+  - Request: `{ name?, status? }`
+- `DELETE /items/{itemId}` - Delete item

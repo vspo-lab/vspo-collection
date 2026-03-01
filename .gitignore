@@ -45,3 +45,6 @@ services/web/test-results/
 
 # Generated dummy Parquet data (local dev only)
 services/web/public/datasets/
+
+# Claude Code hooks temporary file
+.claude/.post_edit_check_pending

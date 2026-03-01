@@ -2,7 +2,7 @@
 
 ## Overview
 
-Custom utility classes defined in the `@layer utilities` block of `globals.css`. These complement Tailwind CSS's standard utilities and provide project-specific styles.
+Custom utility classes defined in the `@layer utilities` of `globals.css`. These complement Tailwind CSS's standard utilities and provide project-specific styles.
 
 ---
 
@@ -10,7 +10,7 @@ Custom utility classes defined in the `@layer utilities` block of `globals.css`.
 
 ### text-balance
 
-Adjusts line-end balance for more aesthetically pleasing typography.
+Adjusts text line-end balance for more aesthetically pleasing typesetting.
 
 ```css
 .text-balance {
@@ -18,11 +18,11 @@ Adjusts line-end balance for more aesthetically pleasing typography.
 }
 ```
 
-**Use case**: Headings, taglines, and other short text
+**Use cases**: Headings, taglines, and other short text
 
 ### text-2xs / text-3xs
 
-Text sizes smaller than Tailwind's standard offerings.
+Text sizes smaller than Tailwind's standard options.
 
 | Class | Size | Line height | Use case |
 |-------|------|-------------|----------|
@@ -35,7 +35,7 @@ Text sizes smaller than Tailwind's standard offerings.
 
 ### animate-fade-up / animate-fade-up-slow
 
-Fade-in animation from bottom to top.
+Fade-in animations from bottom to top.
 
 | Class | Duration | Use case |
 |-------|----------|----------|
@@ -58,7 +58,7 @@ Floating up-and-down animation (infinite loop).
 }
 ```
 
-**Use case**: Hero section avatars, decorative elements
+**Use cases**: Hero section avatars, decorative elements
 
 ### animate-soft-pulse
 
@@ -70,7 +70,7 @@ Soft pulse animation (infinite loop).
 }
 ```
 
-**Use case**: CTA buttons, attention-grabbing elements
+**Use cases**: CTA buttons, attention-drawing elements
 
 ### animate-fade-in
 
@@ -82,7 +82,7 @@ Simple fade-in animation.
 }
 ```
 
-**Use case**: Modals, tooltip appearances
+**Use cases**: Modals, tooltip display
 
 ---
 
@@ -112,7 +112,7 @@ Simple fade-in animation.
 
 ```tsx
 <div className="transition-width duration-fast ease-standard">
-  Width transitions smoothly
+  Width changes smoothly
 </div>
 ```
 
@@ -154,7 +154,7 @@ Surface for input fields.
 
 ### surface-info / surface-alert
 
-Surfaces for informational and alert displays.
+Surfaces for information and alert displays.
 
 | Class | Background color | Use case |
 |-------|-----------------|----------|
@@ -172,11 +172,11 @@ Surfaces for metric displays.
 
 ---
 
-## Pill / Badge Utilities
+## Pill/Badge Utilities
 
 ### pill-outline
 
-Outline-styled pill.
+Outline-style pill.
 
 ```css
 .pill-outline {
@@ -205,7 +205,7 @@ Surface for form fields.
 
 ## Video UI Utilities
 
-Specialized classes for video overlay use.
+Dedicated classes for use in video overlays.
 
 ### badge-video-overlay
 
@@ -220,7 +220,7 @@ Specialized classes for video overlay use.
 }
 ```
 
-**Use case**: Timestamps and status indicators on video
+**Use cases**: Timestamps on video, status indicators
 
 ### badge-alert
 
@@ -236,7 +236,7 @@ Alert badge with pulse animation.
 }
 ```
 
-**Use case**: Important warnings, time limit exceeded
+**Use cases**: Important warnings, time limit exceeded
 
 ### badge-speaking
 
@@ -249,11 +249,11 @@ Badge indicating active speech.
 }
 ```
 
-**Use case**: Indicates that a user or AI is currently speaking
+**Use cases**: Indicating that a user or AI is currently speaking
 
 ### badge-name / badge-name-sm
 
-Badges for displaying names.
+Badges for name display.
 
 | Class | Font size | Use case |
 |-------|-----------|----------|
@@ -281,7 +281,7 @@ Badge for posture feedback.
 }
 ```
 
-**Use case**: Real-time posture feedback
+**Use cases**: Real-time posture feedback
 
 ---
 
@@ -289,13 +289,13 @@ Badge for posture feedback.
 
 | Class | Value | Use case |
 |-------|-------|----------|
-| `min-h-stage` | 80vh | Hero sections |
+| `min-h-stage` | 80vh | Hero section |
 | `min-w-pricing-table` | 600px | Pricing table minimum width |
 | `min-h-answer` | 140px | Answer area |
-| `min-h-suspense` | 60vh | Loading states |
-| `min-h-textarea` | 150px | Text area |
-| `min-w-action-btn` | 120px | Action buttons |
-| `max-w-chat-bubble` | 80% | Chat bubbles |
+| `min-h-suspense` | 60vh | Loading state |
+| `min-h-textarea` | 150px | Textarea |
+| `min-w-action-btn` | 120px | Action button |
+| `max-w-chat-bubble` | 80% | Chat bubble |
 | `aspect-avatar` | 4:5 | Avatar display |
 
 ```tsx
@@ -314,7 +314,7 @@ Badge for posture feedback.
 
 ### lg:grid-cols-mic-check
 
-Grid layout specifically for the mic check page.
+Grid layout dedicated to the mic check page.
 
 ```css
 @media (min-width: 1024px) {
@@ -353,7 +353,7 @@ Gradient background used across the application.
 }
 ```
 
-**Use case**: Landing page, onboarding
+**Use cases**: Landing pages, onboarding
 
 ---
 

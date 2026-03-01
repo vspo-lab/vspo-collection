@@ -2,29 +2,29 @@
 
 ## Overview
 
-Meta information is an important configuration for optimizing how the site appears on search engines and social media. This guideline defines how to set up favicons, OGP, apple-touch-icons, and the web manifest.
+Meta information is an important configuration for optimizing site display in search engines and social media. This guideline defines how to set up favicon, OGP, apple-touch-icon, and manifest.
 
 ## Favicon
 
 ### Recommended Specifications
 
-| Item | Recommended Value |
+| Item | Recommended value |
 |------|-------------------|
 | Size | 48 x 48 px |
 | Format | PNG |
-| Color mode | RGB (with transparency) |
+| Color mode | RGB (with transparency support) |
 
-### Why 48x48px?
+### Why 48x48px
 
-- **High-resolution display support**: Compatible with high pixel density displays such as Retina
+- **High-resolution display support**: Supports high pixel density displays such as Retina displays
 - **Google Search display**: Google recommends multiples of 48x48px
-- **Scalability**: Browsers automatically downscale when a smaller size is needed
+- **Scalability**: When smaller sizes are needed, the browser automatically scales down
 
-### Why PNG?
+### Why PNG
 
 - All major modern browsers support the PNG format
-- Easier to work with than ICO, and supports transparency
-- Manageable as a single file
+- Easier to handle than ICO format, and also supports transparency
+- Can be managed as a single file
 
 ### Implementation
 
@@ -36,15 +36,15 @@ Meta information is an important configuration for optimizing how the site appea
 
 ### Recommended Specifications
 
-| Item | Recommended Value |
+| Item | Recommended value |
 |------|-------------------|
 | Size | 180 x 180 px |
 | Format | PNG |
-| Rounded corners | Not required (the OS applies them automatically) |
+| Rounded corners | Not required (OS applies them automatically) |
 
-### Why 180x180px?
+### Why 180x180px
 
-According to the [Apple documentation](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html), this is the recommended size for Retina iPads. When a smaller icon is needed, the OS automatically generates it from this size.
+According to the [Apple official documentation](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html), this is the recommended size for Retina iPad, and icons for smaller sizes are automatically generated from this size.
 
 ### Implementation
 
@@ -54,7 +54,7 @@ According to the [Apple documentation](https://developer.apple.com/library/archi
 
 ## OGP (Open Graph Protocol)
 
-### Basic Setup
+### Basic Configuration
 
 ```html
 <meta property="og:title" content="Page Title" />
@@ -68,7 +68,7 @@ According to the [Apple documentation](https://developer.apple.com/library/archi
 
 ### OGP Image Recommended Specifications
 
-| Item | Recommended Value |
+| Item | Recommended value |
 |------|-------------------|
 | Size | 1200 x 630 px |
 | Aspect ratio | 1.91:1 |
@@ -77,12 +77,12 @@ According to the [Apple documentation](https://developer.apple.com/library/archi
 
 ### Notes
 
-- URLs must be absolute paths starting with `https://`
-- It is recommended that `og:description` match `<meta name="description">`
+- URLs must be specified as absolute paths starting with `https://`
+- It is recommended to match `og:description` with `<meta name="description">`
 
 ## Twitter Card
 
-In addition to OGP, set X (formerly Twitter) specific meta tags.
+Set Twitter/X-specific meta tags separately from OGP.
 
 ```html
 <meta name="twitter:card" content="summary_large_image" />
@@ -101,7 +101,7 @@ In addition to OGP, set X (formerly Twitter) specific meta tags.
 
 ## Web Manifest
 
-Used for PWA support and icon settings when adding to the home screen.
+Used for PWA support and icon configuration when added to the home screen.
 
 ### manifest.webmanifest
 
@@ -135,9 +135,9 @@ Used for PWA support and icon settings when adding to the home screen.
 
 ### Maskable Icon
 
-Icons with `purpose: "maskable"` are displayed with a circular or other shape mask on Android and similar platforms.
+Icons specified with `purpose: "maskable"` are displayed masked into circular or other shapes on Android and other platforms.
 
-| Item | Recommended Value |
+| Item | Recommended value |
 |------|-------------------|
 | Size | 512 x 512 px |
 | Safe area | Place important elements within the center 80% |
@@ -148,15 +148,15 @@ Icons with `purpose: "maskable"` are displayed with a circular or other shape ma
 <link rel="manifest" href="/manifest.webmanifest" />
 ```
 
-## Considerations for Logged-in / Logged-out States
+## Logged-in / Logged-out Considerations
 
-OGP images and meta information may need to change dynamically based on the page state (e.g., whether the user is logged in).
+OGP images and meta information may need to be dynamically changed depending on page state (e.g., login status).
 
-| Scenario | Considerations |
-|----------|----------------|
-| Public pages | Use the standard OGP settings |
-| Members-only pages | Set a generic OGP such as "Login required" |
-| User-generated content | Generate OGP dynamically (server-side rendering) |
+| Scenario | Consideration |
+|----------|---------------|
+| Public pages | Use standard OGP settings |
+| Members-only pages | Set generic OGP such as "Login required" |
+| User-generated content | Dynamically generate OGP (server-side rendering) |
 
 ## File Structure
 
@@ -171,9 +171,9 @@ public/
 └── manifest.webmanifest
 ```
 
-## References
+## Reference Links
 
-- [Google Favicon Guidelines](https://developers.google.com/search/docs/appearance/favicon-in-search?hl=ja)
+- [Google Favicon Guidelines](https://developers.google.com/search/docs/appearance/favicon-in-search)
 - [Apple - Configuring Web Applications](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)
 - [Open Graph Protocol](https://ogp.me/)
 - [Twitter Cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)

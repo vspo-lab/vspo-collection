@@ -1,45 +1,58 @@
-# Security Scanning
+# Lint / Quality Check
 
-## Tools
+## Overview
 
-| Tool | Purpose | CI Job |
-|------|---------|--------|
-| **Trivy** (filesystem) | Dependency, Dockerfile, and IaC vulnerability scan | `trivy-fs` |
-| **Trivy** (container) | Docker image vulnerability scan | `trivy-container` |
-| **Semgrep** | Static Application Security Testing (SAST) | `semgrep` |
+This document defines the minimum set of quality checks performed in this repository.
+Run the same procedure before PRs for both code and documentation changes.
 
-## Local Development
+## Required Checks (Common to All Changes)
 
-Run security scans locally via Docker (no local tool installation required):
-
-```bash
-# Filesystem scan + Semgrep
-pnpm security-scan
-
-# Include Docker image scan
-pnpm security-scan:docker
-```
-
-## Suppression Files
-
-- `.trivyignore` - CVE IDs to suppress in Trivy scans
-- `.semgrepignore` - File patterns to exclude from Semgrep analysis
-
-## Post-Edit Check
-
-After completing modifications, run all checks including security scan:
+After any change, always run the following command:
 
 ```bash
 ./scripts/post-edit-check.sh
 ```
 
-This runs: `pnpm build`, `pnpm biome`, `pnpm knip`, `pnpm type-check`, `pnpm security-scan`
+`post-edit-check.sh` executes the following in order:
 
-## Security Review Checklist
+```bash
+pnpm build
+pnpm biome
+pnpm textlint
+pnpm knip
+pnpm type-check
+pnpm test
+pnpm security-scan
+```
 
-When reviewing code for security concerns, verify the following:
+## Additional Checks for Documentation Changes
 
-- [ ] User input is validated before processing (Zod schemas, sanitization)
-- [ ] XSS and injection mitigations are in place (no careless `dangerouslySetInnerHTML`, parameterized queries)
-- [ ] Sensitive information (API keys, tokens, credentials) is not hardcoded in source (use environment variables)
-- [ ] OWASP Top 10 vulnerabilities are addressed (SQL injection, CSRF protections, proper authentication checks)
+When updating `docs/`, also verify the following:
+
+1. Content follows the writing rules in [docs/design/writing.md](../design/writing.md)
+2. Heading structure (`#` -> `##` -> `###`) is not broken
+3. Terminology is consistent (use the same term for the same concept)
+4. Referenced links exist and relative paths are correct
+5. `pnpm textlint` passes
+
+See [docs/security/textlint.md](./textlint.md) for textlint operation policy and setup examples.
+
+## Architecture Lint Rules (AI Review Targets)
+
+The following rules cannot be fully detected by automated linting, but are verified during code reviews.
+The `/code-review` skill checks these rules.
+
+| Rule | Target | Detection Method |
+| --- | --- | --- |
+| UseCase-to-UseCase calls prohibited | `usecase/` | AI review |
+| Direct env var access in UseCase prohibited | `usecase/` | AI review + grep `process.env` |
+| Direct message queue operations in UseCase prohibited | `usecase/` | AI review |
+| JSDoc (pre-conditions / post-conditions) required for Domain functions | `domain/` | AI review |
+| Idempotency (`@idempotent`) annotation required for UseCase functions | `usecase/` | AI review |
+| try-catch prohibited (Result type required) | All | AI review |
+| Direct interface definitions prohibited (Zod Schema First) | All | AI review |
+
+For details, see the following:
+
+- [UseCase Implementation Rules](../backend/usecase-rules.md)
+- [Function Documentation Conventions](../backend/function-documentation.md)

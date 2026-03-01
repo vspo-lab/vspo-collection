@@ -1,55 +1,53 @@
 # Tailwind CSS Guidelines
 
-## Core Principles
+## Basic Principles
 
-### Utility-First Mindset
+### Utility-First Philosophy
 
-Tailwind utility-first does not mean every UI must be abstracted into components.
-When reuse and behavior are uncertain, prefer writing utilities directly.
-Abstract only when the UI has stable reuse and includes behavior (for example, event handlers).
+Tailwind's utility-first approach does not mean "every UI element is a composition of lower-level components." Rather, it means **write uncertain parts with utilities**. Abstract into components only when reusability and behavior (event handlers, etc.) are involved.
 
 ### Prohibited
 
-- Using `@apply`
-- Defining custom classes outside Tailwind (including `@layer utilities` custom classes)
-- Accepting `className` as a generic extension prop by default (except controlled wrappers)
-- CSS-only abstractions such as `.btn-primary` or `.surface-panel`
+- Using the `@apply` directive
+- Defining CSS classes outside of Tailwind (including custom classes in `@layer utilities`)
+- Accepting `className` as props (except for variations)
+- CSS-only abstractions (e.g., defining `.btn-primary`, `.surface-panel`)
 - Adding new `@keyframes` to `globals.css`
 
-### Allowed
+### Permitted
 
-- Component abstraction that includes behavior and not just style
-- Variant modeling with `cva`
-- Limited `.prose` usage for rich-text rendering
-- Normalize/reset rules in `@layer base`
-- Design token definitions via `@theme`
-- Built-in Tailwind animations such as `animate-spin` and `animate-pulse`
+- Abstracting as UI components (including logic such as handlers)
+- Defining variations with `cva`
+- Exceptional use of the `.prose` class (for rich text display)
+- Normalize/reset processing in `@layer base`
+- Defining design tokens in `@theme`
+- Tailwind built-in animations (`animate-spin`, `animate-pulse`, etc.)
 
 ### Design Goals
 
-- Manage design tokens as a single source of truth (color, type, radius, motion)
-- Use Tailwind in a token-first way and reduce arbitrary values in components
-- Use shadcn/ui as shared primitives while preserving brand identity
-- Keep future theming possible (dark mode, seasonal themes) without component rewrites
+- Manage design tokens as a single source (color, type, radius, motion)
+- Use Tailwind in a token-first manner, reducing arbitrary values within components
+- Adopt shadcn/ui as the common primitive while maintaining brand look
+- Enable future theme support (dark mode, seasonal) without component changes
 
 ## Design Tokens
 
 ### Token Architecture
 
 | Layer | Description | Example |
-|------|-------------|---------|
-| Base palette | Raw values without semantic intent | `--palette-ink-900`, `--palette-coral-100` |
-| Semantic tokens | Intent-based aliases | `--token-canvas`, `--token-text`, `--token-border` |
-| Component tokens | Component-specific overrides (only when needed) | `--token-dark-canvas` |
-| Motion tokens | Timing and easing | `--duration-fast`, `--ease-standard` |
+|-------|-------------|---------|
+| Base palette | Raw color values only (no intent) | `--palette-ink-900`, `--palette-coral-100` |
+| Semantic tokens | Expresses intent | `--token-canvas`, `--token-text`, `--token-border` |
+| Component tokens | For specific components (only when needed) | `--token-dark-canvas` |
+| Motion tokens | duration/easing | `--duration-fast`, `--ease-standard` |
 
-### Tailwind v4 CSS-First Setup
+### Tailwind v4 CSS-first Configuration
 
-Define tokens in `@theme` and expose them as utilities.
+Define tokens with the `@theme` directive and expose them as utilities:
 
 ```css
 @theme {
-  /* Colors */
+  /* Colors - semantic tokens */
   --color-background: var(--token-canvas);
   --color-foreground: var(--token-text);
   --color-primary: var(--token-surface-ink);
@@ -59,7 +57,7 @@ Define tokens in `@theme` and expose them as utilities.
   --font-body: "M PLUS Rounded 1c", sans-serif;
   --font-display: "Shippori Mincho B1", serif;
 
-  /* Radius */
+  /* Radius scale */
   --radius-sm: 0.5rem;
   --radius-md: 0.875rem;
   --radius-lg: 1.25rem;
@@ -70,22 +68,25 @@ Define tokens in `@theme` and expose them as utilities.
 
 ### Color Format
 
-Use `oklch()` for all color definitions.
+All colors use the `oklch()` format (for perceptual uniformity):
 
 ```css
 :root {
+  /* Base palette */
   --palette-ink-900: oklch(0.21 0.02 285);
   --palette-ink-800: oklch(0.28 0.02 285);
   --palette-coral-100: oklch(0.90 0.08 50);
+
+  /* With alpha */
   --palette-line: oklch(0.21 0.03 285 / 0.12);
 }
 ```
 
-### JS Token Mirror
+### Color Mapping (JS Side)
 
-Mirror important color tokens in TypeScript for app-side usage.
+For maintainability, make color definitions referenceable from JS as well:
 
-```ts
+```typescript
 // shared/lib/design-tokens.ts
 export const colors = {
   ink: {
@@ -98,41 +99,41 @@ export const colors = {
 } as const;
 ```
 
-## Arbitrary Value Rules
+## Arbitrary Values Restriction
 
-Do not use arbitrary values in design-critical areas.
+**Arbitrary values are prohibited in areas core to design consistency**:
 
-| Area | Disallowed Example | Preferred Alternative |
-|------|--------------------|-----------------------|
-| Spacing | `p-[13px]`, `m-[7px]` | Tailwind scale (`p-3`, `m-2`) |
-| Font size | `text-[15px]` | Tokenized size via `@theme` |
-| Radius | `rounded-[10px]` | `--radius-*` tokens |
-| Colors | `bg-[#ff6b6b]` | Add to palette first |
+| Area | Prohibited Example | Alternative |
+|------|-------------------|-------------|
+| Spacing | `p-[13px]`, `m-[7px]` | Use Tailwind scale (`p-3`, `m-2`) |
+| Font size | `text-[15px]` | Define token in `@theme` |
+| Border radius | `rounded-[10px]` | Use `--radius-*` tokens |
+| Colors | `bg-[#ff6b6b]` | Add to palette first, then use |
 
-Allowed cases:
+**Permitted cases:**
 
-- Layout-driven calculations such as `w-[calc(100%-2rem)]`
-- One-off visual backgrounds/gradients
-- Fixed values required by external constraints
+- Layout-specific dimensions (`w-[calc(100%-2rem)]`)
+- Artistic backgrounds/gradients
+- Fixed values due to external constraints (e.g., video player aspect ratio)
 
 ```tsx
-// Bad: arbitrary spacing and color
-<div className="p-[13px] bg-[#custom]" />
+// NG: Arbitrary values for spacing/color
+<div className="p-[13px] bg-[#custom]">
 
-// Good: layout calculation
-<div className="w-[calc(100%-var(--sidebar-width))]" />
+// OK: Layout requiring calculation
+<div className="w-[calc(100%-var(--sidebar-width))]">
 
-// Good: one-off artistic background
-<div className="bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))]" />
+// OK: One-off artistic background
+<div className="bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))]">
 ```
 
-When an exception is unavoidable, document the reason near the component.
+If unavoidable, document the reason in the component or a nearby comment.
 
 ## Component Design
 
-### Variants with `cva`
+### Variation Definition with cva
 
-```ts
+```typescript
 import { cva, type VariantProps } from "class-variance-authority";
 
 const buttonVariants = cva(
@@ -154,7 +155,7 @@ const buttonVariants = cva(
       intent: "primary",
       size: "md",
     },
-  },
+  }
 );
 
 type ButtonProps = VariantProps<typeof buttonVariants> & {
@@ -163,9 +164,11 @@ type ButtonProps = VariantProps<typeof buttonVariants> & {
 };
 ```
 
-### Always Use `cn` for Conditional Classes
+### Using tailwind-merge
 
-```ts
+Always use the `cn` utility for conditional classes to prevent class name conflicts:
+
+```typescript
 // shared/lib/utils.ts
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -176,67 +179,66 @@ export function cn(...inputs: ClassValue[]) {
 ```
 
 ```tsx
-<div
-  className={cn(
-    "bg-card rounded-lg p-4",
-    isActive && "ring-2 ring-primary",
-  )}
-/>
+// Usage example
+<div className={cn(
+  "bg-card rounded-lg p-4",
+  isActive && "ring-2 ring-primary",
+)}>
 ```
 
-### `className` Policy
+### Handling className Props
 
-Default rule: do not accept generic `className` extension props.
+**Basic rule:** Do not accept `className` as props
 
 ```tsx
-// Bad
+// NG: Accepting className as props
 interface CardProps {
   className?: string;
   children: ReactNode;
 }
 
-// Good
+// OK: Handle via variations
 interface CardProps {
   variant: "default" | "elevated" | "outlined";
   children: ReactNode;
 }
 ```
 
-Exception: wrappers around shadcn primitives may internally accept `className`.
+**Exception:** When wrapping shadcn/ui primitives, `className` may be accepted as an internal implementation detail
 
-## shadcn/ui Adoption
+## shadcn/ui Adoption Policy
 
-### Recommended Primitives
+### Primitives Used
 
-`Button`, `Input`, `Textarea`, `Select`, `Dialog`, `Tooltip`, `Popover`, `Tabs`, `Badge`, `Card`, `DropdownMenu`
+Button, Input, Textarea, Select, Dialog, Tooltip, Popover, Tabs, Badge, Card, DropdownMenu
 
 ### Brand Wrappers
 
-Place brand-level wrappers in `shared/components/presenters`.
+Place wrappers combining shadcn primitives in `shared/components/presenters`:
 
-| Wrapper | Base | Added Behavior |
-|---------|------|----------------|
-| `ActionButton` | Button | Optional `href` support |
-| `SurfaceCard` | Card | Tone variants (`glass`, `soft`, `ink`) |
+| Wrapper | Base | Additional Feature |
+|---------|------|-------------------|
+| `ActionButton` | Button | Link support via `href` prop |
+| `SurfaceCard` | Card | Tone variants (glass, soft, ink) |
 | `TagPill` | Badge | Simplified API |
 
-### UI Primitive Inventory
+### UI Primitives List
 
-Keep low-level primitives in `shared/components/ui/`.
+Placed in `shared/components/ui/`:
 
 | Component | Variants | Notes |
 |-----------|----------|-------|
 | `Button` | primary, secondary, ghost / sm, md, lg | CVA-based |
 | `Card` | - | Base card container |
-| `Badge` | mint, sky, lilac, amber, coral, ink | Color tones |
+| `Badge` | mint, sky, lilac, amber, coral, ink | With color tones |
 | `Input` | default, error | Form input |
-| `Textarea` | default, error | Multiline input |
+| `Textarea` | default, error | Multi-line text |
 | `Select` | default, error | Native select wrapper |
 | `Chart` | - | Recharts wrapper |
 
 ## Normalize / Reset
 
-Keep base rules inside `@layer base`.
+Performed within Tailwind's `@layer base`:
 
 ```css
 @layer base {
@@ -264,10 +266,7 @@ Keep base rules inside `@layer base`.
     cursor: not-allowed;
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
+  h1, h2, h3, h4 {
     font-family: var(--font-display);
   }
 
@@ -277,15 +276,16 @@ Keep base rules inside `@layer base`.
 }
 ```
 
-## Animation Policy
+## Animation
 
-### Preferred Options
+### Recommended Approach
 
-1. UI animation libraries: Framer Motion, React Spring
-2. JS-driven animations: GSAP, Anime.js
-3. Tailwind built-ins: `animate-spin`, `animate-pulse`
+1. **UI library:** Framer Motion, React Spring
+2. **JS-based animation:** GSAP, Anime.js
+3. **Tailwind built-in:** `animate-spin`, `animate-pulse`, etc.
 
 ```tsx
+// Example with Framer Motion
 import { motion } from "framer-motion";
 
 <motion.div
@@ -294,31 +294,38 @@ import { motion } from "framer-motion";
   transition={{ duration: 0.3, ease: "easeOut" }}
 >
   Content
-</motion.div>;
+</motion.div>
 ```
 
-### Disallowed
+### Prohibited
 
 - Adding new `@keyframes` to `globals.css`
-- Defining CSS-only custom animations
+- CSS-only custom animation definitions
 
-### Legacy Migration
+### Migrating Existing Code
 
-Treat existing CSS animations as legacy and migrate gradually to JS-based animations.
+The following in `globals.css` are treated as **legacy** and should be gradually migrated to JS-based solutions:
+
+- `@keyframes fadeUp` → Framer Motion
+- `@keyframes floaty` → Framer Motion
+- `@keyframes softPulse` → Framer Motion
+- Custom classes in `@layer utilities` → Convert to React components
 
 ## Token Catalog
 
-### Color Utilities
+Tokens defined in `@theme` and available as Tailwind utilities:
+
+### Colors
 
 | Token | Usage |
 |-------|-------|
 | `bg-background` / `text-foreground` | Main canvas |
 | `bg-primary` / `text-primary-foreground` | Primary action |
 | `bg-accent` / `text-accent-foreground` | Accent |
-| `bg-card` / `text-card-foreground` | Card surfaces |
-| `bg-dark-canvas` / `bg-dark-bar` | Dark-mode-only surfaces |
+| `bg-card` / `text-card-foreground` | Card background |
+| `bg-dark-canvas` / `bg-dark-bar` | Dark mode only |
 
-### Radius Utilities
+### Radius
 
 | Token | Value |
 |-------|-------|
@@ -328,91 +335,75 @@ Treat existing CSS animations as legacy and migrate gradually to JS-based animat
 | `rounded-xl` | 1.5rem |
 | `rounded-2xl` | 2rem |
 
-### Shadow Variables
+### Shadow (via CSS Variable)
 
 | Variable | Usage |
 |----------|-------|
-| `--shadow-card` | Standard cards |
-| `--shadow-action` | Action buttons and prominent controls |
-| `--shadow-hero` | Hero sections and large cards |
+| `--shadow-card` | Standard card |
+| `--shadow-action` | Action buttons, prominent elements |
+| `--shadow-hero` | Hero sections, large cards |
 
-Usage example: `shadow-[var(--shadow-card)]` or inline `boxShadow: 'var(--shadow-card)'`.
+Usage example: `shadow-[var(--shadow-card)]` or in a React component `style={{ boxShadow: 'var(--shadow-card)' }}`
 
-### Motion Variables
+### Motion (via CSS Variable)
 
 | Variable | Value |
 |----------|-------|
 | `--duration-fast` | 150ms |
 | `--duration-md` | 300ms |
-| `--ease-standard` | `cubic-bezier(0.2, 0.7, 0.2, 1)` |
+| `--ease-standard` | cubic-bezier(0.2, 0.7, 0.2, 1) |
 
 ## File Structure
 
-```text
-services/my-app/
+```
+services/web/
 ├── app/
-│   └── globals.css          # only @theme, @layer base, CSS variables
+│   └── globals.css          # @theme, @layer base, CSS Variables only
 └── shared/
     ├── components/
-    │   ├── ui/              # shadcn/ui primitives (CVA)
-    │   └── presenters/      # brand wrappers
+    │   ├── ui/              # shadcn/ui primitives (using cva)
+    │   └── presenters/      # Brand wrappers
     └── lib/
         ├── utils.ts         # cn() utility
-        └── design-tokens.ts # optional JS token mirror
+        └── design-tokens.ts # JS-side color mapping (optional)
 ```
 
-### Allowed Content in `globals.css`
+### Allowed Content in globals.css
 
 ```css
 /* Allowed */
 @import "tailwindcss";
-@theme {
-  /* ... */
-}
-@layer base {
-  /* ... */
-}
-:root {
-  /* CSS variables */
-}
+@theme { ... }
+@layer base { ... }
+:root { /* CSS Variables */ }
 
-/* Disallowed */
-@layer utilities {
-  .custom-class {
-    /* ... */
-  }
-}
-@keyframes newAnimation {
-  /* ... */
-}
-.my-class {
-  /* ... */
-}
+/* Prohibited */
+@layer utilities { .custom-class { ... } }  /* Custom class definitions */
+@keyframes newAnimation { ... }              /* New animations */
+.my-class { ... }                            /* Classes outside Tailwind */
 ```
 
 ## Guardrails
 
-- Treat token names as stable; refactor usage sites instead of renaming published tokens
-- Add new colors to the palette first, then map them to semantic roles
-- Prefer the default Tailwind spacing scale; add custom spacing only when repeated usage is clear
-- Define all new colors in `oklch()` format
+- Treat token names as stable. Refactor usage sites rather than renaming published tokens
+- Add new colors to the palette first, then map to a semantic role
+- Prefer Tailwind's default spacing scale. Add custom spacing only when used repeatedly
+- Write all new colors in `oklch()` format
 
 ## Checklist
 
 When adding new styles:
 
-- [ ] No arbitrary values in design-critical areas
-- [ ] No `@apply`
-- [ ] No custom classes in `@layer utilities`
-- [ ] Components include behavior (event handlers, state), not just className wrappers
-- [ ] Variants are modeled with `cva`
-- [ ] Conditional classes use `cn()`
-- [ ] New colors use `oklch()`
-- [ ] Existing primitives (`ActionButton`, `SurfaceCard`, `TagPill`) were considered first
-- [ ] Props use explicit variant types over booleans when there are more than 2 states
-- [ ] `VariantProps<typeof variants>` is used with `cva` for variant prop types
+- [ ] Are arbitrary values not being used in areas core to design consistency?
+- [ ] Is `@apply` not being used?
+- [ ] Are custom classes not being defined in `@layer utilities`?
+- [ ] Does the component include behavior (handlers, etc.)? (Is it not a CSS-only abstraction?)
+- [ ] Are variations defined with `cva`?
+- [ ] Are conditional classes using `cn()`?
+- [ ] Are new colors in `oklch()` format?
+- [ ] Have you checked whether existing UI primitives (`ActionButton`, `SurfaceCard`, `TagPill`) can handle this?
 
-## References
+## Reference Links
 
 - [Tailwind CSS v4 - Adding Custom Styles](https://tailwindcss.com/docs/adding-custom-styles)
 - [Class Variance Authority](https://cva.style/docs)

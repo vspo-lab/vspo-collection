@@ -2,91 +2,91 @@
 
 ## Overview
 
-Design review is a critical process for ensuring product quality. This guideline defines two types of review: Information Design Review and UI Review.
+Design review is an important process for ensuring product quality. This guideline defines two types of review processes: information architecture review and UI review.
 
-## Information Design Review
+## Information Architecture Review
 
-A review that examines whether the product's information structure is sound.
+A review that examines whether the product's information structure is appropriate.
 
 ### Scope
 
 | Scope | Description |
 |-------|-------------|
-| New applications | Newly developed applications |
+| New application development | Newly developed applications |
 | Large-scale feature development | Major feature additions to existing products |
 
 ### Timing
 
-Conduct the review once the high-level design is finalized and ready to share with the development team.
+Conduct the review when the design outline has been established and is ready to share with the development team.
 
 ### Required Materials
 
 | Material | Description |
 |----------|-------------|
-| Information design artifacts | IA diagrams, sitemaps, flow diagrams, etc. |
+| Information architecture outputs | IA diagrams, sitemaps, flow diagrams, etc. |
 | Screen layouts | Design files or screen captures |
 
 ### Participant Roles
 
-| Role | Assigned To | Responsibility |
-|------|-------------|----------------|
-| Reviewee | Lead designer | Accountable for explaining design decisions |
-| Support | Development team (optional) | Supports the reviewee |
-| Facilitator | Moderator | Manages proceedings and organizes discussion |
-| Reviewer | Other participants | Provides feedback |
+| Role | Person | Responsibility |
+|------|--------|----------------|
+| Reviewee | Assigned designer | Accountable for explaining design decisions |
+| Support | Development team (optional) | Support the reviewee |
+| Facilitator | Moderator | Facilitate proceedings and organize discussions |
+| Reviewer | Other participants | Provide feedback |
 
 ### Evaluation Criteria
 
-Evaluation uses a 4-level scale.
+Evaluation is conducted on a 4-level scale.
 
-| Rating | Description | Next Action |
+| Rating | Description | Next action |
 |--------|-------------|-------------|
 | Good | No issues | Proceed as-is |
-| Minor issues | Small improvements needed | Fix without re-review |
-| Clear issues | Definite problems exist | Redesign and re-review |
+| Minor issues | Small improvements needed | Fix, no re-review needed |
+| Clear issues | Clear problems exist | Fix/redesign, then re-review |
 | Fundamental issues | Design rethink required | Restart from design phase |
 
 ### Expected Feedback
 
-| Perspective | Examples |
-|-------------|----------|
-| Any concerns with the information design artifacts? | Object definitions, screen transitions, navigation structure |
-| Any misalignment between screens and the information design? | Consistency between design intent and screen presentation |
+| Perspective | Specific examples |
+|-------------|-------------------|
+| Are there concerns with the information architecture outputs? | Object definitions, screen transitions, navigation structure |
+| Is there a gap between the screens and the information architecture? | Consistency between design intent and screen representation |
 
-**Note**: Details such as spacing and component selection are handled in the UI Review.
+**Note**: Details such as spacing and component selection are handled in the UI review.
 
 ### Review Process
 
-1. **Preparation**: Reviewee shares materials (at least 2 business days before review)
-2. **Presentation**: Reviewee explains the information design rationale (15 min)
-3. **Q&A**: Reviewers ask questions (20 min)
+1. **Preparation**: Reviewee shares materials (at least 2 business days before the review)
+2. **Presentation**: Reviewee explains the intent of the information architecture (15 min)
+3. **Q&A**: Respond to reviewer questions (20 min)
 4. **Feedback**: Reviewers provide feedback (15 min)
-5. **Wrap-up**: Determine rating and confirm next actions (10 min)
+5. **Summary**: Determine evaluation and confirm next actions (10 min)
 
 ## UI Review
 
-A review focused on the concrete visual layer of product design.
+A review conducted on the concrete surface-level aspects of product design.
 
 ### Scope
 
 | Scope | Description |
 |-------|-------------|
-| New applications | Newly developed applications |
+| New application development | Newly developed applications |
 | Medium to large-scale feature development | Feature additions to existing products |
 
 ### Timing
 
-| Development Type | Timing |
-|------------------|--------|
-| New development | After information design review is complete |
-| Medium-scale development | At the lead designer's preferred timing |
+| Development type | Timing |
+|-----------------|--------|
+| New development | After information architecture review is complete |
+| Medium-scale development | At the assigned designer's preferred time |
 
 ### Participants
 
 | Role | Count |
 |------|-------|
-| Lead designer (reviewee) | 1 |
-| Reviewer | 1 (randomly assigned) |
+| Assigned designer (reviewee) | 1 person |
+| Reviewer | 1 person (randomly assigned) |
 
 ### Review Format
 
@@ -98,40 +98,40 @@ A review focused on the concrete visual layer of product design.
 
 ### Expected Feedback
 
-Feedback should follow this format:
+Feedback is provided in the following format:
 
 | Element | Description |
 |---------|-------------|
-| Checklist number | The checklist item number from [Design Principles](./design-principles.md) |
-| Target | Specific screen or element |
-| Issue details | Problem description and improvement suggestion |
+| Checklist number | Checklist number from [Design Principles](./design-principles.md) |
+| Target | Specific screen/element |
+| Feedback content | Issue and improvement suggestion |
 
 #### Feedback Example
 
 ```
-【#7 Visual Grouping】
+[#7 Visual Grouping]
 Settings screen - "Notification Settings" section
 
-Problem: The spacing between "Email notifications" and "Push notifications"
-         is too narrow, making them appear as the same group.
+Issue: The spacing between "Email notifications" and "Push notifications"
+      is too narrow, making them appear as the same group.
 
-Suggestion: Increase the section spacing from 24px to 40px to clearly
-            delineate group boundaries.
+Suggestion: Increase the section spacing from 24px to 40px to
+           clarify the group boundaries.
 ```
 
 ### Review Goal
 
-Ideally, the review completes in **a single round-trip**: the reviewee receives feedback and responds to any decisions outside the checklist scope.
+The ideal is **a single round-trip communication** where the reviewee receives feedback and responds to decisions outside the checklist.
 
 ### Checklist Usage
 
-The UI Review uses the 22-item checklist from [Design Principles](./design-principles.md).
+The UI review utilizes the 22-item checklist from [Design Principles](./design-principles.md).
 
-Key items to focus on:
+Especially important items:
 
 | # | Item |
 |---|------|
-| 6 | Visual flow |
+| 6 | Eye flow guidance |
 | 7 | Visual grouping |
 | 8 | Page layout |
 | 9 | Spacing |
@@ -144,46 +144,46 @@ Key items to focus on:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    New Development                       │
+│                    For new development                   │
 ├─────────────────────────────────────────────────────────┤
 │  Start design                                           │
 │      ↓                                                  │
-│  Create information design artifacts                    │
+│  Create information architecture outputs                │
 │      ↓                                                  │
-│  【Information Design Review】 ← Re-review if rated     │
-│      │                          "Clear issues" or worse │
+│  [IA Review] ←──── Re-review if rated                   │
+│      │             "Clear issues" or above              │
 │      ↓                                                  │
 │  Create UI design                                       │
 │      ↓                                                  │
-│  【UI Review】 ←──────────── Revise and re-check        │
-│      ↓                       as needed                  │
+│  [UI Review] ←───── Revise and re-confirm as needed     │
+│      ↓                                                  │
 │  Start development                                      │
 └─────────────────────────────────────────────────────────┘
 ```
 
 ## Review Request Templates
 
-### Information Design Review Request
+### Information Architecture Review Request
 
 ```markdown
-## Information Design Review Request
+## Information Architecture Review Request
 
 ### Project Name
 [Project name]
 
-### Summary
-[Brief project description]
+### Overview
+[Brief description of the project]
 
 ### Material Links
-- Information design: [link]
-- Screen layouts: [link]
+- Information architecture: [Link]
+- Screen layouts: [Link]
 
 ### Preferred Date
 [List candidate dates]
 
-### Areas to Focus On
-- [Focus area 1]
-- [Focus area 2]
+### Points to Focus On
+- [Focus point 1]
+- [Focus point 2]
 ```
 
 ### UI Review Request
@@ -192,30 +192,20 @@ Key items to focus on:
 ## UI Review Request
 
 ### Target Screens
-[List of screens to review]
+[List of target screens]
 
 ### Design File
-[Figma or other design tool link]
+[Figma or other link]
 
-### Background & Context
+### Background / Context
 [Design background and constraints]
 
-### Areas to Focus On
-- [Focus area 1]
-- [Focus area 2]
+### Points to Focus On
+- [Focus point 1]
+- [Focus point 2]
 ```
 
-## Responsive Design Checklist
-
-When reviewing responsive design, verify the following:
-
-- [ ] Layouts are mobile-aware with appropriate breakpoints
-- [ ] Sticky/fixed elements do not obscure focused content (e.g., `scroll-padding-top` is set)
-- [ ] Layouts work correctly at 200% zoom (no fixed pixel widths that break)
-- [ ] Touch-friendly spacing is used on mobile (tap targets meet minimum size)
-- [ ] Responsive prefixes (`sm:`, `md:`, `max-md:`) are used consistently
-
-## References
+## Reference Links
 
 - [Design Principles](./design-principles.md)
 - [Design Patterns](./design-patterns.md)
