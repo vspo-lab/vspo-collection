@@ -1,21 +1,21 @@
 ---
 name: integration-testing
-description: Integrationテストを実DBと実アプリ配線で構築し、内部はモックせず外部境界のみ最小モックで検証するときに使う。
+description: Used when building integration tests with a real DB and real app wiring, verifying without internal mocks and limiting mocking to external boundaries only.
 ---
 
-# トリガー条件
+# Trigger Conditions
 
-- UseCase と Repository の連携を検証するとき
-- DB を含む結合テストを追加・更新するとき
+- When verifying the coordination between UseCases and Repositories
+- When adding or updating integration tests that involve a DB
 
-# 実行チェックリスト
+# Execution Checklist
 
-1. `docs/testing/integration-testing.md` を確認する
-2. 実DBを使う前提でシナリオをテーブル化する
-3. 外部依存だけ境界で置き換える
-4. `test:integration` で再現可能性を確認する
+1. Review `docs/testing/integration-testing.md`
+2. Define scenarios as tables assuming a real DB
+3. Replace only external dependencies at the boundary
+4. Confirm reproducibility with `test:integration`
 
-# 参照ドキュメント
+# Reference Documents
 
 - `docs/testing/integration-testing.md`
 - `docs/web-frontend/twada-tdd.md`

@@ -1,4 +1,4 @@
-# UI Specification — ぶいすぽコレクション（音声）
+# UI Specification — Vspo Collection (Voice)
 
 ## 1. Purpose / Scope
 
@@ -50,7 +50,7 @@
 | Section | Items |
 |---------|-------|
 | Main nav | Home, Member, Add voice |
-| Categories | 挨拶, リアクション, 決め台詞, 叫び, 笑い, 歌, ゲーム, 日常 |
+| Categories | Greetings, Reactions, Catchphrases, Shouts, Laughter, Singing, Gaming, Daily life |
 | Playlists | Favorites, custom playlists, + New |
 
 ### Route Map
@@ -153,7 +153,7 @@ Design mockups: [Figma](https://www.figma.com/design/84XQRkIqqgbIfuILBe7G2E)
 - **Layout**: Category header + filtered clip list (same layout as Home)
 - **Key elements**:
   - Back navigation
-  - Category header: Lucide icon + category name (Japanese) + total clip count
+  - Category header: Lucide icon + category name + total clip count
   - Sort control: Popular / Newest
   - Member filter chips (filter within category)
   - Clip list: same components as Home (ClipListPresenter / ClipTablePresenter)
@@ -214,9 +214,9 @@ Member initial character in a colored circle using the member's brand color.
 
 ### Status Badges
 
-- Pending: `--warning` bg (yellow), dark text, "審査中" label
-- Approved: `--success` bg (green), dark text, "承認済み" label
-- Rejected: `--error` bg (red), white text, "却下" label
+- Pending: `--warning` bg (yellow), dark text, "Pending review" label
+- Approved: `--success` bg (green), dark text, "Approved" label
+- Rejected: `--error` bg (red), white text, "Rejected" label
 - Size: inline badge (padding 2px 8px, border-radius 4px, font-size 12px)
 
 ### Cards
@@ -254,7 +254,7 @@ Member initial character in a colored circle using the member's brand color.
 ### Empty States
 
 - No clips: Illustration-free message with CTA to add voice
-- No clips in category: "このカテゴリにはまだクリップがありません" message
+- No clips in category: "There are no clips in this category yet" message
 - No playlists: Prompt to create first playlist
 - No submissions: Prompt to submit first clip
 

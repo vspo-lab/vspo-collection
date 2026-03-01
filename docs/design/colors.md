@@ -1,57 +1,57 @@
-# カラーガイドライン
+# Color Guidelines
 
-## 概要
+## Overview
 
-カラーパレットは、ブランドの視覚的アイデンティティを構成する重要な要素です。一貫したカラー使用により、ユーザーに統一感のある体験を提供します。
+The color palette is an important element that makes up a brand's visual identity. Consistent color usage provides users with a unified experience.
 
-## ブランドカラー
+## Brand Colors
 
-プロジェクトに合わせてブランドカラーを定義してください。
+Define brand colors according to your project.
 
-| 名称 | HEX | 用途 |
-|------|-----|------|
-| Background | `#FFFFFF` | 背景・ベースカラー |
-| Accent | `#000000` | アクセント・強調 |
+| Name | HEX | Use case |
+|------|-----|----------|
+| Background | `#FFFFFF` | Background / base color |
+| Accent | `#000000` | Accent / emphasis |
 
-## セカンダリカラー
+## Secondary Colors
 
-ブランドカラーを補完し、UIのバリエーションを豊かにするカラーを定義してください。
+Define colors that complement the brand colors and enrich UI variations.
 
-## カラー使用ルール
+## Color Usage Rules
 
-### コントラスト比の考慮
+### Contrast Ratio Considerations
 
-アクセシビリティを確保するため、テキストと背景のコントラスト比は以下を満たす必要があります：
+To ensure accessibility, the contrast ratio between text and background must meet the following requirements:
 
-| 対象 | 最小コントラスト比 |
-|------|-------------------|
-| 通常テキスト（14px未満） | 4.5:1 以上 |
-| 大きなテキスト（18px以上、または14px以上のボールド） | 3:1 以上 |
-| UIコンポーネント・グラフィック | 3:1 以上 |
+| Target | Minimum contrast ratio |
+|--------|----------------------|
+| Normal text (less than 14px) | 4.5:1 or higher |
+| Large text (18px or larger, or 14px or larger bold) | 3:1 or higher |
+| UI components and graphics | 3:1 or higher |
 
-### カラーの組み合わせ
+### Color Combinations
 
-#### 推奨される組み合わせ
+#### Recommended Combinations
 
-| 背景 | テキスト/前景 | 用途 |
-|------|--------------|------|
-| Background色 | ダークグレー/ブラック | 本文テキスト |
-| Accent色 | ダークテキスト | CTAボタン |
+| Background | Text/Foreground | Use case |
+|------------|----------------|----------|
+| Background color | Dark gray/black | Body text |
+| Accent color | Dark text | CTA buttons |
 
-#### 避けるべき組み合わせ
+#### Combinations to Avoid
 
-- 明るい背景色に白テキスト（コントラスト不足）
-- 類似色相の組み合わせ（色の区別が困難）
+- White text on light backgrounds (insufficient contrast)
+- Similar hue combinations (difficult to distinguish colors)
 
-## 禁止事項
+## Prohibited Practices
 
-- パレット外のカラーの無断使用
-- ブランドカラーの変形（透明度の過度な変更、グラデーションへの変換等）
-- コントラスト比を満たさない組み合わせでのテキスト表示
-- 色のみで情報を伝えること（形状やテキストも併用する）
+- Unauthorized use of colors outside the palette
+- Altering brand colors (excessive transparency changes, conversion to gradients, etc.)
+- Displaying text with combinations that do not meet contrast ratio requirements
+- Conveying information through color alone (also use shapes and text)
 
-## 参考リンク
+## Reference Links
 
-- [アクセシビリティガイドライン](./accessibility.md)
-- [デザイントークン](./design-tokens.md)
+- [Accessibility Guidelines](./accessibility.md)
+- [Design Tokens](./design-tokens.md)
 - [Contrast Checker - WebAIM](https://webaim.org/resources/contrastchecker/)

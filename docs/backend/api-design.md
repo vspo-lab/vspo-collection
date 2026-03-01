@@ -1,101 +1,101 @@
 # REST API Design Principles
 
-## 概要
+## Overview
 
-このドキュメントでは、API の RESTful 設計原則を定義します。
+This document defines the RESTful design principles for the API.
 
-## 設計原則
+## Design Principles
 
-### 1. リソース指向 URL
+### 1. Resource-Oriented URLs
 
-URL はリソース（名詞）を表し、操作（動詞）は HTTP メソッドで表現します。
+URLs represent resources (nouns), and operations (verbs) are expressed via HTTP methods.
 
 ```
 # Good
-GET    /items                # アイテム一覧取得
-POST   /items                # アイテム作成
-GET    /items/{id}           # アイテム取得
-PUT    /items/{id}           # アイテム更新
-DELETE /items/{id}           # アイテム削除
+GET    /items                # List items
+POST   /items                # Create item
+GET    /items/{id}           # Get item
+PUT    /items/{id}           # Update item
+DELETE /items/{id}           # Delete item
 
 # Bad
 GET    /getItems
 POST   /createItem
-GET    /users/me/home       # "home" はリソースではない
+GET    /users/me/home       # "home" is not a resource
 ```
 
-### 2. HTTP メソッド
+### 2. HTTP Methods
 
-| メソッド | 説明 | 冪等性 | 安全性 |
+| Method | Description | Idempotent | Safe |
 |---------|------|-------|-------|
-| GET    | リソース取得 | あり | あり |
-| POST   | リソース作成、アクション実行 | なし | なし |
-| PUT    | リソース更新（部分更新を含む） | あり | なし |
-| DELETE | リソース削除 | あり | なし |
+| GET    | Retrieve resource | Yes | Yes |
+| POST   | Create resource, execute action | No | No |
+| PUT    | Update resource (including partial updates) | Yes | No |
+| DELETE | Delete resource | Yes | No |
 
-**注意**: PATCH は使用しません。部分更新は PUT でドメインモデル全体を送信し、サーバー側で差分を計算します。
+**Note**: PATCH is not used. For partial updates, send the entire domain model via PUT and let the server compute the diff.
 
-### 3. リソース命名規則
+### 3. Resource Naming Conventions
 
-- **複数形を使用**: `/items`, `/users`, `/orders`
-- **snake_case を使用**: `/api_tokens`, `/user_settings`（ハイフンは使わない）
-- **ネストは2階層まで**: `/orders/{id}/items`（OK）、`/orders/{id}/items/{itemId}/comments`（避ける）
-- **リソース識別子はパスパラメータ**: `/items/{id}`
-- **フィルタリングはクエリパラメータ**: `/items?status=completed&limit=10`
+- **Use plural forms**: `/items`, `/users`, `/orders`
+- **Use snake_case**: `/api_tokens`, `/user_settings` (no hyphens)
+- **Nesting up to 2 levels**: `/orders/{id}/items` (OK), `/orders/{id}/items/{itemId}/comments` (avoid)
+- **Resource identifiers as path parameters**: `/items/{id}`
+- **Filtering via query parameters**: `/items?status=completed&limit=10`
 
-### 4. フィルタリング、ソート、ページネーション
+### 4. Filtering, Sorting, and Pagination
 
-クエリパラメータを使用します。
+Use query parameters.
 
 ```
-# フィルタリング
+# Filtering
 GET /items?status=completed
 GET /orders?user_id={userId}
 
-# ソート
-GET /items?sort=-created_at        # 降順
-GET /items?sort=created_at         # 昇順
+# Sorting
+GET /items?sort=-created_at        # Descending
+GET /items?sort=created_at         # Ascending
 
-# ページネーション
+# Pagination
 GET /items?limit=20&offset=0
-GET /items?cursor={lastId}         # カーソルベース
+GET /items?cursor={lastId}         # Cursor-based
 ```
 
-### 5. 現在のユーザーリソース
+### 5. Current User Resources
 
-現在のユーザーリソースには `/me` を使用しますが、常に具体的なリソースに紐づけます。
+Use `/me` for current user resources, but always associate them with a specific resource.
 
 ```
 # Good
-GET  /me                    # 現在のユーザー情報
-GET  /me/settings           # ユーザー設定
-PUT  /me/settings           # ユーザー設定の更新
+GET  /me                    # Current user info
+GET  /me/settings           # User settings
+PUT  /me/settings           # Update user settings
 
 # Bad
-GET  /users/me/home         # "home" はリソースではない
-GET  /users/me/history      # "history" はリソースではない
+GET  /users/me/home         # "home" is not a resource
+GET  /users/me/history      # "history" is not a resource
 ```
 
-### 6. サブリソース vs クエリパラメータ
+### 6. Sub-resources vs Query Parameters
 
-強い関連にはサブリソース、弱い関連にはクエリパラメータを使用します。
+Use sub-resources for strong associations and query parameters for weak associations.
 
 ```
-# 強い関連（サブリソース）
+# Strong association (sub-resource)
 GET  /orders/{id}/items
 GET  /orders/{id}/summary
 POST /orders/{id}/items
 
-# 弱い関連（クエリパラメータ）
+# Weak association (query parameter)
 GET  /reports?order_id={id}
 GET  /notifications?user_id={id}
 ```
 
-### 7. リソースに対するアクション
+### 7. Actions on Resources
 
-アクション（状態遷移）は明示的なサブリソースとして表現します。
+Actions (state transitions) are expressed as explicit sub-resources.
 
 ```
-# Good - 状態を表すサブリソース
-POST /orders/{id}/completion       # 注文を完了する
+# Good - Sub-resource representing state
+POST /orders/{id}/completion       # Complete an order
 ```

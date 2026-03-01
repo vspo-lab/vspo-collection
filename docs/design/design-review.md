@@ -1,212 +1,212 @@
-# デザインレビュー
+# Design Review
 
-## 概要
+## Overview
 
-デザインレビューは、プロダクトの品質を担保するための重要なプロセスです。本ガイドラインでは、情報設計レビューとUIレビューの2種類のレビュープロセスを定義します。
+Design review is an important process for ensuring product quality. This guideline defines two types of review processes: information architecture review and UI review.
 
-## 情報設計レビュー
+## Information Architecture Review
 
-プロダクトの情報構造が妥当かどうかを検査するレビューです。
+A review that examines whether the product's information structure is appropriate.
 
-### 対象
+### Scope
 
-| 対象 | 説明 |
-|------|------|
-| 新規開発アプリ | 新しく開発するアプリケーション |
-| 大規模feature開発 | 既存プロダクトへの大きな機能追加 |
+| Scope | Description |
+|-------|-------------|
+| New application development | Newly developed applications |
+| Large-scale feature development | Major feature additions to existing products |
 
-### 実施タイミング
+### Timing
 
-デザインの大枠が固まり、開発チームと共有可能になった段階で実施します。
+Conduct the review when the design outline has been established and is ready to share with the development team.
 
-### 準備物
+### Required Materials
 
-| 資料 | 説明 |
-|------|------|
-| 情報設計のアウトプット | IA図、サイトマップ、フロー図など |
-| 画面レイアウト | デザインファイルまたは画面キャプチャ |
+| Material | Description |
+|----------|-------------|
+| Information architecture outputs | IA diagrams, sitemaps, flow diagrams, etc. |
+| Screen layouts | Design files or screen captures |
 
-### 参加者の役割
+### Participant Roles
 
-| 役割 | 担当 | 責務 |
-|------|------|------|
-| レビュイー | 担当デザイナー | 意思決定の説明責任を負う |
-| サポート | 開発チーム（任意参加） | レビュイーをサポート |
-| ファシリテーター | 進行担当 | 進行と議論の整理 |
-| レビュアー | その他参加者 | フィードバックの提供 |
+| Role | Person | Responsibility |
+|------|--------|----------------|
+| Reviewee | Assigned designer | Accountable for explaining design decisions |
+| Support | Development team (optional) | Support the reviewee |
+| Facilitator | Moderator | Facilitate proceedings and organize discussions |
+| Reviewer | Other participants | Provide feedback |
 
-### 評価基準
+### Evaluation Criteria
 
-4段階で評価を行います。
+Evaluation is conducted on a 4-level scale.
 
-| 評価 | 説明 | 次のアクション |
-|------|------|---------------|
-| 良好 | 問題なし | そのまま進行 |
-| 軽微な課題あり | 小さな改善点がある | 修正後、再レビュー不要 |
-| 明確な課題あり | 明確な問題がある | 修正・再設計後、再レビュー |
-| 根本的な課題あり | 設計の見直しが必要 | 設計からやり直し |
+| Rating | Description | Next action |
+|--------|-------------|-------------|
+| Good | No issues | Proceed as-is |
+| Minor issues | Small improvements needed | Fix, no re-review needed |
+| Clear issues | Clear problems exist | Fix/redesign, then re-review |
+| Fundamental issues | Design rethink required | Restart from design phase |
 
-### 期待されるフィードバック
+### Expected Feedback
 
-| 観点 | 具体例 |
-|------|--------|
-| 情報設計のアウトプットに違和感がないか | オブジェクト定義、画面遷移、ナビゲーション構造 |
-| 画面と情報設計にズレがないか | 設計意図と画面表現の一致 |
+| Perspective | Specific examples |
+|-------------|-------------------|
+| Are there concerns with the information architecture outputs? | Object definitions, screen transitions, navigation structure |
+| Is there a gap between the screens and the information architecture? | Consistency between design intent and screen representation |
 
-**注意**: 余白やコンポーネント選定などの詳細はUIレビューで扱います。
+**Note**: Details such as spacing and component selection are handled in the UI review.
 
-### レビューの進め方
+### Review Process
 
-1. **事前準備**: レビュイーが資料を共有（レビュー日の2営業日前まで）
-2. **説明**: レビュイーが情報設計の意図を説明（15分）
-3. **質疑応答**: レビュアーからの質問に回答（20分）
-4. **フィードバック**: レビュアーがフィードバックを提供（15分）
-5. **まとめ**: 評価の決定と次のアクションの確認（10分）
+1. **Preparation**: Reviewee shares materials (at least 2 business days before the review)
+2. **Presentation**: Reviewee explains the intent of the information architecture (15 min)
+3. **Q&A**: Respond to reviewer questions (20 min)
+4. **Feedback**: Reviewers provide feedback (15 min)
+5. **Summary**: Determine evaluation and confirm next actions (10 min)
 
-## UIレビュー
+## UI Review
 
-プロダクトデザインの具体的な表層部分に対して行うレビューです。
+A review conducted on the concrete surface-level aspects of product design.
 
-### 対象
+### Scope
 
-| 対象 | 説明 |
-|------|------|
-| 新規開発アプリ | 新しく開発するアプリケーション |
-| 中〜大規模feature開発 | 既存プロダクトへの機能追加 |
+| Scope | Description |
+|-------|-------------|
+| New application development | Newly developed applications |
+| Medium to large-scale feature development | Feature additions to existing products |
 
-### 実施タイミング
+### Timing
 
-| 開発種別 | タイミング |
-|----------|-----------|
-| 新規開発 | 情報設計レビュー完了後 |
-| 中規模開発 | 担当デザイナーの希望時期 |
+| Development type | Timing |
+|-----------------|--------|
+| New development | After information architecture review is complete |
+| Medium-scale development | At the assigned designer's preferred time |
 
-### 参加者
+### Participants
 
-| 役割 | 人数 |
-|------|------|
-| 担当デザイナー（レビュイー） | 1名 |
-| レビュアー | 1名（ランダムアサイン） |
+| Role | Count |
+|------|-------|
+| Assigned designer (reviewee) | 1 person |
+| Reviewer | 1 person (randomly assigned) |
 
-### レビュー形式
+### Review Format
 
-**非同期レビュー**を基本とします。
+**Asynchronous review** is the default format.
 
-1. レビュイーがデザインファイルを共有
-2. レビュアーがコメントでフィードバック
-3. レビュイーが回答・修正
+1. Reviewee shares the design file
+2. Reviewer provides feedback via comments
+3. Reviewee responds and makes corrections
 
-### 期待されるフィードバック
+### Expected Feedback
 
-フィードバックは以下の形式で提供します：
+Feedback is provided in the following format:
 
-| 要素 | 説明 |
-|------|------|
-| チェックリスト番号 | [デザイン原則](./design-principles.md)のチェックリスト番号 |
-| 指摘対象 | 具体的な画面・要素 |
-| 指摘内容 | 問題点と改善提案 |
+| Element | Description |
+|---------|-------------|
+| Checklist number | Checklist number from [Design Principles](./design-principles.md) |
+| Target | Specific screen/element |
+| Feedback content | Issue and improvement suggestion |
 
-#### フィードバック例
+#### Feedback Example
 
 ```
-【#7 視覚的グルーピング】
-設定画面の「通知設定」セクション
+[#7 Visual Grouping]
+Settings screen - "Notification Settings" section
 
-問題: 「メール通知」と「プッシュ通知」の間の余白が狭く、
-      同じグループに見えてしまう。
+Issue: The spacing between "Email notifications" and "Push notifications"
+      is too narrow, making them appear as the same group.
 
-提案: セクション間の余白を24pxから40pxに広げることで、
-      グループの境界を明確にする。
+Suggestion: Increase the section spacing from 24px to 40px to
+           clarify the group boundaries.
 ```
 
-### レビューのゴール
+### Review Goal
 
-指摘を受け、チェックリスト外の判断について回答するなど、**一往復のコミュニケーション**が理想的です。
+The ideal is **a single round-trip communication** where the reviewee receives feedback and responds to decisions outside the checklist.
 
-### チェックリストの活用
+### Checklist Usage
 
-UIレビューでは、[デザイン原則](./design-principles.md)の22項目チェックリストを活用します。
+The UI review utilizes the 22-item checklist from [Design Principles](./design-principles.md).
 
-特に重要な項目：
+Especially important items:
 
-| # | 項目 |
+| # | Item |
 |---|------|
-| 6 | 視線誘導 |
-| 7 | 視覚的グルーピング |
-| 8 | ページレイアウト |
-| 9 | 余白の取り方 |
-| 10 | モバイルレイアウト |
-| 11 | フィードバック |
-| 17 | 独自コンポーネントの回避 |
-| 21 | エラーメッセージ |
+| 6 | Eye flow guidance |
+| 7 | Visual grouping |
+| 8 | Page layout |
+| 9 | Spacing |
+| 10 | Mobile layout |
+| 11 | Feedback |
+| 17 | Avoiding custom components |
+| 21 | Error messages |
 
-## レビュープロセスのフロー
+## Review Process Flow
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    新規開発の場合                        │
+│                    For new development                   │
 ├─────────────────────────────────────────────────────────┤
-│  設計開始                                               │
+│  Start design                                           │
 │      ↓                                                  │
-│  情報設計のアウトプット作成                              │
+│  Create information architecture outputs                │
 │      ↓                                                  │
-│  【情報設計レビュー】 ←─── 評価「明確な課題あり」以上は  │
-│      │                     再レビュー                   │
+│  [IA Review] ←──── Re-review if rated                   │
+│      │             "Clear issues" or above              │
 │      ↓                                                  │
-│  UIデザイン作成                                         │
+│  Create UI design                                       │
 │      ↓                                                  │
-│  【UIレビュー】 ←──────── 必要に応じて修正・再確認      │
+│  [UI Review] ←───── Revise and re-confirm as needed     │
 │      ↓                                                  │
-│  開発着手                                               │
+│  Start development                                      │
 └─────────────────────────────────────────────────────────┘
 ```
 
-## レビュー依頼のテンプレート
+## Review Request Templates
 
-### 情報設計レビュー依頼
-
-```markdown
-## 情報設計レビュー依頼
-
-### プロジェクト名
-[プロジェクト名]
-
-### 概要
-[プロジェクトの概要を簡潔に記述]
-
-### 資料リンク
-- 情報設計: [リンク]
-- 画面レイアウト: [リンク]
-
-### 希望日時
-[候補日を記載]
-
-### 特に確認してほしい点
-- [確認ポイント1]
-- [確認ポイント2]
-```
-
-### UIレビュー依頼
+### Information Architecture Review Request
 
 ```markdown
-## UIレビュー依頼
+## Information Architecture Review Request
 
-### 対象画面
-[対象画面の一覧]
+### Project Name
+[Project name]
 
-### デザインファイル
-[Figmaなどのリンク]
+### Overview
+[Brief description of the project]
 
-### 背景・コンテキスト
-[デザインの背景や制約事項]
+### Material Links
+- Information architecture: [Link]
+- Screen layouts: [Link]
 
-### 特に確認してほしい点
-- [確認ポイント1]
-- [確認ポイント2]
+### Preferred Date
+[List candidate dates]
+
+### Points to Focus On
+- [Focus point 1]
+- [Focus point 2]
 ```
 
-## 参考リンク
+### UI Review Request
 
-- [デザイン原則](./design-principles.md)
-- [デザインパターン](./design-patterns.md)
-- [アクセシビリティチェックリスト](./accessibility.md)
+```markdown
+## UI Review Request
+
+### Target Screens
+[List of target screens]
+
+### Design File
+[Figma or other link]
+
+### Background / Context
+[Design background and constraints]
+
+### Points to Focus On
+- [Focus point 1]
+- [Focus point 2]
+```
+
+## Reference Links
+
+- [Design Principles](./design-principles.md)
+- [Design Patterns](./design-patterns.md)
+- [Accessibility Checklist](./accessibility.md)
