@@ -8,9 +8,7 @@ const bindings = new InngestMiddleware({
 			onFunctionRun({ reqArgs }) {
 				return {
 					transformInput() {
-						const [honoCtx] = reqArgs as [
-							Context<{ Bindings: Env }>,
-						];
+						const [honoCtx] = reqArgs as [Context<{ Bindings: Env }>];
 						return {
 							ctx: {
 								env: honoCtx.env,

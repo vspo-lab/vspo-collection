@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { Avatar } from "@/shared/components/ui/Avatar";
 import { members } from "@/shared/lib/members";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/member")({ component: MemberListPage });
 

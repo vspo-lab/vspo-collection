@@ -1,13 +1,23 @@
-import { SkipBack, Play, Pause, SkipForward, Volume2 } from "lucide-react";
 import { Avatar } from "@/shared/components/ui/Avatar";
 import { LikeButton } from "@/shared/components/ui/LikeButton";
-import { usePlayerContext } from "../../providers/PlayerProvider";
-import { useLikes } from "../../hooks/useLikes";
 import { getMemberById } from "@/shared/lib/members";
+import { Pause, Play, SkipBack, SkipForward, Volume2 } from "lucide-react";
+import { useLikes } from "../../hooks/useLikes";
+import { usePlayerContext } from "../../providers/PlayerProvider";
 
 export function PlayerBarPresenter() {
-	const { currentClip, isPlaying, progress, volume, pause, resume, next, prev, seek, setVolume } =
-		usePlayerContext();
+	const {
+		currentClip,
+		isPlaying,
+		progress,
+		volume,
+		pause,
+		resume,
+		next,
+		prev,
+		seek,
+		setVolume,
+	} = usePlayerContext();
 	const { isLiked, toggleLike } = useLikes();
 
 	if (!currentClip) {
@@ -31,9 +41,9 @@ export function PlayerBarPresenter() {
 					seek((e.clientX - rect.left) / rect.width);
 				}}
 				onKeyDown={(e) => {
-				if (e.key === "ArrowRight") seek(Math.min(1, progress + 0.05));
-				if (e.key === "ArrowLeft") seek(Math.max(0, progress - 0.05));
-			}}
+					if (e.key === "ArrowRight") seek(Math.min(1, progress + 0.05));
+					if (e.key === "ArrowLeft") seek(Math.max(0, progress - 0.05));
+				}}
 				role="slider"
 				aria-label="Seek"
 				aria-valuenow={Math.round(progress * 100)}
@@ -47,7 +57,10 @@ export function PlayerBarPresenter() {
 				/>
 				<div
 					className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity"
-					style={{ left: `${progress * 100}%`, transform: `translate(-50%, -50%)` }}
+					style={{
+						left: `${progress * 100}%`,
+						transform: "translate(-50%, -50%)",
+					}}
 				/>
 			</div>
 
@@ -56,10 +69,13 @@ export function PlayerBarPresenter() {
 				<div className="flex items-center gap-3 w-[240px] shrink-0">
 					<Avatar member={member} size="md" />
 					<div className="min-w-0">
-						<div className="text-sm font-medium truncate">{currentClip.title}</div>
+						<div className="text-sm font-medium truncate">
+							{currentClip.title}
+						</div>
 						<div className="text-xs text-ink-muted truncate">{member.name}</div>
 					</div>
 					<LikeButton
+						count={currentClip.likeCount}
 						isLiked={isLiked(currentClip.id)}
 						onToggle={() => toggleLike(currentClip.id)}
 						className="ml-2"
@@ -82,7 +98,11 @@ export function PlayerBarPresenter() {
 						className="w-9 h-9 rounded-full bg-ink text-white flex items-center justify-center hover:bg-ink-soft transition-colors"
 						aria-label={isPlaying ? "Pause" : "Play"}
 					>
-						{isPlaying ? <Pause size={16} /> : <Play size={16} className="ml-0.5" />}
+						{isPlaying ? (
+							<Pause size={16} />
+						) : (
+							<Play size={16} className="ml-0.5" />
+						)}
 					</button>
 					<button
 						type="button"

@@ -15,7 +15,7 @@ dayjs.tz.setDefault("UTC");
  * @returns UTC ISO string (e.g., "2024-01-15T10:30:00Z")
  */
 const convertToUTC = (input: Date | string | number): string => {
-  return dayjs.tz(input).utc().format();
+	return dayjs.tz(input).utc().format();
 };
 
 /**
@@ -23,7 +23,7 @@ const convertToUTC = (input: Date | string | number): string => {
  * @returns Date object in UTC
  */
 const getCurrentUTCDate = (): Date => {
-  return dayjs.tz().toDate();
+	return dayjs.tz().toDate();
 };
 
 /**
@@ -31,7 +31,7 @@ const getCurrentUTCDate = (): Date => {
  * @returns UTC ISO string
  */
 const getCurrentUTCString = (): string => {
-  return dayjs.tz().format();
+	return dayjs.tz().format();
 };
 
 /**
@@ -40,7 +40,7 @@ const getCurrentUTCString = (): string => {
  * @returns Unix timestamp in milliseconds
  */
 const getCurrentTimestamp = (): number => {
-  return dayjs.tz().valueOf();
+	return dayjs.tz().valueOf();
 };
 
 /**
@@ -49,7 +49,7 @@ const getCurrentTimestamp = (): number => {
  * @returns Date object in UTC
  */
 const convertToUTCDate = (input: Date | string | number): Date => {
-  return dayjs.tz(input).utc().toDate();
+	return dayjs.tz(input).utc().toDate();
 };
 
 /**
@@ -59,10 +59,10 @@ const convertToUTCDate = (input: Date | string | number): Date => {
  * @returns UTC ISO string
  */
 const convertToUTCTimestamp = (
-  dateStr: Date | string | number,
-  tz: string,
+	dateStr: Date | string | number,
+	tz: string,
 ): string => {
-  return dayjs.tz(dateStr, tz).utc().format();
+	return dayjs.tz(dateStr, tz).utc().format();
 };
 
 /**
@@ -73,11 +73,11 @@ const convertToUTCTimestamp = (
  * @returns UTC ISO string
  */
 const addDaysAndConvertToUTC = (
-  dateStr: Date | string | number,
-  days: number,
-  tz: string,
+	dateStr: Date | string | number,
+	days: number,
+	tz: string,
 ): string => {
-  return dayjs.tz(dateStr, tz).add(days, "day").utc().format();
+	return dayjs.tz(dateStr, tz).add(days, "day").utc().format();
 };
 
 /**
@@ -87,10 +87,10 @@ const addDaysAndConvertToUTC = (
  * @returns UTC ISO string at end of day
  */
 const getEndOfDayUTC = (
-  dateStr: Date | string | number,
-  tz: string,
+	dateStr: Date | string | number,
+	tz: string,
 ): string => {
-  return dayjs.tz(dateStr, tz).endOf("day").utc().format();
+	return dayjs.tz(dateStr, tz).endOf("day").utc().format();
 };
 
 /**
@@ -100,10 +100,10 @@ const getEndOfDayUTC = (
  * @returns Date string in YYYY-MM-DD format
  */
 const getPreviousDay = (
-  dateStr: Date | string | number,
-  tz: string,
+	dateStr: Date | string | number,
+	tz: string,
 ): string => {
-  return dayjs.tz(dateStr, tz).subtract(1, "day").format("YYYY-MM-DD");
+	return dayjs.tz(dateStr, tz).subtract(1, "day").format("YYYY-MM-DD");
 };
 
 /**
@@ -111,7 +111,7 @@ const getPreviousDay = (
  * @returns Current year as number
  */
 const getCurrentYear = (): number => {
-  return dayjs.tz().year();
+	return dayjs.tz().year();
 };
 
 /**
@@ -120,7 +120,7 @@ const getCurrentYear = (): number => {
  * @returns Date string in YYYY-MM-DD format
  */
 const formatToISODate = (input: Date | string | number): string => {
-  return dayjs.tz(input).format("YYYY-MM-DD");
+	return dayjs.tz(input).format("YYYY-MM-DD");
 };
 
 /**
@@ -129,7 +129,7 @@ const formatToISODate = (input: Date | string | number): string => {
  * @returns Filename-safe ISO string (e.g., "2024-01-15T10-30-00-000Z")
  */
 const formatToFilenameSafeISO = (input: Date | string | number): string => {
-  return dayjs.tz(input).utc().format("YYYY-MM-DDTHH-mm-ss-SSS[Z]");
+	return dayjs.tz(input).utc().format("YYYY-MM-DDTHH-mm-ss-SSS[Z]");
 };
 
 /**
@@ -138,7 +138,7 @@ const formatToFilenameSafeISO = (input: Date | string | number): string => {
  * @returns Date object with added time
  */
 const addMillisecondsFromNow = (ms: number): Date => {
-  return dayjs.tz().add(ms, "millisecond").toDate();
+	return dayjs.tz().add(ms, "millisecond").toDate();
 };
 
 /**
@@ -148,7 +148,7 @@ const addMillisecondsFromNow = (ms: number): Date => {
  * @returns Date object
  */
 const subtractDays = (input: Date | string | number, days: number): Date => {
-  return dayjs.tz(input).subtract(days, "day").toDate();
+	return dayjs.tz(input).subtract(days, "day").toDate();
 };
 
 /**
@@ -158,10 +158,10 @@ const subtractDays = (input: Date | string | number, days: number): Date => {
  * @returns Date object
  */
 const subtractMinutes = (
-  input: Date | string | number,
-  minutes: number,
+	input: Date | string | number,
+	minutes: number,
 ): Date => {
-  return dayjs.tz(input).subtract(minutes, "minute").toDate();
+	return dayjs.tz(input).subtract(minutes, "minute").toDate();
 };
 
 /**
@@ -171,7 +171,7 @@ const subtractMinutes = (
  * @returns Date object
  */
 const addMinutes = (input: Date | string | number, minutes: number): Date => {
-  return dayjs.tz(input).add(minutes, "minute").toDate();
+	return dayjs.tz(input).add(minutes, "minute").toDate();
 };
 
 /**
@@ -181,10 +181,10 @@ const addMinutes = (input: Date | string | number, minutes: number): Date => {
  * @returns true if date1 is before date2
  */
 const isBefore = (
-  date1: Date | string | number,
-  date2: Date | string | number,
+	date1: Date | string | number,
+	date2: Date | string | number,
 ): boolean => {
-  return dayjs.tz(date1).isBefore(dayjs.tz(date2));
+	return dayjs.tz(date1).isBefore(dayjs.tz(date2));
 };
 
 /**
@@ -195,11 +195,11 @@ const isBefore = (
  * @returns Difference in seconds (date1 - date2)
  */
 const diffInSeconds = (
-  date1: Date | string | number,
-  date2: Date | string | number,
-  float = false,
+	date1: Date | string | number,
+	date2: Date | string | number,
+	float = false,
 ): number => {
-  return dayjs.tz(date1).diff(dayjs.tz(date2), "second", float);
+	return dayjs.tz(date1).diff(dayjs.tz(date2), "second", float);
 };
 
 /**
@@ -210,21 +210,21 @@ const diffInSeconds = (
  * @returns A string formatted in the local format for the specified language
  */
 const formatToLocalizedDate = (
-  input: Date | string | number,
-  lang: TargetLang,
+	input: Date | string | number,
+	lang: TargetLang,
 ): string => {
-  const { locale, timeZone } = LOCALE_TIMEZONE_MAP[lang];
+	const { locale, timeZone } = LOCALE_TIMEZONE_MAP[lang];
 
-  return new Intl.DateTimeFormat(locale, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZone,
-    hour12: locale.startsWith("en") || locale.startsWith("es"), // en, es use AM/PM notation
-  }).format(convertToUTCDate(input));
+	return new Intl.DateTimeFormat(locale, {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+		timeZone,
+		hour12: locale.startsWith("en") || locale.startsWith("es"), // en, es use AM/PM notation
+	}).format(convertToUTCDate(input));
 };
 
 /**
@@ -233,16 +233,16 @@ const formatToLocalizedDate = (
  * @returns Formatted date string in JST
  */
 const formatToJST = (input: Date | string | number): string => {
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZone: "Asia/Tokyo",
-    hour12: false,
-  }).format(convertToUTCDate(input));
+	return new Intl.DateTimeFormat("ja-JP", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+		timeZone: "Asia/Tokyo",
+		hour12: false,
+	}).format(convertToUTCDate(input));
 };
 
 /**
@@ -251,7 +251,7 @@ const formatToJST = (input: Date | string | number): string => {
  * @returns Date string in YYYY/MM/DD format (JST)
  */
 const formatToJSTShort = (input: Date | string | number): string => {
-  return dayjs.tz(input).tz("Asia/Tokyo").format("YYYY/MM/DD");
+	return dayjs.tz(input).tz("Asia/Tokyo").format("YYYY/MM/DD");
 };
 
 /**
@@ -260,30 +260,30 @@ const formatToJSTShort = (input: Date | string | number): string => {
  * @returns Date string in M/D format (JST)
  */
 const formatToJSTMonthDay = (input: Date | string | number): string => {
-  return dayjs.tz(input).tz("Asia/Tokyo").format("M/D");
+	return dayjs.tz(input).tz("Asia/Tokyo").format("M/D");
 };
 
 export {
-  convertToUTC,
-  convertToUTCDate,
-  getCurrentUTCDate,
-  getCurrentUTCString,
-  getCurrentTimestamp,
-  formatToLocalizedDate,
-  convertToUTCTimestamp,
-  addDaysAndConvertToUTC,
-  getEndOfDayUTC,
-  getPreviousDay,
-  getCurrentYear,
-  formatToISODate,
-  formatToFilenameSafeISO,
-  addMillisecondsFromNow,
-  subtractDays,
-  subtractMinutes,
-  addMinutes,
-  isBefore,
-  diffInSeconds,
-  formatToJST,
-  formatToJSTShort,
-  formatToJSTMonthDay,
+	convertToUTC,
+	convertToUTCDate,
+	getCurrentUTCDate,
+	getCurrentUTCString,
+	getCurrentTimestamp,
+	formatToLocalizedDate,
+	convertToUTCTimestamp,
+	addDaysAndConvertToUTC,
+	getEndOfDayUTC,
+	getPreviousDay,
+	getCurrentYear,
+	formatToISODate,
+	formatToFilenameSafeISO,
+	addMillisecondsFromNow,
+	subtractDays,
+	subtractMinutes,
+	addMinutes,
+	isBefore,
+	diffInSeconds,
+	formatToJST,
+	formatToJSTShort,
+	formatToJSTMonthDay,
 };

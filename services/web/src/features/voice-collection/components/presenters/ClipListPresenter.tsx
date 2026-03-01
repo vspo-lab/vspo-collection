@@ -1,9 +1,9 @@
-import { Heart } from "lucide-react";
 import { Avatar } from "@/shared/components/ui/Avatar";
 import { PlayingBars } from "@/shared/components/ui/PlayingBars";
-import { cn } from "@/shared/lib/utils";
 import { formatDuration } from "@/shared/lib/format";
 import { getMemberById } from "@/shared/lib/members";
+import { cn } from "@/shared/lib/utils";
+import { Heart } from "lucide-react";
 import type { Clip } from "../../types/domain";
 
 type ClipListPresenterProps = {
@@ -32,8 +32,6 @@ export function ClipListPresenter({
 				return (
 					<li
 						key={clip.id}
-						role="button"
-						tabIndex={0}
 						onClick={() => onPlay(clip)}
 						onKeyDown={(e) => {
 							if (e.key === "Enter" || e.key === " ") {
@@ -55,7 +53,12 @@ export function ClipListPresenter({
 							)}
 						</div>
 						<div className="flex-1 min-w-0">
-							<div className={cn("text-sm font-medium truncate", isPlaying && "text-accent")}>
+							<div
+								className={cn(
+									"text-sm font-medium truncate",
+									isPlaying && "text-accent",
+								)}
+							>
 								{clip.title}
 							</div>
 							<div className="text-xs text-ink-muted">{member.name}</div>

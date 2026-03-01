@@ -49,10 +49,7 @@ describe("TranscriptUseCase", () => {
 		});
 
 		const fetched = await usecase.fetch({ videoId: "abc", lang: "ja" });
-		const saved = await usecase.saveRaw(
-			{ videoId: "abc", lang: "ja" },
-			"raw",
-		);
+		const saved = await usecase.saveRaw({ videoId: "abc", lang: "ja" }, "raw");
 
 		expect(fetched).toBe(fetchError);
 		expect(saved).toBe(saveError);

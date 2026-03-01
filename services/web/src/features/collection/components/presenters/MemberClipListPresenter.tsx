@@ -1,5 +1,5 @@
-import { cn } from "@/shared/lib/utils";
 import { LikeButton } from "@/shared/components/ui/LikeButton";
+import { cn } from "@/shared/lib/utils";
 import type { AudioClip, SortOption } from "../../types/domain";
 
 type MemberClipListPresenterProps = {
@@ -29,9 +29,7 @@ export function MemberClipListPresenter({
 				<button
 					type="button"
 					onClick={() =>
-						onSortChange?.(
-							sortOption === "popular" ? "newest" : "popular",
-						)
+						onSortChange?.(sortOption === "popular" ? "newest" : "popular")
 					}
 					className="text-[13px] font-bold text-primary"
 				>
@@ -44,9 +42,7 @@ export function MemberClipListPresenter({
 				{clips.map((clip) => (
 					<div
 						key={clip.id}
-						className={cn(
-							"flex items-center gap-3.5 border-b py-3",
-						)}
+						className={cn("flex items-center gap-3.5 border-b py-3")}
 						style={{ borderColor: "var(--border-card)" }}
 					>
 						{/* Play button */}

@@ -130,9 +130,7 @@ export const JobRepository = {
 					.first()
 					.then((row) =>
 						row
-							? TranscriptJobMapper.fromRow(
-									row as Record<string, unknown>,
-								)
+							? TranscriptJobMapper.fromRow(row as Record<string, unknown>)
 							: null,
 					),
 				(err) =>
@@ -155,9 +153,7 @@ export const JobRepository = {
 					.all()
 					.then((result) =>
 						result.results.map((row) =>
-							TranscriptJobMapper.fromRow(
-								row as Record<string, unknown>,
-							),
+							TranscriptJobMapper.fromRow(row as Record<string, unknown>),
 						),
 					),
 				(err) =>

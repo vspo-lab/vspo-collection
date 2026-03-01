@@ -1,7 +1,7 @@
+import { z } from "zod";
 import { JobRepository } from "../../repository/job";
 import { createTranscriptUseCase } from "../../usecase/transcript";
 import { inngest } from "../client";
-import { z } from "zod";
 
 const eventDataSchema = z.object({
 	video_id: z.string().min(1),

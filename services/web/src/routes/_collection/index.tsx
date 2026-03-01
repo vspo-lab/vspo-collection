@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import {
 	mockClips,
 	mockMembers,
 } from "@/features/collection/__mocks__/fixtures";
 import { HomePagePresenter } from "@/features/collection/components/presenters/HomePagePresenter";
 import type { HomeTab } from "@/features/collection/types/domain";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_collection/")({
 	component: HomePage,

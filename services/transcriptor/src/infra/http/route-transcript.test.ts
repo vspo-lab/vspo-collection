@@ -23,7 +23,7 @@ const createEnv = () =>
 	({
 		YT_CONTAINER: {},
 		TRANSCRIPT_BUCKET: {},
-	} as unknown as Env);
+	}) as unknown as Env;
 
 describe("registerTranscriptRoute", () => {
 	beforeEach(() => {

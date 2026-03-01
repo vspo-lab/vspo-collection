@@ -1,11 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 import {
 	mockClips,
 	mockMembers,
 } from "@/features/collection/__mocks__/fixtures";
 import { MemberDetailPagePresenter } from "@/features/collection/components/presenters/MemberDetailPagePresenter";
 import type { SortOption } from "@/features/collection/types/domain";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_collection/members/$memberId")({
 	component: MemberDetailPage,

@@ -1,5 +1,5 @@
-import { z } from "zod";
 import type { MemberColorKey } from "@/shared/lib/design-tokens";
+import { z } from "zod";
 
 export const clipSchema = z.object({
 	id: z.string(),

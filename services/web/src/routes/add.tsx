@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { Avatar } from "@/shared/components/ui/Avatar";
+import type { MemberColorKey } from "@/shared/lib/design-tokens";
+import { members } from "@/shared/lib/members";
+import { getMemberById } from "@/shared/lib/members";
+import { cn } from "@/shared/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { Play } from "lucide-react";
-import { Avatar } from "@/shared/components/ui/Avatar";
-import { members } from "@/shared/lib/members";
-import { cn } from "@/shared/lib/utils";
-import type { MemberColorKey } from "@/shared/lib/design-tokens";
-import { getMemberById } from "@/shared/lib/members";
+import { useState } from "react";
 
 export const Route = createFileRoute("/add")({ component: AddVoicePage });
 
@@ -13,10 +13,14 @@ function AddVoicePage() {
 	const [url, setUrl] = useState("");
 	const [startTime, setStartTime] = useState("");
 	const [endTime, setEndTime] = useState("");
-	const [selectedMemberId, setSelectedMemberId] = useState<MemberColorKey | "">("");
+	const [selectedMemberId, setSelectedMemberId] = useState<MemberColorKey | "">(
+		"",
+	);
 	const [title, setTitle] = useState("");
 
-	const selectedMember = selectedMemberId ? getMemberById(selectedMemberId) : null;
+	const selectedMember = selectedMemberId
+		? getMemberById(selectedMemberId)
+		: null;
 	const hasDuration = startTime && endTime;
 
 	return (
@@ -44,7 +48,10 @@ function AddVoicePage() {
 
 					{/* URL input */}
 					<div>
-						<label htmlFor="add-url" className="block text-sm font-medium mb-1.5">
+						<label
+							htmlFor="add-url"
+							className="block text-sm font-medium mb-1.5"
+						>
 							YouTube URL
 						</label>
 						<input
@@ -60,7 +67,10 @@ function AddVoicePage() {
 					{/* Time range */}
 					<div className="flex gap-4">
 						<div className="flex-1">
-							<label htmlFor="add-start" className="block text-sm font-medium mb-1.5">
+							<label
+								htmlFor="add-start"
+								className="block text-sm font-medium mb-1.5"
+							>
 								Start
 							</label>
 							<input
@@ -73,7 +83,10 @@ function AddVoicePage() {
 							/>
 						</div>
 						<div className="flex-1">
-							<label htmlFor="add-end" className="block text-sm font-medium mb-1.5">
+							<label
+								htmlFor="add-end"
+								className="block text-sm font-medium mb-1.5"
+							>
 								End
 							</label>
 							<input
@@ -89,13 +102,18 @@ function AddVoicePage() {
 
 					{/* Member dropdown */}
 					<div>
-						<label htmlFor="add-member" className="block text-sm font-medium mb-1.5">
+						<label
+							htmlFor="add-member"
+							className="block text-sm font-medium mb-1.5"
+						>
 							Member
 						</label>
 						<select
 							id="add-member"
 							value={selectedMemberId}
-							onChange={(e) => setSelectedMemberId(e.target.value as MemberColorKey)}
+							onChange={(e) =>
+								setSelectedMemberId(e.target.value as MemberColorKey)
+							}
 							className="w-full px-3 py-2 text-sm border border-border rounded-md bg-surface focus:outline-2 focus:outline-accent"
 						>
 							<option value="">Select member...</option>
@@ -109,7 +127,10 @@ function AddVoicePage() {
 
 					{/* Title */}
 					<div>
-						<label htmlFor="add-title" className="block text-sm font-medium mb-1.5">
+						<label
+							htmlFor="add-title"
+							className="block text-sm font-medium mb-1.5"
+						>
 							Title
 						</label>
 						<div className="relative">
@@ -147,7 +168,9 @@ function AddVoicePage() {
 					<div className="sticky top-6 flex flex-col gap-4">
 						{/* Preview card */}
 						<div className="rounded-lg border border-border bg-surface p-5">
-							<div className="text-xs text-ink-muted mb-3 font-medium">Preview</div>
+							<div className="text-xs text-ink-muted mb-3 font-medium">
+								Preview
+							</div>
 							<div className="flex items-center gap-3">
 								{selectedMember ? (
 									<Avatar member={selectedMember} size="md" />

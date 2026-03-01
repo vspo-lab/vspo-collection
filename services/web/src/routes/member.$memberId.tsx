@@ -1,16 +1,16 @@
-import { useState } from "react";
+import { mockClips } from "@/features/voice-collection/__mocks__/fixtures";
+import { ClipListPresenter } from "@/features/voice-collection/components/presenters/ClipListPresenter";
+import { ClipTablePresenter } from "@/features/voice-collection/components/presenters/ClipTablePresenter";
+import { useLikes } from "@/features/voice-collection/hooks/useLikes";
+import { usePlayerContext } from "@/features/voice-collection/providers/PlayerProvider";
+import type { Clip } from "@/features/voice-collection/types/domain";
+import { Avatar } from "@/shared/components/ui/Avatar";
+import { type MemberColorKey, memberColors } from "@/shared/lib/design-tokens";
+import { getMemberById } from "@/shared/lib/members";
+import { cn } from "@/shared/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { Play, Shuffle } from "lucide-react";
-import { Avatar } from "@/shared/components/ui/Avatar";
-import { ClipTablePresenter } from "@/features/voice-collection/components/presenters/ClipTablePresenter";
-import { ClipListPresenter } from "@/features/voice-collection/components/presenters/ClipListPresenter";
-import { usePlayerContext } from "@/features/voice-collection/providers/PlayerProvider";
-import { useLikes } from "@/features/voice-collection/hooks/useLikes";
-import { mockClips } from "@/features/voice-collection/__mocks__/fixtures";
-import { getMemberById } from "@/shared/lib/members";
-import { memberColors, type MemberColorKey } from "@/shared/lib/design-tokens";
-import type { Clip } from "@/features/voice-collection/types/domain";
-import { cn } from "@/shared/lib/utils";
+import { useState } from "react";
 
 export const Route = createFileRoute("/member/$memberId")({
 	component: MemberDetailPage,
@@ -24,7 +24,9 @@ function isValidMemberId(id: string): id is MemberColorKey {
 
 function MemberDetailPage() {
 	const { memberId } = Route.useParams();
-	const member = isValidMemberId(memberId) ? getMemberById(memberId) : undefined;
+	const member = isValidMemberId(memberId)
+		? getMemberById(memberId)
+		: undefined;
 	const [sort, setSort] = useState<SortMode>("popular");
 	const { currentClip, play } = usePlayerContext();
 	const { likes, toggleLike } = useLikes();
@@ -42,7 +44,8 @@ function MemberDetailPage() {
 		sort === "popular"
 			? [...memberClips].sort((a, b) => b.likeCount - a.likeCount)
 			: [...memberClips].sort(
-					(a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+					(a, b) =>
+						new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
 				);
 
 	const totalLikes = memberClips.reduce((sum, c) => sum + c.likeCount, 0);

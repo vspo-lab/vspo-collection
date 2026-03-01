@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { PlayerBarPresenter } from "./PlayerBarPresenter";
-import { PlayerProvider } from "../../providers/PlayerProvider";
 import { mockClips } from "../../__mocks__/fixtures";
+import { PlayerProvider } from "../../providers/PlayerProvider";
+import { PlayerBarPresenter } from "./PlayerBarPresenter";
 
 const meta = {
 	title: "VoiceCollection/PlayerBar",

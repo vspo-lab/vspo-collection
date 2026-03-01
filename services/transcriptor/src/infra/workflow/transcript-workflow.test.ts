@@ -27,14 +27,14 @@ const createEnv = () =>
 	({
 		YT_CONTAINER: {},
 		TRANSCRIPT_BUCKET: {},
-	} as unknown as Env);
+	}) as unknown as Env;
 
 const createExecutionContext = () =>
 	({
 		waitUntil: vi.fn(),
 		passThroughOnException: vi.fn(),
 		props: {},
-	} as never);
+	}) as never;
 
 describe("TranscriptWorkflow", () => {
 	it("runs fetch-and-save step and returns key", async () => {
@@ -44,12 +44,18 @@ describe("TranscriptWorkflow", () => {
 			.mockResolvedValue(Ok({ key: "transcripts/raw/abc/ja.json" }));
 		createTranscriptUseCaseMock.mockReturnValue({ fetch, saveRaw });
 
-		const workflow = new TranscriptWorkflow(createExecutionContext(), createEnv());
+		const workflow = new TranscriptWorkflow(
+			createExecutionContext(),
+			createEnv(),
+		);
 		const step = {
 			do: vi.fn(async (_name, _opts, fn: () => Promise<unknown>) => fn()),
 		};
 
-		await workflow.run({ payload: { videoId: "abc", lang: "ja" } } as never, step as never);
+		await workflow.run(
+			{ payload: { videoId: "abc", lang: "ja" } } as never,
+			step as never,
+		);
 
 		expect(step.do).toHaveBeenCalledWith(
 			"fetch-and-save:abc",
@@ -71,41 +77,59 @@ describe("TranscriptWorkflow", () => {
 	});
 
 	it("throws when fetch fails", async () => {
-		const fetch = vi
-			.fn()
-			.mockResolvedValue(
-				Err(new AppError({ code: "INTERNAL_SERVER_ERROR", message: "fetch failed" })),
-			);
+		const fetch = vi.fn().mockResolvedValue(
+			Err(
+				new AppError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: "fetch failed",
+				}),
+			),
+		);
 		const saveRaw = vi.fn();
 		createTranscriptUseCaseMock.mockReturnValue({ fetch, saveRaw });
 
-		const workflow = new TranscriptWorkflow(createExecutionContext(), createEnv());
+		const workflow = new TranscriptWorkflow(
+			createExecutionContext(),
+			createEnv(),
+		);
 		const step = {
 			do: vi.fn(async (_name, _opts, fn: () => Promise<unknown>) => fn()),
 		};
 
 		await expect(
-			workflow.run({ payload: { videoId: "abc", lang: "ja" } } as never, step as never),
+			workflow.run(
+				{ payload: { videoId: "abc", lang: "ja" } } as never,
+				step as never,
+			),
 		).rejects.toThrow("fetch failed");
 		expect(saveRaw).not.toHaveBeenCalled();
 	});
 
 	it("throws when saveRaw fails", async () => {
 		const fetch = vi.fn().mockResolvedValue(Ok("raw-json"));
-		const saveRaw = vi
-			.fn()
-			.mockResolvedValue(
-				Err(new AppError({ code: "INTERNAL_SERVER_ERROR", message: "save failed" })),
-			);
+		const saveRaw = vi.fn().mockResolvedValue(
+			Err(
+				new AppError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: "save failed",
+				}),
+			),
+		);
 		createTranscriptUseCaseMock.mockReturnValue({ fetch, saveRaw });
 
-		const workflow = new TranscriptWorkflow(createExecutionContext(), createEnv());
+		const workflow = new TranscriptWorkflow(
+			createExecutionContext(),
+			createEnv(),
+		);
 		const step = {
 			do: vi.fn(async (_name, _opts, fn: () => Promise<unknown>) => fn()),
 		};
 
 		await expect(
-			workflow.run({ payload: { videoId: "abc", lang: "ja" } } as never, step as never),
+			workflow.run(
+				{ payload: { videoId: "abc", lang: "ja" } } as never,
+				step as never,
+			),
 		).rejects.toThrow("save failed");
 	});
 });

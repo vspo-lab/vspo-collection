@@ -10,7 +10,7 @@ type WorkflowBinding = {
 const createEnv = (binding: WorkflowBinding) =>
 	({
 		TRANSCRIPT_WORKFLOW: binding,
-	} as unknown as Env);
+	}) as unknown as Env;
 
 const createApp = () => {
 	const app = new Hono<{ Bindings: Env }>();
@@ -22,9 +22,11 @@ describe("registerWorkflowRoutes", () => {
 	it("creates workflow instances with default lang", async () => {
 		const create = vi
 			.fn()
-			.mockImplementation(async ({ params }: { params: { videoId: string } }) => ({
-				id: `wf-${params.videoId}`,
-			}));
+			.mockImplementation(
+				async ({ params }: { params: { videoId: string } }) => ({
+					id: `wf-${params.videoId}`,
+				}),
+			);
 		const get = vi.fn();
 		const app = createApp();
 
@@ -75,7 +77,11 @@ describe("registerWorkflowRoutes", () => {
 		const get = vi.fn();
 		const app = createApp();
 
-		const response = await app.request("/run", init, createEnv({ create, get }));
+		const response = await app.request(
+			"/run",
+			init,
+			createEnv({ create, get }),
+		);
 
 		expect(response.status).toBe(400);
 		expect(create).not.toHaveBeenCalled();

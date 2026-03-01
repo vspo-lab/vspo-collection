@@ -5,34 +5,34 @@
    ======================================== */
 :root {
 	/* Primary */
-	--primary: #B8A9E8;
-	--primary-hover: #A494D8;
-	--primary-soft: #F9F7FE;
-	--primary-bg: #F5F0FA;
+	--primary: #b8a9e8;
+	--primary-hover: #a494d8;
+	--primary-soft: #f9f7fe;
+	--primary-bg: #f5f0fa;
 
 	/* Backgrounds */
-	--bg: #FFFFFF;
-	--bg-body: #FAFAFA;
+	--bg: #ffffff;
+	--bg-body: #fafafa;
 
 	/* Text */
 	--text-primary: #333333;
 	--text-secondary: #666666;
 	--text-muted: #888888;
-	--text-disabled: #AAAAAA;
-	--text-inactive-tab: #BBBBBB;
-	--icon-inactive: #CCCCCC;
+	--text-disabled: #aaaaaa;
+	--text-inactive-tab: #bbbbbb;
+	--icon-inactive: #cccccc;
 
 	/* Surfaces */
-	--surface-chip: #F5F5F5;
-	--surface-highlight: #F9F7FE;
-	--surface-member-avatar: #F5F0FA;
+	--surface-chip: #f5f5f5;
+	--surface-highlight: #f9f7fe;
+	--surface-member-avatar: #f5f0fa;
 
 	/* Borders */
-	--border-separator: #F0F0F0;
-	--border-card: #F5F5F5;
+	--border-separator: #f0f0f0;
+	--border-card: #f5f5f5;
 
 	/* Playlist featured */
-	--playlist-featured-border: #FCE4EC;
+	--playlist-featured-border: #fce4ec;
 
 	/* Shadows */
 	--shadow-card: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -46,12 +46,12 @@
 	--dur-md: 280ms;
 
 	/* Member avatar colors (from Figma) */
-	--avatar-purple: #D4A8E8;
-	--avatar-blue: #A8D8EA;
-	--avatar-pink: #E8B8D4;
-	--avatar-orange: #F5D0A8;
-	--avatar-green: #B8E8C8;
-	--avatar-light-blue: #A8C8E8;
+	--avatar-purple: #d4a8e8;
+	--avatar-blue: #a8d8ea;
+	--avatar-pink: #e8b8d4;
+	--avatar-orange: #f5d0a8;
+	--avatar-green: #b8e8c8;
+	--avatar-light-blue: #a8c8e8;
 
 	/* Member Colors — JP */
 	--c-sumire: #b0c4de;
@@ -93,35 +93,35 @@
    TAILWIND v4 THEME
    ======================================== */
 @theme {
-  /* Colors */
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-soft: var(--primary-soft);
-  --color-primary-bg: var(--primary-bg);
-  --color-background: var(--bg);
-  --color-background-body: var(--bg-body);
-  --color-foreground: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-  --color-text-disabled: var(--text-disabled);
-  --color-text-inactive: var(--text-inactive-tab);
-  --color-icon-inactive: var(--icon-inactive);
-  --color-surface-chip: var(--surface-chip);
-  --color-surface-highlight: var(--surface-highlight);
-  --color-border-separator: var(--border-separator);
-  --color-border-card: var(--border-card);
+	/* Colors */
+	--color-primary: var(--primary);
+	--color-primary-hover: var(--primary-hover);
+	--color-primary-soft: var(--primary-soft);
+	--color-primary-bg: var(--primary-bg);
+	--color-background: var(--bg);
+	--color-background-body: var(--bg-body);
+	--color-foreground: var(--text-primary);
+	--color-text-secondary: var(--text-secondary);
+	--color-text-muted: var(--text-muted);
+	--color-text-disabled: var(--text-disabled);
+	--color-text-inactive: var(--text-inactive-tab);
+	--color-icon-inactive: var(--icon-inactive);
+	--color-surface-chip: var(--surface-chip);
+	--color-surface-highlight: var(--surface-highlight);
+	--color-border-separator: var(--border-separator);
+	--color-border-card: var(--border-card);
 
-  /* Typography */
-  --font-body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+	/* Typography */
+	--font-body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
 
-  /* Radius */
-  --radius-chip: 20px;
-  --radius-avatar-sm: 18px;
-  --radius-avatar-md: 22px;
-  --radius-avatar-lg: 40px;
-  --radius-card: 12px;
-  --radius-playlist-card: 16px;
-  --radius-full: 9999px;
+	/* Radius */
+	--radius-chip: 20px;
+	--radius-avatar-sm: 18px;
+	--radius-avatar-md: 22px;
+	--radius-avatar-lg: 40px;
+	--radius-card: 12px;
+	--radius-playlist-card: 16px;
+	--radius-full: 9999px;
 }
 
 /* ========================================

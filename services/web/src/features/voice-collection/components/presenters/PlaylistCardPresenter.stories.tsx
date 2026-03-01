@@ -1,12 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { PlaylistCardPresenter } from "./PlaylistCardPresenter";
 import { mockClips, mockPlaylists } from "../../__mocks__/fixtures";
+import { PlaylistCardPresenter } from "./PlaylistCardPresenter";
 
 const favPlaylist = mockPlaylists[0]!;
 const regularPlaylist = mockPlaylists[1]!;
 
 function resolveClips(ids: string[]) {
-	return ids.map((id) => mockClips.find((c) => c.id === id)).filter(Boolean) as typeof mockClips;
+	return ids
+		.map((id) => mockClips.find((c) => c.id === id))
+		.filter(Boolean) as typeof mockClips;
 }
 
 const meta = {

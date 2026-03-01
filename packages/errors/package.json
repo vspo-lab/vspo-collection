@@ -1,25 +1,27 @@
 {
-  "name": "@vspo/errors",
-  "version": "0.0.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "module": "./dist/index.mjs",
-  "files": [
-    "./dist/**"
-  ],
-  "description": "",
-  "keywords": [],
-  "scripts": {
-    "build": "tsup",
-    "test": "vitest",
-    "test:run": "vitest run"
-  },
-  "devDependencies": {
-    "tsup": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "^4.0.18"
-  },
-  "dependencies": {
-    "zod": "catalog:"
-  }
+	"name": "@vspo/errors",
+	"version": "0.0.0",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"module": "./dist/index.mjs",
+	"files": ["./dist/**"],
+	"description": "",
+	"keywords": [],
+	"scripts": {
+		"build": "tsup",
+		"type-check": "tsc --noEmit",
+		"biome:check": "biome check .",
+		"biome": "biome check --write .",
+		"test": "vitest",
+		"test:run": "vitest run"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "catalog:",
+		"tsup": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "^4.0.18"
+	},
+	"dependencies": {
+		"zod": "catalog:"
+	}
 }

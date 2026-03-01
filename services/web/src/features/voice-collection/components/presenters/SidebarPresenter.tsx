@@ -1,6 +1,6 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Users, Plus, Heart, ListMusic } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Heart, Home, ListMusic, Plus, Users } from "lucide-react";
 import type { Playlist } from "../../types/domain";
 
 const navItems = [

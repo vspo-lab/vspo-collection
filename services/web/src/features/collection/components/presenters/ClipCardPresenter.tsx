@@ -1,7 +1,7 @@
-import { cn } from "@/shared/lib/utils";
 import { Avatar } from "@/shared/components/ui/Avatar";
 import { LikeButton } from "@/shared/components/ui/LikeButton";
 import { ProgressBar } from "@/shared/components/ui/ProgressBar";
+import { cn } from "@/shared/lib/utils";
 import type { AudioClip } from "../../types/domain";
 
 type ClipCardPresenterProps = {
@@ -24,15 +24,9 @@ export function ClipCardPresenter({
 			className={cn(
 				"flex w-full items-center gap-3.5 px-5 text-left",
 				"transition-colors duration-[var(--dur-fast)] ease-[var(--ease)]",
-				isHighlighted
-					? "bg-surface-highlight py-5"
-					: "border-b py-4",
+				isHighlighted ? "bg-surface-highlight py-5" : "border-b py-4",
 			)}
-			style={
-				!isHighlighted
-					? { borderColor: "var(--border-card)" }
-					: undefined
-			}
+			style={!isHighlighted ? { borderColor: "var(--border-card)" } : undefined}
 		>
 			{/* Avatar */}
 			<Avatar
@@ -67,10 +61,7 @@ export function ClipCardPresenter({
 					<span className="text-[11px] tabular-nums text-text-muted">
 						{clip.timeRange.end}
 					</span>
-					<ProgressBar
-						progress={clip.progressPercent}
-						className="flex-1"
-					/>
+					<ProgressBar progress={clip.progressPercent} className="flex-1" />
 				</div>
 			</div>
 

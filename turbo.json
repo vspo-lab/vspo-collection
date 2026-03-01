@@ -1,82 +1,42 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "globalPassThroughEnv": [
-    "DATABASE_URL",
-    "GCP_PROJECT_ID",
-    "GCP_LOCATION",
-    "NEXT_PUBLIC_API_BASE_URL",
-    "FRONTEND_URL",
-    "BETTER_AUTH_URL",
-    "AUTH_GOOGLE_ID",
-    "AUTH_GOOGLE_SECRET",
-    "SSL_KEY_PATH",
-    "SSL_CERT_PATH",
-    "RESEND_API_KEY",
-    "RESEND_FROM_ADDRESS",
-    "STRIPE_SECRET_KEY",
-    "STRIPE_WEBHOOK_SECRET"
-  ],
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
-      "cache": false
-    },
-    "type-check": {
-      "dependsOn": ["^type-check"],
-      "cache": false
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "dev:subscriber": {
-      "cache": false,
-      "persistent": true
-    },
-    "tiup:start": {
-      "cache": false,
-      "persistent": true
-    },
-    "docker:up": {
-      "cache": false,
-      "persistent": true
-    },
-    "biome:check": {
-      "cache": false
-    },
-    "biome:format": {
-      "dependsOn": ["biome:check"],
-      "cache": false
-    },
-    "biome:unsafe-fix": {
-      "dependsOn": ["biome:format"],
-      "cache": false
-    },
-    "biome:lint": {
-      "dependsOn": ["biome:unsafe-fix"],
-      "cache": false
-    },
-    "biome": {
-      "dependsOn": ["biome:lint"],
-      "cache": false
-    },
-"//#knip": {
-      "cache": false,
-      "inputs": [
-        "knip.json",
-        "packages/*/src/**",
-        "packages/*/package.json",
-        "services/*/app/**",
-        "services/*/features/**",
-        "services/*/shared/**",
-        "services/*/{domain,infra,usecase,cmd,local}/**",
-        "services/*/package.json"
-      ]
-    },
-    "//#knip:fix": {
-      "cache": false
-    }
-  }
+	"$schema": "https://turbo.build/schema.json",
+	"globalDependencies": ["**/.env.*local"],
+	"globalPassThroughEnv": ["GCP_PROJECT_ID", "GCP_LOCATION", "FRONTEND_URL"],
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**"],
+			"cache": false
+		},
+		"type-check": {
+			"dependsOn": ["^type-check"],
+			"cache": false
+		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"test": {
+			"cache": false
+		},
+		"biome:check": {
+			"cache": false
+		},
+		"biome": {
+			"cache": false
+		},
+		"//#knip": {
+			"cache": false,
+			"inputs": [
+				"knip.json",
+				"packages/*/package.json",
+				"packages/*/*.ts",
+				"services/*/src/**",
+				"services/*/package.json"
+			]
+		},
+		"//#knip:fix": {
+			"cache": false
+		}
+	}
 }

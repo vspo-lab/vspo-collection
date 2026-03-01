@@ -6,7 +6,10 @@ type PlayingBarsProps = {
 
 export function PlayingBars({ className }: PlayingBarsProps) {
 	return (
-		<div className={cn("flex items-end gap-[2px] h-3.5", className)} aria-label="Now playing">
+		<div
+			className={cn("flex items-end gap-[2px] h-3.5", className)}
+			aria-label="Now playing"
+		>
 			{[0, 1, 2, 3].map((i) => (
 				<span
 					key={i}

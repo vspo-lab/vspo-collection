@@ -3,11 +3,7 @@
 	"description": "Build a Container-enabled Worker",
 	"cloudflare": {
 		"label": "Containers Starter",
-		"products": [
-			"Workers",
-			"Durable Objects",
-			"Containers"
-		],
+		"products": ["Workers", "Durable Objects", "Containers"],
 		"categories": [],
 		"docs_url": "https://developers.cloudflare.com/containers/",
 		"preview_image_url": "https://imagedelivery.net/_yJ02hpOMj_EnGvsU2aygw/5aba1fb7-b937-46fd-fa67-138221082200/public",
@@ -23,6 +19,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "catalog:",
 		"@types/node": "catalog:",
 		"typescript": "5.9.3",
 		"vitest": "^4.0.18",
@@ -30,6 +27,9 @@
 	},
 	"private": true,
 	"scripts": {
+		"type-check": "tsc --noEmit",
+		"biome:check": "biome check .",
+		"biome": "biome check --write .",
 		"cf-typegen": "wrangler types",
 		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",

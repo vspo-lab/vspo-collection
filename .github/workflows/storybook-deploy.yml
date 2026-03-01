@@ -20,11 +20,6 @@ jobs:
           echo "::add-mask::${{ secrets.CLOUDFLARE_API_TOKEN }}"
           echo "::add-mask::${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
 
-      - name: Install tools
-        uses: aquaproj/aqua-installer@ea518c135a02fc11ff8024364510c181a5c6b342
-        with:
-          aqua_version: v2.55.0
-
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:

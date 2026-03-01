@@ -18,20 +18,19 @@ export type PlayerActions = {
 	setVolume: (volume: number) => void;
 };
 
-export function usePlayerState(playlist: Clip[] = []): PlayerState & PlayerActions {
+export function usePlayerState(
+	playlist: Clip[] = [],
+): PlayerState & PlayerActions {
 	const [currentClip, setCurrentClip] = useState<Clip | null>(null);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [progress, setProgress] = useState(0);
 	const [volume, setVolume] = useState(0.8);
 
-	const play = useCallback(
-		(clip: Clip) => {
-			setCurrentClip(clip);
-			setIsPlaying(true);
-			setProgress(0);
-		},
-		[],
-	);
+	const play = useCallback((clip: Clip) => {
+		setCurrentClip(clip);
+		setIsPlaying(true);
+		setProgress(0);
+	}, []);
 
 	const pause = useCallback(() => setIsPlaying(false), []);
 	const resume = useCallback(() => setIsPlaying(true), []);

@@ -1,8 +1,8 @@
-import { Play, Download, Merge } from "lucide-react";
 import { Avatar } from "@/shared/components/ui/Avatar";
-import { cn } from "@/shared/lib/utils";
 import { formatDuration } from "@/shared/lib/format";
 import { getMemberById } from "@/shared/lib/members";
+import { cn } from "@/shared/lib/utils";
+import { Download, Merge, Play } from "lucide-react";
 import type { Clip, Playlist } from "../../types/domain";
 
 function formatTotalDuration(clips: Clip[]): string {

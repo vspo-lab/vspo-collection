@@ -1,9 +1,9 @@
-import { Play, Heart } from "lucide-react";
 import { Avatar } from "@/shared/components/ui/Avatar";
 import { PlayingBars } from "@/shared/components/ui/PlayingBars";
-import { cn } from "@/shared/lib/utils";
 import { formatDuration } from "@/shared/lib/format";
 import { getMemberById } from "@/shared/lib/members";
+import { cn } from "@/shared/lib/utils";
+import { Heart, Play } from "lucide-react";
 import type { Clip } from "../../types/domain";
 
 type ClipTablePresenterProps = {
@@ -44,9 +44,7 @@ export function ClipTablePresenter({
 							key={clip.id}
 							className={cn(
 								"group cursor-pointer transition-colors duration-[var(--dur-fast)]",
-								isPlaying
-									? "bg-accent-bg"
-									: "hover:bg-surface-warm",
+								isPlaying ? "bg-accent-bg" : "hover:bg-surface-warm",
 							)}
 							onClick={() => onPlay(clip)}
 						>
@@ -64,12 +62,7 @@ export function ClipTablePresenter({
 								)}
 							</td>
 							<td className="py-2.5 px-2">
-								<span
-									className={cn(
-										"font-medium",
-										isPlaying && "text-accent",
-									)}
-								>
+								<span className={cn("font-medium", isPlaying && "text-accent")}>
 									{clip.title}
 								</span>
 							</td>

@@ -29,10 +29,7 @@ vi.mock("../../usecase/transcript", () => ({
 
 import { processTranscript } from "./process-transcript";
 
-type StepRun = <T>(
-	name: string,
-	fn: () => Promise<T>,
-) => Promise<T>;
+type StepRun = <T>(name: string, fn: () => Promise<T>) => Promise<T>;
 
 const createStep = () => ({
 	run: vi.fn(async (_name: string, fn: () => Promise<unknown>) => fn()),
@@ -75,10 +72,15 @@ describe("processTranscript", () => {
 		});
 
 		expect(result).toEqual({ jobId: "job-1", status: "completed" });
-		expect(repo.updateStatus).toHaveBeenNthCalledWith(1, "job-1", "processing", {
-			error: null,
-			retryCount: 2,
-		});
+		expect(repo.updateStatus).toHaveBeenNthCalledWith(
+			1,
+			"job-1",
+			"processing",
+			{
+				error: null,
+				retryCount: 2,
+			},
+		);
 		expect(repo.updateStatus).toHaveBeenNthCalledWith(2, "job-1", "completed", {
 			r2Key: "transcripts/raw/video-1/ja.json",
 			error: null,
@@ -98,16 +100,14 @@ describe("processTranscript", () => {
 		jobRepositoryFromMock.mockReturnValue(repo);
 
 		const usecase = {
-			fetch: vi
-				.fn()
-				.mockResolvedValue(
-					Err(
-						new AppError({
-							code: "INTERNAL_SERVER_ERROR",
-							message: "fetch failed",
-						}),
-					),
+			fetch: vi.fn().mockResolvedValue(
+				Err(
+					new AppError({
+						code: "INTERNAL_SERVER_ERROR",
+						message: "fetch failed",
+					}),
 				),
+			),
 			saveRaw: vi.fn(),
 		};
 		createTranscriptUseCaseMock.mockReturnValue(usecase);
@@ -126,10 +126,15 @@ describe("processTranscript", () => {
 		});
 
 		expect(result).toEqual({ jobId: "job-1", status: "failed" });
-		expect(repo.updateStatus).toHaveBeenNthCalledWith(1, "job-1", "processing", {
-			error: null,
-			retryCount: 1,
-		});
+		expect(repo.updateStatus).toHaveBeenNthCalledWith(
+			1,
+			"job-1",
+			"processing",
+			{
+				error: null,
+				retryCount: 1,
+			},
+		);
 		expect(repo.updateStatus).toHaveBeenNthCalledWith(2, "job-1", "failed", {
 			error: "fetch failed",
 			retryCount: 1,

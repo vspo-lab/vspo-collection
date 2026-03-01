@@ -1,9 +1,9 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 import { mockMiniPlayer } from "@/features/collection/__mocks__/fixtures";
 import { BottomTabBarPresenter } from "@/features/collection/components/presenters/BottomTabBarPresenter";
 import { MiniPlayerPresenter } from "@/features/collection/components/presenters/MiniPlayerPresenter";
 import type { BottomTab } from "@/features/collection/types/domain";
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_collection")({
 	component: CollectionLayout,
@@ -38,10 +38,7 @@ function CollectionLayout() {
 			<main className="flex-1 overflow-y-auto pb-[148px]">
 				<Outlet />
 			</main>
-			<MiniPlayerPresenter
-				state={miniPlayer}
-				onPlayPause={handlePlayPause}
-			/>
+			<MiniPlayerPresenter state={miniPlayer} onPlayPause={handlePlayPause} />
 			<BottomTabBarPresenter
 				activeTab={activeTab}
 				onTabChange={handleTabChange}
