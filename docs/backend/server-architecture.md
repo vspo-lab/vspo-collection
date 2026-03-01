@@ -2,27 +2,27 @@
 
 ## Overview
 
-サーバーは **Clean Architecture** と **Domain-Driven Design (DDD)** の原則に基づいて設計されています。
-Hexagonal Architecture (Ports & Adapters) パターンを採用し、ビジネスロジックを外部システムから分離しています。
+The server is designed based on the principles of **Clean Architecture** and **Domain-Driven Design (DDD)**.
+It adopts the Hexagonal Architecture (Ports & Adapters) pattern to isolate business logic from external systems.
 
-## ディレクトリ構成
+## Directory Structure
 
 ```
 services/transcriptor/src/
-├── domain/              # ドメイン層 - ビジネスロジック
-├── usecase/             # ユースケース層 - アプリケーションロジック
-├── infra/               # インフラストラクチャ層 - 外部システムとの接続
-│   ├── di/              # 依存性注入コンテナ
-│   ├── repository/      # データアクセス層
+├── domain/              # Domain layer - Business logic
+├── usecase/             # UseCase layer - Application logic
+├── infra/               # Infrastructure layer - External system connections
+│   ├── di/              # Dependency injection container
+│   ├── repository/      # Data access layer
 │   ├── http/            # HTTP/REST API
-│   ├── ai/              # AI サービス連携
-│   ├── external/        # 外部API連携
-│   └── auth/            # 認証
-├── cmd/                 # エントリーポイント
-└── pkg/                 # 共有ユーティリティ
+│   ├── ai/              # AI service integration
+│   ├── external/        # External API integration
+│   └── auth/            # Authentication
+├── cmd/                 # Entry points
+└── pkg/                 # Shared utilities
 ```
 
-## レイヤー構成
+## Layer Structure
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -32,12 +32,12 @@ services/transcriptor/src/
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
 │                    Use Case Layer                            │
-│              (アプリケーションロジック)                        │
+│                (Application Logic)                           │
 └───────────────────────┬─────────────────────────────────────┘
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
 │                    Domain Layer                              │
-│                 (ビジネスロジック)                            │
+│                 (Business Logic)                             │
 └───────────────────────┬─────────────────────────────────────┘
                         │
 ┌───────────────────────▼─────────────────────────────────────┐
@@ -46,55 +46,55 @@ services/transcriptor/src/
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 設計原則
+## Design Principles
 
-### 1. 依存性逆転の原則 (DIP)
+### 1. Dependency Inversion Principle (DIP)
 
-- 上位レイヤーは下位レイヤーに依存しない
-- 抽象（型定義）に依存し、具象（実装）には依存しない
-- ドメイン層は他のレイヤーに依存しない
+- Upper layers do not depend on lower layers
+- Depend on abstractions (type definitions), not on concrete implementations
+- The domain layer does not depend on any other layer
 
 ```typescript
-// UseCase は Repository の型（抽象）に依存
+// UseCase depends on the Repository type (abstraction)
 type Dependencies = Readonly<{
-  itemRepository: ItemRepository;  // 型定義
+  itemRepository: ItemRepository;  // Type definition
   txManager: TxManager;
 }>;
 
-// 具象は DI コンテナで注入
+// Concrete implementations are injected via the DI container
 const itemUseCase = ItemUseCase.from({
-  itemRepository: ItemRepository,  // 実装
+  itemRepository: ItemRepository,  // Implementation
   txManager: TxManager,
 });
 ```
 
-### 2. Result 型によるエラーハンドリング
+### 2. Error Handling with Result Type
 
-`try-catch` を使用せず、すべてのエラーを `Result<T, E>` 型で表現します。
+Instead of using `try-catch`, all errors are expressed using the `Result<T, E>` type.
 
 ```typescript
-// Result 型の定義
+// Result type definition
 type Result<T, E extends BaseError> = OkResult<T> | ErrResult<E>;
 
-// 使用例
+// Usage example
 const itemResult = await itemRepository.from({ tx }).getById(itemId);
 if (itemResult.err) {
-  return itemResult;  // エラーを伝播
+  return itemResult;  // Propagate the error
 }
-const item = itemResult.val;  // 成功時の値
+const item = itemResult.val;  // Value on success
 ```
 
-**メリット:**
-- エラーフローが明示的
-- 型システムでエラーハンドリングを強制
-- 予期しない例外が発生しにくい
+**Benefits:**
+- Error flow is explicit
+- The type system enforces error handling
+- Unexpected exceptions are less likely to occur
 
 ### 3. Zod Schema First
 
-すべての型定義は Zod スキーマから導出します。
+All type definitions are derived from Zod schemas.
 
 ```typescript
-// スキーマが型の源泉
+// The schema is the source of truth for types
 const itemSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -102,17 +102,17 @@ const itemSchema = z.object({
   // ...
 });
 
-// 型はスキーマから推論
+// Types are inferred from the schema
 type Item = z.infer<typeof itemSchema>;
 ```
 
-### 4. イミュータブルな更新
+### 4. Immutable Updates
 
-ドメインオブジェクトは不変で、更新操作は新しいオブジェクトを返します。
+Domain objects are immutable, and update operations return new objects.
 
 ```typescript
-// 現在のユーザーを更新して新しいユーザーを返す
-const updatedUser = Item.update(item, { name: "新しい名前" });
+// Update the current user and return a new user
+const updatedUser = Item.update(item, { name: "New Name" });
 const completedTask = Item.archive(item);
 ```
 
@@ -120,29 +120,29 @@ const completedTask = Item.archive(item);
 
 ## Domain Layer
 
-### 集約 (Aggregate)
+### Aggregates
 
-DDDの集約パターンを採用し、関連するエンティティをグループ化します。
+The DDD aggregate pattern is adopted to group related entities together.
 
 ```
 domain/
-├── [your-domain]/           # アプリケーション固有の集約
-│   ├── [aggregate-root].ts  # 集約ルート
-│   ├── [entity].ts          # 子エンティティ
-│   └── [value-object].ts    # 値オブジェクト
-└── [reference-data].ts     # 参照データ（マスタデータなど）
+├── [your-domain]/           # Application-specific aggregates
+│   ├── [aggregate-root].ts  # Aggregate root
+│   ├── [entity].ts          # Child entities
+│   └── [value-object].ts    # Value objects
+└── [reference-data].ts     # Reference data (master data, etc.)
 ```
 
-### コンパニオンオブジェクトパターン
+### Companion Object Pattern
 
-ドメインモデルは、同名のコンパニオンオブジェクトにファクトリメソッドやビジネスロジックを持ちます。
+Domain models have factory methods and business logic in a companion object with the same name.
 
 ```typescript
-// 型定義
+// Type definition
 const itemSchema = z.object({ ... });
 export type Item = z.infer<typeof itemSchema>;
 
-// コンパニオンオブジェクト（ドメインロジック）
+// Companion object (domain logic)
 export const Item = {
   new: (props: CreateUserProps): User => { ... },
   update: (user: User, props: UpdateProps): User => { ... },
@@ -152,10 +152,10 @@ export const Item = {
 
 ### Discriminated Union
 
-複雑な状態を持つ値オブジェクトは Discriminated Union で表現します。
+Value objects with complex state are expressed using Discriminated Unions.
 
 ```typescript
-// ItemStatus は status によって異なる型
+// ItemStatus has different types based on status
 type ActiveItem = {
   status: "active";
   publishedAt: Date;
@@ -177,7 +177,7 @@ type DraftItem = {
 
 type ItemStatus = ActiveItem | ArchivedItem | DraftItem;
 
-// 型ガード
+// Type guards
 export const ItemStatus = {
   isActive: (item: ItemStatus): item is ActiveItem =>
     item.status === "active",
@@ -190,9 +190,9 @@ export const ItemStatus = {
 
 ## UseCase Layer
 
-詳細な実装ルールは [UseCase 実装ルール](./usecase-rules.md) を参照。
+For detailed implementation rules, see [UseCase Implementation Rules](./usecase-rules.md).
 
-### ファクトリパターンによる依存性注入
+### Dependency Injection via Factory Pattern
 
 ```typescript
 type Dependencies = Readonly<{
@@ -219,13 +219,13 @@ export const ItemUseCase = {
 } as const satisfies ItemUseCaseType;
 ```
 
-### トランザクション管理
+### Transaction Management
 
-すべてのデータベース操作は `txManager.runTx()` でトランザクションにラップします。
+All database operations are wrapped in a transaction using `txManager.runTx()`.
 
 ```typescript
 return await txManager.runTx(async (tx) => {
-  // 複数のリポジトリ操作が同一トランザクション内で実行される
+  // Multiple repository operations execute within the same transaction
   const itemRepo = itemRepository.from({ tx });
   const orderRepo = itemRepository.from({ tx });
 
@@ -239,26 +239,26 @@ return await txManager.runTx(async (tx) => {
 });
 ```
 
-### 複合操作のオーケストレーション
+### Orchestration of Composite Operations
 
-UseCase は複数のドメイン操作とリポジトリ操作を調整します。
+UseCases coordinate multiple domain operations and repository operations.
 
 ```typescript
 // OrderUseCase.completeTask
 return await txManager.runTx(async (tx) => {
-  // 1. タスクを完了状態に更新
+  // 1. Update the task to completed state
   const completedTask = Item.archive(item);
   await itemRepo.update(completedTask);
 
-  // 2. ユーザーの使用回数をインクリメント
+  // 2. Increment the user's usage count
   const updatedUser = User.incrementCount(user);
   await orderRepo.update(updatedUser);
 
-  // 3. 結果のプレースホルダーを作成
+  // 3. Create a result placeholder
   const pendingResult = Result.createPending({ taskId });
   await resultRepo.create(pendingResult);
 
-  // 4. 非同期処理タスクを発行
+  // 4. Publish an async processing task
   await messageQueue.publishProcessingTask({ taskId, resultId });
 
   return Ok(result);
@@ -269,9 +269,9 @@ return await txManager.runTx(async (tx) => {
 
 ## Infrastructure Layer
 
-### Repository パターン
+### Repository Pattern
 
-リポジトリはファクトリパターンでトランザクションを受け取ります。
+Repositories receive transactions via the factory pattern.
 
 ```typescript
 type Dependencies = Readonly<{ tx: Transaction }>;
@@ -390,36 +390,36 @@ export type PaymentHistoryRepository = Readonly<{
 }>;
 ```
 
-### drizzle-zod スキーマの活用
+### Using drizzle-zod Schemas
 
-DB からドメインへの変換には drizzle-zod が生成するスキーマを DTO として活用します。
+drizzle-zod generated schemas are used as DTOs for converting from DB to domain models.
 
 ```typescript
 import { selectHighlightsSchema } from "./mysql/schema";
 
-// drizzle-zod スキーマを直接使用
+// Use the drizzle-zod schema directly
 return Ok(selectItemsSchema.parse(result.val[0]));
 
-// 集約の子エンティティにも使用
+// Also used for aggregate child entities
 const toTaskAggregate = (task, steps) => ({
   ...task,
   steps: steps.map((row) => selectStepsSchema.parse(row)),
 });
 ```
 
-### N+1 問題の回避
+### Avoiding the N+1 Problem
 
-複数の関連エンティティは一括取得してクライアント側でグループ化します。
+Multiple related entities are fetched in bulk and grouped on the client side.
 
 ```typescript
-// Good: 一括取得
+// Good: Bulk fetch
 const taskIds = tasks.map((t) => t.id);
 const stepsResult = await tx
   .select()
   .from(stepsTable)
   .where(inArray(stepsTable.taskId, taskIds));
 
-// グループ化
+// Group by taskId
 const stepsByTaskId = new Map<string, SelectStep[]>();
 for (const step of stepsResult.val) {
   const existing = stepsByTaskId.get(step.taskId) ?? [];
@@ -427,7 +427,7 @@ for (const step of stepsResult.val) {
   stepsByTaskId.set(step.taskId, existing);
 }
 
-// Bad: N+1 クエリ
+// Bad: N+1 queries
 for (const task of tasks) {
   const steps = await tx
     .select()
@@ -436,22 +436,22 @@ for (const task of tasks) {
 }
 ```
 
-### 集約の永続化
+### Aggregate Persistence
 
-集約ルートとその子エンティティをアトミックに保存します。
+The aggregate root and its child entities are saved atomically.
 
 ```typescript
 saveAggregate: async (task: Task) => {
-  // 1. タスクヘッダーを更新
+  // 1. Update the task header
   await tx.update(tasksTable)
     .set({ status: task.status, ... })
     .where(eq(tasksTable.id, task.id));
 
-  // 2. 既存の steps を削除
+  // 2. Delete existing steps
   await tx.delete(stepsTable)
     .where(eq(stepsTable.taskId, task.id));
 
-  // 3. 新しい steps を挿入
+  // 3. Insert new steps
   if (task.steps.length > 0) {
     await tx.insert(stepsTable)
       .values(task.steps.map(step => ({ ... })));
@@ -463,21 +463,21 @@ saveAggregate: async (task: Task) => {
 
 ---
 
-## 依存性注入 (DI)
+## Dependency Injection (DI)
 
-### 手動によるファクトリベース DI
+### Manual Factory-Based DI
 
-外部の DI フレームワークを使用せず、手動でコンテナを構築します。
+The container is built manually without using an external DI framework.
 
 ```typescript
 // infra/di/container.ts
 export const createContainer = (): Container => {
-  // 1. インフラストラクチャ層のインスタンス化
+  // 1. Instantiate the infrastructure layer
   const txManager = TxManager;
   const orderRepository = UserRepository;
   const orderRepository = OrderRepository;
 
-  // 2. ユースケース層のインスタンス化（依存性を注入）
+  // 2. Instantiate the usecase layer (inject dependencies)
   const itemUseCase = ItemUseCase.from({
     orderRepository,
     txManager,
@@ -488,7 +488,7 @@ export const createContainer = (): Container => {
     txManager,
   });
 
-  // 3. コンテナを返却
+  // 3. Return the container
   return {
     userUseCase,
     orderUseCase,
@@ -497,17 +497,17 @@ export const createContainer = (): Container => {
 };
 ```
 
-### Hono ミドルウェアでの注入
+### Injection via Hono Middleware
 
 ```typescript
-// HTTP リクエストごとにコンテナを注入
+// Inject the container for each HTTP request
 app.use("*", async (c, next) => {
   const container = createContainer();
   c.set("container", container);
   await next();
 });
 
-// ハンドラーで使用
+// Use in handlers
 app.openapi(route, async (c) => {
   const container = c.get("container");
   const result = await container.userUseCase.getById({ itemId });
@@ -517,7 +517,7 @@ app.openapi(route, async (c) => {
 
 ---
 
-## エラーハンドリング
+## Error Handling
 
 ### AppError
 
@@ -531,7 +531,7 @@ class AppError extends BaseError {
   }) { ... }
 }
 
-// エラーコード
+// Error codes
 type ErrorCode =
   | "NOT_FOUND"
   | "NOT_UNIQUE"
@@ -541,9 +541,9 @@ type ErrorCode =
   | "INTERNAL_SERVER_ERROR";
 ```
 
-### wrap ユーティリティ
+### The wrap Utility
 
-Promise を Result 型に変換します。
+Converts a Promise into a Result type.
 
 ```typescript
 const result = await wrap(
@@ -556,12 +556,12 @@ const result = await wrap(
 );
 ```
 
-### HTTP エラーハンドリング
+### HTTP Error Handling
 
-グローバルエラーハンドラーで AppError を HTTP レスポンスに変換します。
+A global error handler converts AppError to HTTP responses.
 
 ```typescript
-// エラーコードから HTTP ステータスへのマッピング
+// Mapping from error codes to HTTP statuses
 const statusMap: Record<ErrorCode, number> = {
   NOT_FOUND: 404,
   NOT_UNIQUE: 409,
@@ -571,7 +571,7 @@ const statusMap: Record<ErrorCode, number> = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
-// レスポンス形式
+// Response format
 {
   "error": {
     "code": "NOT_FOUND",
@@ -583,45 +583,45 @@ const statusMap: Record<ErrorCode, number> = {
 
 ---
 
-## 外部サービス連携
+## External Service Integration
 
-### AI サービス
+### AI Service
 
 ```typescript
 // infra/ai/contentGenerator.ts
 export const ContentGenerator = {
   generate: async (params: GenerateParams): Promise<Result<ContentOutput, AppError>> => {
-    // 1. プロンプト構築
+    // 1. Build the prompt
     const prompt = buildPrompt(params);
 
-    // 2. AI サービス API 呼び出し
+    // 2. Call the AI service API
     const response = await aiClient.generateContent(prompt);
 
-    // 3. レスポンスをパース・バリデーション
+    // 3. Parse and validate the response
     const parsed = contentOutputSchema.safeParse(response);
     if (!parsed.success) {
       return Err(new AppError({ ... }));
     }
 
-    // 4. ドメインオブジェクトに変換
+    // 4. Convert to domain objects
     const items = ContentItem.fromAIOutput(parsed.data);
     return Ok({ items, ... });
   },
 };
 ```
 
-### メッセージキュー
+### Message Queue
 
-非同期処理にはメッセージキューを使用します。
+A message queue is used for asynchronous processing.
 
 ```typescript
-// タスク発行
+// Publish a task
 await messageQueue.publishProcessingTask({
   itemId,
   requestId,
 });
 
-// ワーカーでの購読
+// Subscribe in a worker
 await messageQueue.subscribe(async (message) => {
   const task = processingTaskSchema.parse(message.data);
   await contentGenerator.generate(task);
@@ -631,20 +631,20 @@ await messageQueue.subscribe(async (message) => {
 
 ---
 
-## テスト戦略
+## Test Strategy
 
-### レイヤー別テスト
+### Testing by Layer
 
-| レイヤー | テスト対象 | アプローチ |
+| Layer | Test Target | Approach |
 |---------|-----------|-----------|
-| Domain | ビジネスロジック | 純粋な単体テスト |
-| UseCase | オーケストレーション | モックリポジトリを使用 |
-| Repository | データアクセス | テスト用DBを使用 |
-| HTTP | API エンドポイント | 統合テスト |
+| Domain | Business logic | Pure unit tests |
+| UseCase | Orchestration | Using mock repositories |
+| Repository | Data access | Using a test DB |
+| HTTP | API endpoints | Integration tests |
 
-### 依存性のモック
+### Mocking Dependencies
 
-ファクトリパターンにより、テスト時に依存性を差し替え可能です。
+The factory pattern allows dependencies to be swapped out during testing.
 
 ```typescript
 const mockItemRepository = {
@@ -662,14 +662,14 @@ const useCase = ItemUseCase.from({
 
 ---
 
-## まとめ
+## Summary
 
-このアーキテクチャの主な特徴：
+Key characteristics of this architecture:
 
-1. **明確なレイヤー分離**: Domain/UseCase/Infrastructure の責務が明確
-2. **型安全性**: Zod スキーマと TypeScript による完全な型推論
-3. **エラーハンドリング**: Result 型による明示的なエラーフロー
-4. **テスタビリティ**: ファクトリパターンによる依存性の差し替え
-5. **トランザクション管理**: 複数操作のアトミック性を保証
-6. **イミュータブル更新**: 予測可能な状態管理
-7. **集約パターン**: 整合性境界の明確化
+1. **Clear layer separation**: Responsibilities of Domain/UseCase/Infrastructure are well-defined
+2. **Type safety**: Full type inference through Zod schemas and TypeScript
+3. **Error handling**: Explicit error flow via Result types
+4. **Testability**: Dependencies can be swapped out via the factory pattern
+5. **Transaction management**: Atomicity of multiple operations is guaranteed
+6. **Immutable updates**: Predictable state management
+7. **Aggregate pattern**: Clear consistency boundaries

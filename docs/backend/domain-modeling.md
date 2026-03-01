@@ -2,26 +2,26 @@
 
 ## Overview
 
-このドキュメントでは、ドメインモデリングの設計方針と構造を定義します。アプリケーション固有のドメインモデルは、この方針に従って実装してください。
+This document defines the design policies and structure for domain modeling. Application-specific domain models should be implemented following these policies.
 
-## ファイル構成
+## File Structure
 
-ドメインモデルは集約ごとにディレクトリを分割し、各集約のルートエンティティと値オブジェクトを明確に分離しています。
+Domain models are divided into directories by aggregate, with a clear separation between each aggregate's root entity and value objects.
 
 ```
 services/transcriptor/src/domain/
-└── [your-domain]/           # アプリケーション固有の集約
-    ├── [aggregate-root].ts  # 集約ルート
-    ├── [value-object].ts    # 値オブジェクト
-    ├── [entity].ts          # 子エンティティ
-    └── index.ts             # バレルファイル
+└── [your-domain]/           # Application-specific aggregates
+    ├── [aggregate-root].ts  # Aggregate root
+    ├── [value-object].ts    # Value objects
+    ├── [entity].ts          # Child entities
+    └── index.ts             # Barrel file
 ```
 
-## ドメインモデルの設計方針
+## Domain Model Design Policy
 
 ### 1. Zod Schema First
 
-すべての型定義はZodスキーマから導出します：
+All type definitions are derived from Zod schemas:
 
 ```typescript
 // item.ts
@@ -34,10 +34,10 @@ export const itemSchema = z.object({
 export type Item = z.infer<typeof itemSchema>;
 ```
 
-### 2. ドメインメソッドはコンパニオンオブジェクトパターン
+### 2. Domain Methods Use the Companion Object Pattern
 
-各ドメインモデルは、同名のコンパニオンオブジェクトにファクトリメソッドやビジネスロジックを持ちます。
-公開関数には JSDoc で事前条件・事後条件を記述します。詳細は [関数ドキュメント規約](./function-documentation.md) を参照。
+Each domain model has factory methods and business logic in a companion object with the same name.
+Public functions should have JSDoc with pre-conditions and post-conditions. See [Function Documentation Conventions](./function-documentation.md) for details.
 
 ```typescript
 // item.ts
@@ -49,9 +49,9 @@ export const Item = {
 } as const;
 ```
 
-### 3. 型ガードとユーティリティ
+### 3. Type Guards and Utilities
 
-Discriminated Unionを使用する場合は、型ガード関数も提供します：
+When using Discriminated Unions, also provide type guard functions:
 
 ```typescript
 // item-detail.ts (Discriminated Union example)
@@ -64,20 +64,20 @@ export const ItemDetail = {
 } as const;
 ```
 
-### 4. イミュータブルな更新
+### 4. Immutable Updates
 
-すべての更新操作は新しいオブジェクトを返します：
+All update operations return new objects:
 
 ```typescript
-const updatedItem = Item.update(item, { name: "新しい名前" });
+const updatedItem = Item.update(item, { name: "New Name" });
 const activatedItem = Item.activate(item);
 ```
 
-## リポジトリの設計方針
+## Repository Design Policy
 
-### 1. drizzle-zodスキーマをDTOとして活用
+### 1. Using drizzle-zod Schemas as DTOs
 
-リポジトリ層ではDrizzleが生成する`select*Schema`をDTOとして活用し、手動でのマッピングを最小化します：
+In the repository layer, Drizzle-generated `select*Schema` are used as DTOs to minimize manual mapping:
 
 ```typescript
 import {
@@ -95,7 +95,7 @@ const toItemAggregate = (
 ): Item => ({
   id: item.id,
   name: item.name,
-  // ... 直接マッピング
+  // ... direct mapping
   // Use drizzle-zod schema as DTO for child entities
   details: details.map((row) => selectItemDetailsSchema.parse(row)),
 });
@@ -104,36 +104,36 @@ const toItemAggregate = (
 return Ok(selectItemsSchema.parse(result.val[0]));
 ```
 
-### 2. シンプルなマッピング
+### 2. Simple Mapping
 
-DBの行をドメインモデルに変換するヘルパー関数はシンプルに保ちます：
+Helper functions that convert DB rows to domain models should be kept simple:
 
 ```typescript
-// Good: シンプルなマッピング
+// Good: Simple mapping
 const toItemAggregate = (
   item: SelectItem,
   details: SelectItemDetail[],
 ): Item => ({
   id: item.id,
   name: item.name,
-  // ... 直接マッピング
+  // ... direct mapping
   details: details.map(toItemDetail),
 });
 
-// Bad: 冗長な展開
+// Bad: Verbose expansion
 const items = itemsResult.val.map((item) => ({
   id: item.id,
   name: item.name,
-  // ... 毎回同じフィールドを列挙
+  // ... listing the same fields every time
 }));
 ```
 
-### 3. N+1問題の回避
+### 3. N+1 Problem Prevention
 
-集約の子エンティティを取得する際は、`inArray`を使用して一括取得します：
+When fetching aggregate child entities, use `inArray` to fetch them in bulk:
 
 ```typescript
-// Good: 一括取得
+// Good: Bulk fetch
 const itemIds = items.map((i) => i.id);
 const detailsResult = await tx
   .select()
@@ -148,7 +148,7 @@ for (const detail of detailsResult) {
   detailsByItemId.set(detail.itemId, existing);
 }
 
-// Bad: N+1クエリ
+// Bad: N+1 queries
 for (const item of items) {
   const details = await tx
     .select()
@@ -157,12 +157,12 @@ for (const item of items) {
 }
 ```
 
-### 4. ドメインモデルとDBモデルの一致
+### 4. Domain Model and DB Model Alignment
 
-過度な正規化を避け、ドメインモデルとDBモデルをできるだけ一致させます：
+Avoid excessive normalization and keep domain models aligned with DB models as much as possible:
 
 ```typescript
-// Good: DBと同じフラット構造
+// Good: Flat structure matching the DB
 const itemMetricsSchema = z.object({
   id: z.string(),
   itemId: z.string(),
@@ -172,7 +172,7 @@ const itemMetricsSchema = z.object({
   // ...
 });
 
-// Bad: 不必要な正規化（配列への変換）
+// Bad: Unnecessary normalization (converting to an array)
 const itemMetricsSchema = z.object({
   metrics: z.array(
     z.object({
@@ -183,57 +183,57 @@ const itemMetricsSchema = z.object({
 });
 ```
 
-APIの後方互換性が必要な場合は、DTO層で変換を行います。
+When backward compatibility for the API is needed, perform the conversion in the DTO layer.
 
-## 命名規則
+## Naming Conventions
 
-### データベース
-- テーブル名: 複数形 snake_case (`users`, `items`, `orders`)
-- カラム名: snake_case (`user_id`, `created_at`, `item_id`)
-- 外部キー: `{参照先テーブル単数形}_id` (`user_id`, `item_id`, `order_id`)
+### Database
+- Table names: Plural snake_case (`users`, `items`, `orders`)
+- Column names: snake_case (`user_id`, `created_at`, `item_id`)
+- Foreign keys: `{referenced_table_singular}_id` (`user_id`, `item_id`, `order_id`)
 
-### アプリケーション
-- ドメインモデル: PascalCase (`User`, `Item`, `Order`)
-- 型定義: PascalCase (`ItemStatus`, `OrderType`)
-- 型エイリアス（export用）: `{Model}Type` (`UserType`, `ItemType`)
-- 変数/プロパティ: camelCase (`itemId`, `createdAt`)
-- リポジトリ: `{Model}Repository` (`ItemRepository`)
-- ユースケース: `{Model}UseCase` (`ItemUseCase`)
+### Application
+- Domain models: PascalCase (`User`, `Item`, `Order`)
+- Type definitions: PascalCase (`ItemStatus`, `OrderType`)
+- Type aliases (for export): `{Model}Type` (`UserType`, `ItemType`)
+- Variables/Properties: camelCase (`itemId`, `createdAt`)
+- Repositories: `{Model}Repository` (`ItemRepository`)
+- UseCases: `{Model}UseCase` (`ItemUseCase`)
 
-## データ保存の基本方針
+## Data Storage Policy
 
-- **ユーザー単位での保存**: すべてのデータはユーザー（User）に紐づいて保存されます
-- **トランザクション管理**: 複数のリポジトリを跨ぐ処理はユースケース層でトランザクションを管理します
-- **Result型によるエラーハンドリング**: すべてのエラーはResult型で統一的に扱います
-- **集約単位での更新**: 各集約はリポジトリとユースケースで独立して管理し、集約単位で保存します
+- **Per-user storage**: All data is stored associated with a User
+- **Transaction management**: Operations spanning multiple repositories are managed with transactions at the UseCase layer
+- **Error handling with Result type**: All errors are handled uniformly using the Result type
+- **Per-aggregate updates**: Each aggregate is managed independently through its repository and UseCase, and is saved per aggregate unit
 
-## 集約境界
+## Aggregate Boundaries
 
-各集約は独立したユースケースとリポジトリで管理します。
+Each aggregate is managed with an independent UseCase and Repository.
 
 ### [YourAggregate] (Example)
-- **ルートエンティティ**: [AggregateRoot]
-- **値オブジェクト**: [ValueObject1], [ValueObject2]
-- **子エンティティ**: [ChildEntity]
-- **ファイル**: `domain/[your-domain]/`
-- **ユースケース**: `[YourAggregate]UseCase`
-- **リポジトリ**: `[YourAggregate]Repository`
-- **操作**: 作成、更新、取得、削除
-- **主要メソッド**:
-  - `[AggregateRoot].new()` - 作成
-  - `[AggregateRoot].update()` - 更新
-  - `[AggregateRoot].[businessMethod]()` - ビジネスロジック
+- **Root Entity**: [AggregateRoot]
+- **Value Objects**: [ValueObject1], [ValueObject2]
+- **Child Entities**: [ChildEntity]
+- **Files**: `domain/[your-domain]/`
+- **UseCase**: `[YourAggregate]UseCase`
+- **Repository**: `[YourAggregate]Repository`
+- **Operations**: Create, Update, Get, Delete
+- **Key Methods**:
+  - `[AggregateRoot].new()` - Create
+  - `[AggregateRoot].update()` - Update
+  - `[AggregateRoot].[businessMethod]()` - Business logic
 
 ## Use Case Diagram (Example)
 
 ```mermaid
 flowchart LR
-  C[ユーザー]
-  UC1([ログイン])
-  UC2([アイテム一覧])
-  UC3([アイテム作成])
-  UC4([アイテム編集])
-  UC5([アイテム削除])
+  C[User]
+  UC1([Login])
+  UC2([Item List])
+  UC3([Create Item])
+  UC4([Edit Item])
+  UC5([Delete Item])
 
   C --> UC1 --> UC2
   UC2 --> UC3
@@ -331,25 +331,25 @@ erDiagram
 ## Enums (Examples)
 
 ### ItemStatus
-- `active` - 有効
-- `inactive` - 無効
-- `archived` - アーカイブ済み
+- `active` - Active
+- `inactive` - Inactive
+- `archived` - Archived
 
 ### DetailType
-- `type_a` - タイプA
-- `type_b` - タイプB
-- `default` - デフォルト
+- `type_a` - Type A
+- `type_b` - Type B
+- `default` - Default
 
 ## API Endpoints (Examples)
 
 ### Item API
-- `GET /items` - アイテム一覧取得
+- `GET /items` - Get item list
   - Response: `{ items: [{ id, name, status, createdAt, ... }] }`
-- `POST /items` - アイテム作成
+- `POST /items` - Create item
   - Request: `{ name, status? }`
   - Response: `{ id, name, status, createdAt, updatedAt }`
-- `GET /items/{itemId}` - アイテム取得
+- `GET /items/{itemId}` - Get item
   - Response: `{ id, name, status, details, createdAt, updatedAt }`
-- `PUT /items/{itemId}` - アイテム更新
+- `PUT /items/{itemId}` - Update item
   - Request: `{ name?, status? }`
-- `DELETE /items/{itemId}` - アイテム削除
+- `DELETE /items/{itemId}` - Delete item

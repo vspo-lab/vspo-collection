@@ -1,21 +1,21 @@
 # Database and SQL Antipatterns
 
-## 概要
+## Overview
 
-このドキュメントは、リレーショナルデータベースと SQL に関する実践的なアンチパターンチェックをまとめたものです。以下を参考にしています。
+This document summarizes practical antipattern checks for relational databases and SQL. It is based on the following references:
 
-- SQL Antipatterns（第2版）の構成: 4カテゴリ25アンチパターン
-- 講演: 「SQL アンチパターン第2版 入門」（Developers Summit 2025 Summer）
+- SQL Antipatterns (2nd edition) structure: 4 categories, 25 antipatterns
+- Talk: "Introduction to SQL Antipatterns 2nd Edition" (Developers Summit 2025 Summer)
 
-`services/transcriptor/src/infra/repository/mysql/` および関連する domain/usecase コードの設計時・コードレビュー時のチェックリストとして使用してください。
+Use this as a checklist when designing and reviewing code in `services/transcriptor/src/infra/repository/mysql/` and related domain/usecase code.
 
-## 4カテゴリ
+## 4 Categories
 
-### 1. 論理データベース設計
+### 1. Logical Database Design
 
-代表的なアンチパターン:
+Common antipatterns:
 
-- Jaywalking（カンマ区切り ID を1カラムに格納）
+- Jaywalking (storing comma-separated IDs in a single column)
 - Naive Trees
 - ID Required
 - Keyless Entry
@@ -24,11 +24,11 @@
 - Multicolumn Attributes
 - Metadata Tribbles
 
-主なリスク: データ整合性が崩壊し、制約が DB からアプリケーションコードに移動します。
+Primary risk: Data integrity breaks down and constraints move from the DB to application code.
 
-### 2. 物理データベース設計
+### 2. Physical Database Design
 
-代表的なアンチパターン:
+Common antipatterns:
 
 - 31 Flavors
 - Index Shotgun
@@ -36,11 +36,11 @@
 - Ambiguous Groups
 - Random Selection
 
-主なリスク: パフォーマンスチューニングとスキーマ変更が推測に頼ることになります。
+Primary risk: Performance tuning and schema changes rely on guesswork.
 
-### 3. クエリ記述
+### 3. Query Writing
 
-代表的なアンチパターン:
+Common antipatterns:
 
 - Spaghetti Query
 - Implicit Columns
@@ -48,11 +48,11 @@
 - Random Selection
 - Pattern Matching Usage
 
-主なリスク: SQL の可読性、予測可能性、オプティマイザとの相性が低下します。
+Primary risk: SQL readability, predictability, and optimizer compatibility degrade.
 
-### 4. アプリケーション開発
+### 4. Application Development
 
-代表的なアンチパターン:
+Common antipatterns:
 
 - Blunt Hammer
 - Read Committed?
@@ -60,11 +60,11 @@
 - Phantom Files
 - Two-headed Monster
 
-主なリスク: 本番環境でトランザクション境界と整合性保証が壊れます。
+Primary risk: Transaction boundaries and consistency guarantees break in production.
 
-## このテンプレートでの優先ルール
+## Priority Rules for This Template
 
-### 1. ID リストを1カラムに格納しない (Jaywalking)
+### 1. Do Not Store ID Lists in a Single Column (Jaywalking)
 
 Bad:
 
@@ -87,23 +87,23 @@ CREATE TABLE product_accounts (
 );
 ```
 
-理由: 正規表現による JOIN や文字列分割による更新が不要になり、インデックスが使え、FK による整合性が保証されます。
+Reason: Eliminates the need for regex-based JOINs and string-splitting updates, enables index usage, and guarantees integrity through foreign keys.
 
-### 2. 主キーと外部キーを必ず定義する (Keyless Entry)
+### 2. Always Define Primary Keys and Foreign Keys (Keyless Entry)
 
-- すべてのテーブルに安定した主キーを設ける
-- すべての関連に FK を明示する
-- FK が使えない場合（外部境界など）は、スキーマコメントと docs にその理由を記載する
+- Every table must have a stable primary key
+- All relationships must have explicit foreign keys
+- When foreign keys cannot be used (e.g., external boundaries), document the reason in schema comments and docs
 
-### 3. クエリと整合性のトレードオフを明確に受け入れない限り EAV を採用しない
+### 3. Do Not Adopt EAV Unless You Explicitly Accept the Query and Consistency Tradeoffs
 
-推奨:
+Recommendations:
 
-- 安定した属性には型付きカラムを使用する
-- JSON カラムは、真にスパースで拡張可能な属性にのみ使用する
-- JSON を使う場合は、スキーマ層とドメイン層の両方でバリデーションする
+- Use typed columns for stable attributes
+- Use JSON columns only for truly sparse and extensible attributes
+- When using JSON, validate at both the schema layer and the domain layer
 
-### 4. "type + id" ペアによるポリモーフィック関連を避ける
+### 4. Avoid Polymorphic Associations via "type + id" Pairs
 
 Bad:
 
@@ -111,64 +111,64 @@ Bad:
 owner_type VARCHAR(50), owner_id BIGINT
 ```
 
-推奨:
+Recommendations:
 
-- 対象の集約ごとに個別の中間テーブルを用意する
-- または、FK 制約付きのスーパータイプ/サブタイプテーブルを使用する
+- Create separate junction tables for each target aggregate
+- Or use supertype/subtype tables with FK constraints
 
-### 5. 直感ではなくクエリパターンからインデックスを追加する (Index Shotgun)
+### 5. Add Indexes Based on Query Patterns, Not Intuition (Index Shotgun)
 
-- 実際の `WHERE`, `JOIN`, `ORDER BY` から始める
-- フィルタ順序に合った複合インデックスを優先する
-- 未使用または重複したインデックスを削除して書き込みコストを減らす
+- Start from actual `WHERE`, `JOIN`, `ORDER BY` clauses
+- Prefer composite indexes that match filter order
+- Remove unused or duplicate indexes to reduce write costs
 
-### 6. NULL のセマンティクスを明示的に扱う (Fear of UNKNOWN)
+### 6. Handle NULL Semantics Explicitly (Fear of UNKNOWN)
 
-- カラムごとに `NULL` が有効な状態かどうかを判断する
-- `''`, `0`, `'N/A'` などのセンチネル値を偽の NULL として使わない
-- SQL では `IS NULL` / `IS NOT NULL` のチェックを意図的に行う
+- Determine whether `NULL` represents a valid state for each column
+- Do not use sentinel values like `''`, `0`, or `'N/A'` as fake NULLs
+- Use `IS NULL` / `IS NOT NULL` checks intentionally in SQL
 
-### 7. SQL を小さく合成可能に保つ (Spaghetti Query)
+### 7. Keep SQL Small and Composable (Spaghetti Query)
 
-- 大きな SQL は CTE やリポジトリメソッドの分割で対応する
-- 1つのクエリは1つのリードモデル/ユースケースに集中する
-- 過度に汎用化した「1つの SQL ですべて対応」より明快さを優先する
+- Break up large SQL with CTEs or by splitting repository methods
+- Focus each query on a single read model / use case
+- Prefer clarity over an overly generalized "one SQL to rule them all"
 
-### 8. アプリケーションクエリで `SELECT *` を使わない (Implicit Columns)
+### 8. Do Not Use `SELECT *` in Application Queries (Implicit Columns)
 
-常にカラムを明示する:
+Always specify columns explicitly:
 
-- 意図しないペイロード増加を防ぐ
-- スキーマ変更時の破壊を防ぐ
-- インデックスオンリースキャンとレビューが容易になる
+- Prevents unintended payload growth
+- Prevents breakage on schema changes
+- Enables index-only scans and easier review
 
-### 9. `%keyword%` を長期的な検索戦略にしない (Poor Man's Search Engine)
+### 9. Do Not Use `%keyword%` as a Long-Term Search Strategy (Poor Man's Search Engine)
 
-- `%...%` はインデックスの使用を無効にすることが多い
-- 全文検索が必要な場合は、DB の全文検索機能や外部検索エンジンを使用する
-- 完全一致/前方一致検索の要件をユースケースで明示する
+- `%...%` often prevents index usage
+- For full-text search needs, use the DB's full-text search capabilities or an external search engine
+- Clarify exact-match / prefix-match requirements in the use case
 
-### 10. クロスリソースの書き込みを1つのトランザクション境界で制御する (Two-headed Monster / Phantom Files)
+### 10. Control Cross-Resource Writes Within a Single Transaction Boundary (Two-headed Monster / Phantom Files)
 
-- DB 更新とファイル/オブジェクトストレージ更新をアトミックにする必要がある場合:
-  - outbox/event パターン、または
-  - 明示的なリトライセマンティクスを持つ補償アクションを使用する
-- 「通常は順番に成功する」に頼らない
+- When DB updates and file/object-storage updates must be atomic:
+  - Use an outbox/event pattern, or
+  - Use compensating actions with explicit retry semantics
+- Do not rely on "they usually succeed in order"
 
-## PR レビューチェックリスト
+## PR Review Checklist
 
-スキーマ/クエリ関連の PR で使用するチェックリストです。
+Use this checklist for schema/query-related PRs:
 
-- [ ] カンマ区切りリストを1カラムに格納していないか？
-- [ ] 関連が存在する箇所で PK/FK が欠落していないか？
-- [ ] リポジトリやサービスのクエリで `SELECT *` を使っていないか？
-- [ ] クエリ条件が既存のインデックスと整合しているか？
-- [ ] ドメイン上の意味が不明確な nullable カラムを追加していないか？
-- [ ] 検索戦略の判断なしに `%keyword%` 検索を追加していないか？
-- [ ] 明示的な整合性設計なしにマルチリソース書き込みをしていないか？
+- [ ] Are comma-separated lists stored in a single column?
+- [ ] Are PK/FK missing where relationships exist?
+- [ ] Is `SELECT *` used in repository or service queries?
+- [ ] Do query conditions align with existing indexes?
+- [ ] Are nullable columns being added without clear domain semantics?
+- [ ] Is `%keyword%` search being added without a search strategy decision?
+- [ ] Are multi-resource writes being done without explicit consistency design?
 
-## 参考リンク
+## References
 
-- Speaker Deck: SQL アンチパターン第2版入門（2025-07-18 公開）
+- Speaker Deck: Introduction to SQL Antipatterns 2nd Edition (published 2025-07-18)
   https://speakerdeck.com/twada/intro-to-sql-antipatterns-2nd
 - SQL Antipatterns (2nd edition), Bill Karwin

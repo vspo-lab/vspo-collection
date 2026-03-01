@@ -1,20 +1,20 @@
 # Date/Time Handling Guidelines
 
-このドキュメントでは、アプリケーションの日時処理規約を定義します。
+This document defines the date/time handling conventions for the application.
 
-## 基本原則
+## Core Principles
 
-1. **UTC を標準とする**: サーバーサイドのタイムスタンプと保存日時はすべて UTC を使用する
-2. **表示は JST**: フロントエンドでは日本のユーザー向けに JST（Asia/Tokyo）で日時を表示する
-3. **`@vspo/dayjs` を使用する**: ネイティブの `Date` オブジェクトの代わりに共有 dayjs パッケージを常に使用する
+1. **UTC as the standard**: All server-side timestamps and stored dates use UTC
+2. **Display in JST**: The frontend displays dates in JST (Asia/Tokyo) for Japanese users
+3. **Use `@vspo/dayjs`**: Always use the shared dayjs package instead of the native `Date` object
 
-## パッケージ: `@vspo/dayjs`
+## Package: `@vspo/dayjs`
 
-`@vspo/dayjs` パッケージは、アプリケーション全体で一貫した日時ユーティリティを提供します。
+The `@vspo/dayjs` package provides consistent date/time utilities across the application.
 
-### インストール
+### Installation
 
-`services/transcriptor` と `services/web` の両方に既に含まれています。
+Already included in both `services/transcriptor` and `services/web`.
 
 ```typescript
 import {
@@ -25,96 +25,96 @@ import {
 } from "@vspo/dayjs";
 ```
 
-## サーバーサイド（バックエンド）
+## Server-Side (Backend)
 
-### 現在時刻の取得
+### Getting the Current Time
 
 ```typescript
 import { getCurrentUTCDate, getCurrentTimestamp } from "@vspo/dayjs";
 
-// 現在時刻を Date オブジェクト（UTC）として取得
+// Get the current time as a Date object (UTC)
 const now = getCurrentUTCDate();
 
-// 現在のタイムスタンプをミリ秒で取得（Date.now() の代替）
+// Get the current timestamp in milliseconds (alternative to Date.now())
 const timestamp = getCurrentTimestamp();
 ```
 
-### データベース操作
+### Database Operations
 
-データベースのタイムスタンプはすべて UTC で保存します。
+All database timestamps are stored in UTC.
 
 ```typescript
 import { getCurrentUTCDate } from "@vspo/dayjs";
 
-// レコード作成時
+// When creating a record
 await db.insert(table).values({
   createdAt: getCurrentUTCDate(),
   updatedAt: getCurrentUTCDate(),
 });
 ```
 
-### トークン/セッションの有効期限
+### Token/Session Expiration
 
 ```typescript
 import { addMillisecondsFromNow, convertToUTC } from "@vspo/dayjs";
 
-// 有効期限の作成
-const TOKEN_EXPIRE_MS = 30 * 60 * 1000; // 30分
+// Creating an expiration time
+const TOKEN_EXPIRE_MS = 30 * 60 * 1000; // 30 minutes
 const expireTime = convertToUTC(addMillisecondsFromNow(TOKEN_EXPIRE_MS));
 ```
 
-## フロントエンド（クライアントサイド）
+## Frontend (Client-Side)
 
-### 現在時刻の取得
+### Getting the Current Time
 
 ```typescript
 import { getCurrentUTCDate, getCurrentTimestamp } from "@vspo/dayjs";
 
-// タイムスタンプ計算用（例: 経過時間）
+// For timestamp calculations (e.g., elapsed time)
 const startTime = getCurrentTimestamp();
-// ... 後で
+// ... later
 const elapsed = getCurrentTimestamp() - startTime;
 ```
 
-### ユーザーへの日時表示
+### Displaying Dates to Users
 
-日本のユーザー向けには JST フォーマットを使用します。
+Use JST formatting for Japanese users.
 
 ```typescript
 import { formatToJST, formatToJSTShort } from "@vspo/dayjs";
 
-// フルフォーマット: "2024年1月15日 10時30分00秒"
+// Full format: "2024年1月15日 10時30分00秒"
 const fullDate = formatToJST(utcDate);
 
-// ショートフォーマット: "2024/01/15"
+// Short format: "2024/01/15"
 const shortDate = formatToJSTShort(utcDate);
 ```
 
-多言語対応の場合:
+For multilingual support:
 
 ```typescript
 import { formatToLocalizedDate } from "@vspo/dayjs";
 
-// 言語コードに基づいて自動フォーマット
-const localizedDate = formatToLocalizedDate(utcDate, "ja"); // 日本語
-const localizedDate = formatToLocalizedDate(utcDate, "en"); // 英語
+// Automatically formats based on language code
+const localizedDate = formatToLocalizedDate(utcDate, "ja"); // Japanese
+const localizedDate = formatToLocalizedDate(utcDate, "en"); // English
 ```
 
-### ファイル名の生成
+### Generating Filenames
 
 ```typescript
 import { formatToISODate, formatToFilenameSafeISO, getCurrentUTCDate } from "@vspo/dayjs";
 
-// 日付のみのファイル名: "2024-01-15"
+// Date-only filename: "2024-01-15"
 const dateStr = formatToISODate(getCurrentUTCDate());
 const filename = `export-${sessionId}-${dateStr}.webm`;
 
-// タイムスタンプ付きファイル名: "2024-01-15T10-30-00-000Z"
+// Filename with timestamp: "2024-01-15T10-30-00-000Z"
 const timestamp = formatToFilenameSafeISO(getCurrentUTCDate());
 const filename = `recording-${timestamp}.webm`;
 ```
 
-### 日付フィルタリング
+### Date Filtering
 
 ```typescript
 import {
@@ -124,7 +124,7 @@ import {
   isBefore,
 } from "@vspo/dayjs";
 
-// 過去7日間のアイテムをフィルタリング
+// Filter items from the last 7 days
 const now = getCurrentUTCDate();
 const cutoffDate = subtractDays(now, 7);
 const filteredItems = items.filter(
@@ -132,54 +132,54 @@ const filteredItems = items.filter(
 );
 ```
 
-## 利用可能な関数
+## Available Functions
 
-### 時刻取得
+### Time Retrieval
 
-| 関数 | 戻り値の型 | 説明 |
-|-----|-----------|------|
-| `getCurrentUTCDate()` | `Date` | 現在の UTC 時刻を Date オブジェクトで返す |
-| `getCurrentUTCString()` | `string` | 現在の UTC 時刻を ISO 文字列で返す |
-| `getCurrentTimestamp()` | `number` | 現在の UTC タイムスタンプをミリ秒で返す |
-| `getCurrentYear()` | `number` | 現在の年（UTC）を返す |
+| Function | Return Type | Description |
+|----------|-------------|-------------|
+| `getCurrentUTCDate()` | `Date` | Returns the current UTC time as a Date object |
+| `getCurrentUTCString()` | `string` | Returns the current UTC time as an ISO string |
+| `getCurrentTimestamp()` | `number` | Returns the current UTC timestamp in milliseconds |
+| `getCurrentYear()` | `number` | Returns the current year (UTC) |
 
-### 変換関数
+### Conversion Functions
 
-| 関数 | 戻り値の型 | 説明 |
-|-----|-----------|------|
-| `convertToUTC(input)` | `string` | UTC ISO 文字列に変換する |
-| `convertToUTCDate(input)` | `Date` | UTC Date オブジェクトに変換する |
-| `convertToUTCTimestamp(input, tz)` | `string` | タイムゾーンから UTC に変換する |
+| Function | Return Type | Description |
+|----------|-------------|-------------|
+| `convertToUTC(input)` | `string` | Converts to a UTC ISO string |
+| `convertToUTCDate(input)` | `Date` | Converts to a UTC Date object |
+| `convertToUTCTimestamp(input, tz)` | `string` | Converts from a timezone to UTC |
 
-### フォーマット関数
+### Formatting Functions
 
-| 関数 | 戻り値の型 | 説明 |
-|-----|-----------|------|
-| `formatToISODate(input)` | `string` | "YYYY-MM-DD" 形式にフォーマットする |
-| `formatToFilenameSafeISO(input)` | `string` | "YYYY-MM-DDTHH-mm-ss-SSSZ" 形式にフォーマットする |
-| `formatToJST(input)` | `string` | JST 表示用にフォーマットする（フル） |
-| `formatToJSTShort(input)` | `string` | JST 表示用にフォーマットする（YYYY/MM/DD） |
-| `formatToLocalizedDate(input, lang)` | `string` | 言語に基づいてフォーマットする |
+| Function | Return Type | Description |
+|----------|-------------|-------------|
+| `formatToISODate(input)` | `string` | Formats as "YYYY-MM-DD" |
+| `formatToFilenameSafeISO(input)` | `string` | Formats as "YYYY-MM-DDTHH-mm-ss-SSSZ" |
+| `formatToJST(input)` | `string` | Formats for JST display (full) |
+| `formatToJSTShort(input)` | `string` | Formats for JST display (YYYY/MM/DD) |
+| `formatToLocalizedDate(input, lang)` | `string` | Formats based on language |
 
-### 日付演算
+### Date Arithmetic
 
-| 関数 | 戻り値の型 | 説明 |
-|-----|-----------|------|
-| `addMillisecondsFromNow(ms)` | `Date` | 現在時刻にミリ秒を加算する |
-| `addMinutes(input, minutes)` | `Date` | 日時に分を加算する |
-| `subtractDays(input, days)` | `Date` | 日時から日数を減算する |
-| `subtractMinutes(input, minutes)` | `Date` | 日時から分を減算する |
+| Function | Return Type | Description |
+|----------|-------------|-------------|
+| `addMillisecondsFromNow(ms)` | `Date` | Adds milliseconds to the current time |
+| `addMinutes(input, minutes)` | `Date` | Adds minutes to a date |
+| `subtractDays(input, days)` | `Date` | Subtracts days from a date |
+| `subtractMinutes(input, minutes)` | `Date` | Subtracts minutes from a date |
 
-### 比較関数
+### Comparison Functions
 
-| 関数 | 戻り値の型 | 説明 |
-|-----|-----------|------|
-| `isBefore(date1, date2)` | `boolean` | date1 が date2 より前かどうかを判定する |
+| Function | Return Type | Description |
+|----------|-------------|-------------|
+| `isBefore(date1, date2)` | `boolean` | Determines whether date1 is before date2 |
 
-## 対応言語/タイムゾーン
+## Supported Languages/Timezones
 
-| コード | ロケール | タイムゾーン |
-|-------|---------|------------|
+| Code | Locale | Timezone |
+|------|--------|----------|
 | `ja` | ja-JP | Asia/Tokyo |
 | `en` | en-US | UTC |
 | `ko` | ko-KR | Asia/Seoul |
@@ -190,19 +190,19 @@ const filteredItems = items.filter(
 | `es` | es-ES | Europe/Madrid |
 | `default` | ja-JP | Asia/Tokyo |
 
-## ネイティブ Date からの移行
+## Migrating from Native Date
 
-### 移行前
+### Before
 
 ```typescript
-// これらは使わない
+// Do not use these
 const now = new Date();
 const timestamp = Date.now();
 const year = new Date().getFullYear();
 const isoString = new Date().toISOString();
 ```
 
-### 移行後
+### After
 
 ```typescript
 import {
@@ -218,9 +218,9 @@ const year = getCurrentYear();
 const isoString = getCurrentUTCString();
 ```
 
-## テスト
+## Testing
 
-時間依存のコードをテストする場合は、Vitest のフェイクタイマーを使用します。
+When testing time-dependent code, use Vitest's fake timers.
 
 ```typescript
 import { beforeEach, afterEach, vi } from "vitest";
@@ -235,4 +235,4 @@ afterEach(() => {
 });
 ```
 
-注意: `@vspo/dayjs` の関数は内部で dayjs を使用しており、モックされたシステム時刻を尊重するため、Vitest のフェイクタイマーで正しく動作します。
+Note: Functions from `@vspo/dayjs` use dayjs internally, which respects the mocked system time, so they work correctly with Vitest's fake timers.

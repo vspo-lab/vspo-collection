@@ -1,66 +1,66 @@
-# 信頼性の高いコード設計ガイドライン
+# Reliable Code Design Guidelines
 
-本ドキュメントは、誤りにくい設計を志向するための原則と Go での実装パターンをまとめる。t-wada 氏の講演資料から得られた知見を Go 言語の文脈で具体化したものである。
+This document summarizes principles for designing code that is resistant to errors, along with implementation patterns in Go. It concretizes insights from t-wada's presentations in the context of the Go language.
 
-## 設計原則
+## Design Principles
 
-### 1. 型による防御（Defense by Types）
+### 1. Defense by Types
 
-**目的**: 不正な値がシステムに入り込むことをコンパイル時に防ぐ
+**Purpose**: Prevent invalid values from entering the system at compile time
 
-**実践**:
-- プリミティブ型（`string`, `int`）を直接使わず、意味のある値オブジェクト型を定義する
-- ドメイン固有の制約を型で表現する
-- 無効な状態を表現できない型設計を目指す
+**Practice**:
+- Do not use primitive types (`string`, `int`) directly; define meaningful value object types instead
+- Express domain-specific constraints through types
+- Aim for type designs where invalid states are unrepresentable
 
-**本リポジトリでの例**:
-- `VideoID`, `CreatorID` - 文字列 ID の意味を型で明示
-- `PlatformKind` - 許可されたプラットフォームのみを表現
-- `ProcessState` - 有効な状態遷移のみを許可
+**Examples in this repository**:
+- `VideoID`, `CreatorID` - Make the meaning of string IDs explicit through types
+- `PlatformKind` - Represent only allowed platforms
+- `ProcessState` - Allow only valid state transitions
 
-### 2. イミュータビリティの追求
+### 2. Pursuing Immutability
 
-**目的**: 予期しない状態変更を防ぎ、コードの理解を容易にする
+**Purpose**: Prevent unexpected state changes and make code easier to understand
 
-**実践**:
-- 構造体フィールドは非公開にし、getter を提供する
-- 状態変更メソッドは新しい値を返すか、明示的にポインタレシーバを使う
-- 副作用のある操作はメソッド名で明示する
+**Practice**:
+- Keep struct fields unexported and provide getters
+- State-changing methods should return new values or explicitly use pointer receivers
+- Make side-effecting operations explicit through method names
 
-**本リポジトリでの例**:
-- `ProcessState.Start()` は新しい状態を返す
-- `Video.StartJob()` はポインタレシーバで明示的に変更
+**Examples in this repository**:
+- `ProcessState.Start()` returns a new state
+- `Video.StartJob()` uses a pointer receiver to make mutation explicit
 
-#### エイリアシング問題の防止
+#### Preventing the Aliasing Problem
 
-**エイリアシング問題とは**:
-複数の変数が同じメモリ領域を参照している状態で、一方の変更が他方に意図せず影響を及ぼす問題。
+**What is the aliasing problem?**:
+A situation where multiple variables reference the same memory location, and a change through one variable unintentionally affects the other.
 
-**不変オブジェクトによる解決**:
-- オブジェクトの状態を変更しない設計にすることで、エイリアシングによる予期しない副作用を根本的に防ぐ
-- 値を変更したい場合は、新しいオブジェクトを生成して返す
+**Solving it through immutable objects**:
+- By designing objects whose state is never modified, you fundamentally prevent unexpected side effects from aliasing
+- When you want to change a value, generate and return a new object
 
-**例**:
+**Example**:
 ```go
-// Bad: ミュータブルな設計（エイリアシング問題が発生）
+// Bad: Mutable design (aliasing problem occurs)
 type Config struct {
     MaxRetry int
 }
 
 func (c *Config) SetMaxRetry(n int) {
-    c.MaxRetry = n  // 参照先が共有されていると、意図しない変更が波及する
+    c.MaxRetry = n  // If the reference is shared, unintended changes propagate
 }
 
 func main() {
     cfg1 := &Config{MaxRetry: 3}
-    cfg2 := cfg1  // 同じポインタを共有（エイリアシング）
+    cfg2 := cfg1  // Sharing the same pointer (aliasing)
     cfg2.SetMaxRetry(10)
-    fmt.Println(cfg1.MaxRetry)  // 10 - cfg1も変更されてしまう
+    fmt.Println(cfg1.MaxRetry)  // 10 - cfg1 is also changed
 }
 
-// Good: イミュータブルな設計
+// Good: Immutable design
 type Config struct {
-    maxRetry int  // 非公開フィールド
+    maxRetry int  // Unexported field
 }
 
 func (c Config) MaxRetry() int {
@@ -68,71 +68,71 @@ func (c Config) MaxRetry() int {
 }
 
 func (c Config) WithMaxRetry(n int) Config {
-    return Config{maxRetry: n}  // 新しいインスタンスを返す
+    return Config{maxRetry: n}  // Returns a new instance
 }
 
 func main() {
     cfg1 := Config{maxRetry: 3}
-    cfg2 := cfg1.WithMaxRetry(10)  // 新しいインスタンスが生成される
-    fmt.Println(cfg1.MaxRetry())    // 3 - cfg1は変更されない
+    cfg2 := cfg1.WithMaxRetry(10)  // A new instance is created
+    fmt.Println(cfg1.MaxRetry())    // 3 - cfg1 is unchanged
     fmt.Println(cfg2.MaxRetry())    // 10
 }
 ```
 
-**Goにおける注意点**:
-- スライスやマップはポインタのように振る舞うため、コピーしても内部データは共有される
-- 深いコピーが必要な場合は、明示的にコピー関数を実装する
-- 値レシーバ（`func (c Config)`）と値渡しを活用して、暗黙的なコピーを促す
+**Notes for Go**:
+- Slices and maps behave like pointers, so even after copying, internal data is shared
+- When deep copying is needed, implement an explicit copy function
+- Leverage value receivers (`func (c Config)`) and pass-by-value to encourage implicit copying
 
-### 3. コンストラクタでの不変条件検証
+### 3. Invariant Validation in Constructors
 
-**目的**: 不正な状態のオブジェクトが生成されることを防ぐ
+**Purpose**: Prevent objects in invalid states from being created
 
-**実践**:
-- すべての `New*` / `Parse*` 関数で入力を検証する
-- 検証に失敗した場合は error を返す
-- ゼロ値が有効な状態でない場合は必ずコンストラクタを経由させる
+**Practice**:
+- Validate input in all `New*` / `Parse*` functions
+- Return an error when validation fails
+- If the zero value is not a valid state, always require going through a constructor
 
-**本リポジトリでの例**:
-- `ParseVideoID` - 空文字を拒否
-- `ParseProcessState` - 未知の状態を拒否
-- `video.New` - 必須フィールドを検証
+**Examples in this repository**:
+- `ParseVideoID` - Rejects empty strings
+- `ParseProcessState` - Rejects unknown states
+- `video.New` - Validates required fields
 
-### 4. 事実と情報の分離
+### 4. Separation of Facts and Information
 
-**目的**: データの解釈をドメイン層に集約し、変換ミスを防ぐ
+**Purpose**: Centralize data interpretation in the domain layer and prevent conversion errors
 
-**実践**:
-- 外部から受け取る生データは DTO として表現（事実）
-- ドメインロジックで使う型は Domain 型として定義（情報）
-- 変換はアダプタ層で一箇所に集約する
+**Practice**:
+- Represent raw data received from external sources as DTOs (facts)
+- Define types used by domain logic as Domain types (information)
+- Centralize conversions in the adapter layer
 
-**本リポジトリでの例**:
-- `infra/*/internal/dto/` - Firestore/Pub/Sub のペイロード（事実）
-- `domain/video/Video` - ビジネスロジックで使う型（情報）
+**Examples in this repository**:
+- `infra/*/internal/dto/` - Firestore/Pub/Sub payloads (facts)
+- `domain/video/Video` - Types used by business logic (information)
 
-### 5. 不正な状態を表現不可能にする
+### 5. Making Invalid States Unrepresentable
 
-**目的**: 防御的プログラミング（大量のif文）ではなく、設計で不正な値を排除する
+**Purpose**: Eliminate invalid values through design rather than defensive programming (excessive if-statements)
 
-**実践**:
-- 型システムで取り得る値の組み合わせ（状態空間）を最小化する
-- プリミティブ型を避け、ドメイン固有の型を定義する
-- 無効な状態を表現できない型設計を目指す
+**Practice**:
+- Minimize the state space (possible value combinations) through the type system
+- Avoid primitive types; define domain-specific types instead
+- Aim for type designs where invalid states cannot be expressed
 
-**本リポジトリでの例**:
-- `ProcessState` インターフェースで状態を型で表現
-- `PlatformKind` で許可されたプラットフォームのみを表現
-- 値オブジェクトで不正な値の生成を防止
+**Examples in this repository**:
+- `ProcessState` interface represents states through types
+- `PlatformKind` represents only allowed platforms
+- Value objects prevent the creation of invalid values
 
-**アンチパターン**:
+**Anti-pattern**:
 ```go
-// Bad: 文字列で状態管理
+// Bad: Managing state with strings
 type Video struct {
-    Status string // "pending", "running", "success", "failed" などが混在
+    Status string // "pending", "running", "success", "failed" etc. mixed in
 }
 
-// Good: 型で状態管理
+// Good: Managing state with types
 type ProcessState interface {
     Name() string
 }
@@ -140,32 +140,32 @@ type ProcessPending struct{}
 type ProcessRunning struct{}
 ```
 
-### 6. 静的解析の活用
+### 6. Leveraging Static Analysis
 
-**目的**: テストだけでなく、lintツールで事前にバグを検出する
+**Purpose**: Detect bugs proactively with lint tools, not just through tests
 
-**実践**:
-- `golangci-lint` で一般的なコード品質をチェック
-- カスタムlintで設計ルールを機械的にチェック（`go-arch-lint`, `usecasegodoc`, `valueobject`, `tabletest`）
-- CI/CD で自動実行し、違反を防止
+**Practice**:
+- Check general code quality with `golangci-lint`
+- Mechanically enforce design rules with custom lints (`go-arch-lint`, `usecasegodoc`, `valueobject`, `tabletest`)
+- Run automatically in CI/CD to prevent violations
 
-**本リポジトリでの例**:
-- `.go-arch-lint.yml` で Clean Architecture 依存方向を強制
-- `valueobject` lint で値オブジェクトの直接初期化を検出
-- `tabletest` lint でテーブルドリブンテスト形式を強制
+**Examples in this repository**:
+- `.go-arch-lint.yml` enforces Clean Architecture dependency direction
+- `valueobject` lint detects direct initialization of value objects
+- `tabletest` lint enforces table-driven test format
 
-### 7. 完全性（Integrity）の保証
+### 7. Guaranteeing Integrity
 
-**目的**: オブジェクトが生成された時点で、常に整合性が取れた状態であることを保証する
+**Purpose**: Ensure that an object is always in a consistent state from the moment it is created
 
-**実践**:
-- コンストラクタで全ての不変条件を検証する
-- 部分的に初期化されたオブジェクトを公開しない
-- setter を避け、不変オブジェクトを優先する
+**Practice**:
+- Validate all invariants in the constructor
+- Do not expose partially initialized objects
+- Avoid setters; prefer immutable objects
 
-**本リポジトリでの例**:
+**Example in this repository**:
 ```go
-// 完全性を保証するコンストラクタ
+// Constructor that guarantees integrity
 func New(platform platform.PlatformKind, videoID, creatorID string) (*Video, error) {
     vid, err := ParseVideoID(videoID)
     if err != nil {
@@ -175,7 +175,7 @@ func New(platform platform.PlatformKind, videoID, creatorID string) (*Video, err
     if err != nil {
         return nil, err
     }
-    // 生成された時点で全フィールドが有効
+    // All fields are valid at the point of creation
     return &Video{
         Platform:  platform,
         VideoID:   vid,
@@ -184,18 +184,18 @@ func New(platform platform.PlatformKind, videoID, creatorID string) (*Video, err
 }
 ```
 
-### 8. 適切な責務の配置
+### 8. Appropriate Placement of Responsibilities
 
-**目的**: チェックロジックを適切なオブジェクトに配置し、凝集度を高める
+**Purpose**: Place check logic in the appropriate object and increase cohesion
 
-**実践**:
-- 「開始日が終了日より前」のチェックは `DateTimeRange` の責務
-- 「プロセスが実行可能か」のチェックは `ProcessState` の責務
-- ドメインルールはドメインオブジェクトに閉じる
+**Practice**:
+- "Start date is before end date" is the responsibility of `DateTimeRange`
+- "Can the process be executed?" is the responsibility of `ProcessState`
+- Domain rules are confined within domain objects
 
-**本リポジトリでの例**:
+**Example in this repository**:
 ```go
-// Bad: 利用側でチェック
+// Bad: Checking on the caller side
 func (uc *UseCase) Process(ctx context.Context) error {
     if state.Name() != "pending" {
         return errors.New("not pending")
@@ -203,109 +203,109 @@ func (uc *UseCase) Process(ctx context.Context) error {
     // ...
 }
 
-// Good: 状態オブジェクト自身がチェック
+// Good: The state object itself performs the check
 type ProcessPending struct{}
 func (ProcessPending) Start() ProcessRunning {
-    // 開始可能な状態であることを型で保証
+    // The type guarantees that this is a startable state
     return ProcessRunning{}
 }
 ```
 
 ---
 
-## レガシーコード改善戦略
+## Legacy Code Improvement Strategy
 
-### 優先順位
+### Priority Order
 
-レガシーコードを改善する際は、以下の順序で取り組む:
+When improving legacy code, address items in the following order:
 
-1. **バージョン管理**: 変更履歴を追跡可能にする（git）
-2. **自動化**: `make lint && make test` を必ず通す状態を作る
-3. **テスティング**: 段階的にカバレッジを上げる
+1. **Version control**: Make change history trackable (git)
+2. **Automation**: Establish a state where `make lint && make test` always passes
+3. **Testing**: Gradually increase coverage
 
-### 開発の3本柱の確立
+### Establishing the Three Pillars of Development
 
-レガシーコード改善において、以下の3つの柱を確立することが成功の鍵となる。
+Establishing the following three pillars is the key to success in legacy code improvement.
 
-#### 1. バージョン管理（Git）
+#### 1. Version Control (Git)
 
-**重要度**: 最優先事項
+**Importance**: Top priority
 
-**理由**:
-- バージョン管理なしでの開発は**極めて危険**
-- 変更履歴がないと、誰がいつ何を変更したかが追跡不可能
-- ロールバックや差分確認ができない状態は、本番環境での事故に直結する
+**Rationale**:
+- Development without version control is **extremely dangerous**
+- Without change history, it is impossible to track who changed what and when
+- The inability to rollback or diff directly leads to production incidents
 
-**実践**:
-- レガシーコードを引き継いだら、最初に Git リポジトリを作成する
-- コミットメッセージは明確に記述する（Angular スタイルを推奨）
-- ブランチ戦略を定義する（例: main/develop/feature ブランチ）
+**Practice**:
+- When inheriting legacy code, create a Git repository first
+- Write clear commit messages (Angular-style is recommended)
+- Define a branch strategy (e.g., main/develop/feature branches)
 
-#### 2. 自動化（Automation）
+#### 2. Automation
 
-**重要度**: 早期導入がレバレッジを生む
+**Importance**: Early adoption provides high leverage
 
-**理由**:
-- 手作業によるデプロイやビルドは、ミスが発生しやすく時間もかかる
-- 自動化を早期に導入すると、以降のすべての開発でその恩恵を受けられる
-- CI/CD パイプラインは開発速度と品質の両方を向上させる
+**Rationale**:
+- Manual deployment and builds are error-prone and time-consuming
+- Introducing automation early delivers benefits across all subsequent development
+- CI/CD pipelines improve both development speed and quality
 
-**実践**:
-- `Makefile` や `scripts/` でビルド・テストを自動化する
-- GitHub Actions や CI ツールで自動テスト・lint を実行する
-- デプロイプロセスを自動化し、人為的ミスを排除する
+**Practice**:
+- Automate build and test with `Makefile` or `scripts/`
+- Run automated tests and lint via GitHub Actions or other CI tools
+- Automate the deployment process to eliminate human error
 
-**本リポジトリでの例**:
+**Examples in this repository**:
 ```bash
-make lint   # 静的解析を自動実行
-make test   # ユニットテストを自動実行
-make ci     # CI 相当の処理を自動実行
+make lint   # Run static analysis automatically
+make test   # Run unit tests automatically
+make ci     # Run CI-equivalent processing automatically
 ```
 
-#### 3. 自動テスト（Testing）
+#### 3. Automated Testing
 
-**重要度**: テストのないコードは「悪いコード」
+**Importance**: Code without tests is "bad code"
 
-**定義** (マイケル・フェザーズ):
-> "テストのないコードはレガシーコードである"
+**Definition** (Michael Feathers):
+> "Code without tests is legacy code"
 
-**理由**:
-- 手動確認は不安定で、コストが高く、属人化しやすい
-- テストがあれば、リファクタリング時に既存の動作が保たれているか自動検証できる
-- まずは「正常系（Happy Path）」が動くことを確認する簡単なテストから始めても価値がある
+**Rationale**:
+- Manual verification is unreliable, expensive, and dependent on individual knowledge
+- With tests, you can automatically verify that existing behavior is preserved during refactoring
+- Even starting with simple tests that confirm "the happy path works" has value
 
-**実践**:
-- 既存コードには「undefinedでないこと」や「panicしないこと」を確認する程度の雑なテストから始める
-- 新規コードはテストファーストで書く（Sprout パターン）
-- テストカバレッジを段階的に上げていく
+**Practice**:
+- For existing code, start with rough tests that just confirm "it's not undefined" or "it doesn't panic"
+- Write new code test-first (Sprout pattern)
+- Gradually increase test coverage
 
-**テストの段階**:
-1. Phase 1: panic しないこと
-2. Phase 2: 正常系が動くこと
-3. Phase 3: 異常系とエッジケース
-4. Phase 4: 完全一致の検証（詳細は「テスト戦略」セクション参照）
+**Testing phases**:
+1. Phase 1: Confirm it doesn't panic
+2. Phase 2: Confirm the happy path works
+3. Phase 3: Add error cases and edge cases
+4. Phase 4: Add exact-match verification (see the "Testing Strategy" section for details)
 
-### Extract パターン
+### Extract Pattern
 
-既存コードからテスト可能な純粋関数を抽出する:
+Extract testable pure functions from existing code:
 
-1. テストしたいロジックを特定する
-2. 外部依存（I/O、時刻、乱数）を引数として受け取る形に変形する
-3. 純粋関数として切り出す
-4. 単体テストを追加する
-5. 元の場所から切り出した関数を呼び出す
+1. Identify the logic you want to test
+2. Transform it to accept external dependencies (I/O, time, randomness) as arguments
+3. Extract it as a pure function
+4. Add unit tests
+5. Call the extracted function from the original location
 
 ```go
-// Before: テスト困難
+// Before: Hard to test
 func ProcessOrder(orderID string) error {
-    order := db.GetOrder(orderID)  // 外部依存
-    if time.Now().After(order.Deadline) {  // 時刻依存
+    order := db.GetOrder(orderID)  // External dependency
+    if time.Now().After(order.Deadline) {  // Time dependency
         return errors.New("deadline exceeded")
     }
     // ...
 }
 
-// After: 純粋関数を抽出
+// After: Extract a pure function
 func IsDeadlineExceeded(deadline, now time.Time) bool {
     return now.After(deadline)
 }
@@ -319,18 +319,18 @@ func ProcessOrder(orderID string, now time.Time) error {
 }
 ```
 
-### Sprout パターン
+### Sprout Pattern
 
-新規コードはテストファーストで書く:
+Write new code test-first:
 
-1. 新機能の要件を明確にする
-2. テストを先に書く（red）
-3. 最小限の実装でテストを通す（green）
-4. リファクタリングする（refactor）
-5. 既存コードとの統合点は最小限にする
+1. Clarify the requirements for the new feature
+2. Write the test first (red)
+3. Write the minimal implementation to make the test pass (green)
+4. Refactor (refactor)
+5. Minimize integration points with existing code
 
 ```go
-// Step 1: テストを先に書く
+// Step 1: Write the test first
 func TestCalculateDiscount(t *testing.T) {
     tests := []struct {
         name     string
@@ -351,7 +351,7 @@ func TestCalculateDiscount(t *testing.T) {
     }
 }
 
-// Step 2: 最小限の実装
+// Step 2: Minimal implementation
 func CalculateDiscount(price, quantity int) int {
     if quantity >= 10 {
         return price * quantity * 9 / 10
@@ -360,36 +360,36 @@ func CalculateDiscount(price, quantity int) int {
 }
 ```
 
-### 段階的改善プロセス
+### Gradual Improvement Process
 
-レガシーコードを引き継いだ際、以下の4つのステップで段階的に改善していく。
+When inheriting legacy code, improve it gradually through the following four steps.
 
-#### Step 1: 現状確認と環境整備
+#### Step 1: Assess Current State and Set Up the Environment
 
-**目的**: 改善の土台を作る
+**Purpose**: Build the foundation for improvement
 
-**実施内容**:
-1. **Git導入**: バージョン管理を最優先で導入する
-2. **CI化**: GitHub Actions等でlint・テストを自動実行する環境を整備する
-3. **現状把握**: コードベース全体を読み、依存関係や構造を理解する
-4. **ドキュメント作成**: README、アーキテクチャ図など最小限のドキュメントを用意する
+**Actions**:
+1. **Introduce Git**: Introduce version control as the top priority
+2. **Set up CI**: Set up an environment that runs lint and tests automatically via GitHub Actions, etc.
+3. **Understand the current state**: Read the entire codebase and understand dependencies and structure
+4. **Create documentation**: Prepare minimal documentation such as README and architecture diagrams
 
-**注意点**:
-- この段階では、コードの大幅な変更は行わない
-- まず「守り」の体制（バージョン管理・自動化）を整える
+**Notes**:
+- Do not make major code changes at this stage
+- First, establish the "defensive" posture (version control and automation)
 
-#### Step 2: モデル分離とロジック切り出し
+#### Step 2: Model Separation and Logic Extraction
 
-**目的**: ビジネスロジックとハンドラーを分離する
+**Purpose**: Separate business logic from handlers
 
-**実施内容**:
-1. **モデル定義**: ドメインエンティティや値オブジェクトを定義する
-2. **Extract パターン適用**: ハンドラーやコントローラーから純粋関数を抽出する
-3. **テスト追加**: 抽出した関数に対してユニットテストを追加する
+**Actions**:
+1. **Define models**: Define domain entities and value objects
+2. **Apply the Extract pattern**: Extract pure functions from handlers and controllers
+3. **Add tests**: Add unit tests for the extracted functions
 
-**例**:
+**Example**:
 ```go
-// Before: HTTPハンドラーにビジネスロジックが混在
+// Before: Business logic mixed into HTTP handler
 func HandleOrder(w http.ResponseWriter, r *http.Request) {
     orderID := r.URL.Query().Get("id")
     order := db.GetOrder(orderID)
@@ -400,7 +400,7 @@ func HandleOrder(w http.ResponseWriter, r *http.Request) {
     // ...
 }
 
-// After: ロジックを分離
+// After: Separate the logic
 func IsDeadlineExceeded(deadline, now time.Time) bool {
     return now.After(deadline)
 }
@@ -416,55 +416,55 @@ func HandleOrder(w http.ResponseWriter, r *http.Request, now time.Time) {
 }
 ```
 
-#### Step 3: 事実と解釈の分離
+#### Step 3: Separating Facts and Interpretation
 
-**目的**: データの変換ミスを防ぎ、ドメインロジックを明確にする
+**Purpose**: Prevent data conversion errors and clarify domain logic
 
-**実施内容**:
-1. **DTO定義**: 外部から受け取る生データ（JSON、DBレコード等）をDTOとして定義する
-2. **Domain型定義**: ビジネスロジックで使う型をドメインモデルとして定義する
-3. **変換層の確立**: DTO → Domain の変換をアダプタ層で一箇所に集約する
+**Actions**:
+1. **Define DTOs**: Define raw data received from external sources (JSON, DB records, etc.) as DTOs
+2. **Define Domain types**: Define types used by business logic as domain models
+3. **Establish the conversion layer**: Centralize DTO-to-Domain conversions in the adapter layer
 
-**本リポジトリでの例**:
-- `infra/*/internal/dto/` - Firestore/Pub/Sub のペイロード（**事実**）
-- `domain/video/Video` - ビジネスロジックで使う型（**情報**）
+**Examples in this repository**:
+- `infra/*/internal/dto/` - Firestore/Pub/Sub payloads (**facts**)
+- `domain/video/Video` - Types used by business logic (**information**)
 
-詳細は「設計原則 4. 事実と情報の分離」を参照。
+See "Design Principle 4. Separation of Facts and Information" for details.
 
-#### Step 4: アーキテクチャ定義
+#### Step 4: Architecture Definition
 
-**目的**: 持続可能な開発を実現する設計を確立する
+**Purpose**: Establish a design that enables sustainable development
 
-**実施内容**:
-1. **アーキテクチャパターンの選定**: Clean Architecture、Hexagonal Architecture等を選択する
-2. **依存方向の明確化**: 外側（Infra）→内側（Domain）の一方向依存を徹底する
-3. **自動チェックの導入**: `go-arch-lint`等で依存方向違反を自動検出する
-4. **ドキュメント化**: `docs/ARCHITECTURE.md`等にアーキテクチャ決定を記録する
+**Actions**:
+1. **Select an architecture pattern**: Choose Clean Architecture, Hexagonal Architecture, etc.
+2. **Clarify dependency direction**: Enforce one-way dependencies from outer layers (Infra) to inner layers (Domain)
+3. **Introduce automated checks**: Automatically detect dependency direction violations with `go-arch-lint`, etc.
+4. **Document**: Record architecture decisions in `docs/ARCHITECTURE.md`, etc.
 
-**本リポジトリでの例**:
-- Clean Architecture + DDD を採用
-- `.go-arch-lint.yml` で依存方向を強制
-- `docs/ARCHITECTURE_RULES.md` でルールを文書化
+**Examples in this repository**:
+- Adopted Clean Architecture + DDD
+- `.go-arch-lint.yml` enforces dependency direction
+- `docs/ARCHITECTURE_RULES.md` documents the rules
 
 ---
 
-## テスト戦略
+## Testing Strategy
 
-### リクエスト/レスポンスの粒度を狙う
+### Target Request/Response Granularity
 
-**目的**: 実装の細部と距離を置くことで、リファクタリングに強いテストを書く
+**Purpose**: Write tests that are resilient to refactoring by maintaining distance from implementation details
 
-**実践**:
-- インターフェース境界（HTTP、Pub/Sub、関数の入出力）でテストする
-- 内部実装（private メソッド、内部状態）に依存しない
-- ブラックボックステストを優先する
+**Practice**:
+- Test at interface boundaries (HTTP, Pub/Sub, function input/output)
+- Do not depend on internal implementation (private methods, internal state)
+- Prefer black-box testing
 
-**本リポジトリでの例**:
-- Pub/Sub ハンドラのテスト: メッセージ（JSON）を入力し、Firestore の状態変化を確認
-- UseCase のテスト: インターフェース（mock）経由で外部依存を差し替え
+**Examples in this repository**:
+- Pub/Sub handler tests: Input a message (JSON) and verify Firestore state changes
+- UseCase tests: Replace external dependencies via interfaces (mocks)
 
 ```go
-// Good: リクエスト/レスポンスの粒度でテスト
+// Good: Test at request/response granularity
 func TestVideoUseCase_ProcessVideo(t *testing.T) {
     type args struct {
         ctx     context.Context
@@ -480,7 +480,7 @@ func TestVideoUseCase_ProcessVideo(t *testing.T) {
         setup  func(*mockRepo)
     }{
         {
-            name: "正常系",
+            name: "happy path",
             args: args{ctx: context.Background(), videoID: "video-123"},
             want: want{err: nil},
             setup: func(m *mockRepo) {
@@ -490,35 +490,35 @@ func TestVideoUseCase_ProcessVideo(t *testing.T) {
             },
         },
     }
-    // UseCase の入出力のみをテスト、内部実装には依存しない
+    // Test only UseCase input/output, do not depend on internal implementation
 }
 
-// Bad: 内部実装に依存するテスト
+// Bad: Test that depends on internal implementation
 func TestVideoUseCase_internalValidation(t *testing.T) {
-    // private メソッドを直接テスト
+    // Directly testing a private method
 }
 ```
 
-### 段階的なテストの厳密化
+### Gradual Strictness of Tests
 
-**目的**: 完璧なテストを最初から書こうとせず、段階的に改善する
+**Purpose**: Don't try to write perfect tests from the start; improve them incrementally
 
-**実践**:
-1. **Phase 1**: 「undefined でないこと」「panic しないこと」を確認
-2. **Phase 2**: 正常系（Happy Path）の動作を確認
-3. **Phase 3**: 異常系とエッジケースを追加
-4. **Phase 4**: 完全一致のアサーションを追加
+**Practice**:
+1. **Phase 1**: Confirm "it's not undefined" and "it doesn't panic"
+2. **Phase 2**: Confirm the happy path works
+3. **Phase 3**: Add error cases and edge cases
+4. **Phase 4**: Add exact-match assertions
 
-**例**:
+**Example**:
 ```go
-// Phase 1: まず動くことを確認
+// Phase 1: First, confirm it runs
 func TestProcessVideo_DoesNotPanic(t *testing.T) {
     uc := &VideoUseCase{repo: &mockRepo{}}
     _ = uc.ProcessVideo(context.Background(), "video-id")
-    // エラーは無視、panicしなければOK
+    // Ignore errors; OK as long as it doesn't panic
 }
 
-// Phase 2: 正常系の動作を確認
+// Phase 2: Confirm happy path works
 func TestProcessVideo_Success(t *testing.T) {
     uc := &VideoUseCase{repo: &mockRepo{}}
     err := uc.ProcessVideo(context.Background(), "video-id")
@@ -527,15 +527,15 @@ func TestProcessVideo_Success(t *testing.T) {
     }
 }
 
-// Phase 3: 異常系を追加
+// Phase 3: Add error cases
 func TestProcessVideo_ErrorCases(t *testing.T) {
     tests := []struct {
         name    string
         videoID string
         wantErr bool
     }{
-        {name: "空文字", videoID: "", wantErr: true},
-        {name: "不正なID", videoID: "invalid", wantErr: true},
+        {name: "empty string", videoID: "", wantErr: true},
+        {name: "invalid ID", videoID: "invalid", wantErr: true},
     }
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
@@ -548,7 +548,7 @@ func TestProcessVideo_ErrorCases(t *testing.T) {
     }
 }
 
-// Phase 4: 完全一致を検証
+// Phase 4: Verify exact match
 func TestProcessVideo_ExactMatch(t *testing.T) {
     type args struct {
         ctx     context.Context
@@ -565,7 +565,7 @@ func TestProcessVideo_ExactMatch(t *testing.T) {
         setup func(*mockRepo)
     }{
         {
-            name: "正常系",
+            name: "happy path",
             args: args{ctx: context.Background(), videoID: "video-123"},
             want: want{
                 video: &Video{ID: "video-123", Title: "Test Video"},
@@ -593,37 +593,37 @@ func TestProcessVideo_ExactMatch(t *testing.T) {
 }
 ```
 
-**レガシーコード改善の場合**:
-- 既存のテストがない場合は Phase 1 から始める
-- テストがある場合は Phase 2 から始め、段階的に Phase 4 へ進む
-- 完全一致のアサーションは最後に追加し、リファクタリング時の検証として活用する
+**For legacy code improvement**:
+- If there are no existing tests, start from Phase 1
+- If tests exist, start from Phase 2 and gradually progress to Phase 4
+- Add exact-match assertions last, using them as verification during refactoring
 
 ---
 
-## Go 固有の実装指針
+## Go-Specific Implementation Guidelines
 
-### 値オブジェクトのテンプレート
+### Value Object Template
 
 ```go
-// MyValueObject は [説明] を表す値オブジェクト
+// MyValueObject is a value object representing [description]
 type MyValueObject string
 
-// ParseMyValueObject は raw を検証し MyValueObject を生成する
+// ParseMyValueObject validates raw and creates a MyValueObject
 func ParseMyValueObject(raw string) (MyValueObject, error) {
     v := strings.TrimSpace(raw)
     if v == "" {
         return "", xerr.New("myValueObject is empty")
     }
-    // 追加の検証ルール
+    // Additional validation rules
     return MyValueObject(v), nil
 }
 
 func (o MyValueObject) String() string { return string(o) }
 ```
 
-### 状態遷移の型安全な表現
+### Type-Safe State Transition Representation
 
-各状態を独立した型として定義し、遷移メソッドは遷移先の型を返す:
+Define each state as an independent type, and transition methods return the target state's type:
 
 ```go
 type ProcessState interface {
@@ -646,16 +646,16 @@ type ProcessFailed struct{}
 func (ProcessFailed) Name() string { return "failed" }
 ```
 
-### 列挙型による状態管理
+### Enumeration Types for State Management
 
-**目的**: 文字列定数ではなく列挙型を使うことで、想定外の値が入り込む余地をなくす
+**Purpose**: Eliminate the possibility of unexpected values entering by using enumeration types instead of string constants
 
-Goには他言語のようなenumキーワードはないが、`iota`を使った定数定義で列挙型を実現できる。
+Go lacks an enum keyword like other languages, but enumeration types can be achieved using constant definitions with `iota`.
 
-#### 文字列定数との比較
+#### Comparison with String Constants
 
 ```go
-// Bad: 文字列定数は typo や未定義の値を検出できない
+// Bad: String constants cannot detect typos or undefined values
 const (
     StatusPending = "pending"
     StatusRunning = "running"
@@ -663,13 +663,13 @@ const (
 )
 
 func Process(status string) error {
-    if status == "pendng" { // typoに気づかない
+    if status == "pendng" { // Typo goes unnoticed
         // ...
     }
-    // 任意の文字列を渡せてしまう
+    // Any arbitrary string can be passed
 }
 
-// Good: 列挙型で取り得る値を制限
+// Good: Enumeration types restrict possible values
 type Status int
 
 const (
@@ -680,16 +680,16 @@ const (
 
 func Process(status Status) error {
     if status == StatusPending {
-        // コンパイル時に型チェックされる
+        // Type-checked at compile time
     }
-    // Status 型以外は渡せない
+    // Only Status type values can be passed
 }
 ```
 
-#### 本リポジトリでの例: PlatformKind
+#### Example in this repository: PlatformKind
 
 ```go
-// PlatformKind は配信プラットフォームを表す列挙型
+// PlatformKind is an enumeration type representing streaming platforms
 type PlatformKind int
 
 const (
@@ -698,7 +698,7 @@ const (
     NicoNico
 )
 
-// 文字列変換
+// String conversion
 func (p PlatformKind) String() string {
     switch p {
     case YouTube:
@@ -712,7 +712,7 @@ func (p PlatformKind) String() string {
     }
 }
 
-// 文字列からのパース
+// Parsing from string
 func ParsePlatformKind(s string) (PlatformKind, error) {
     switch s {
     case "youtube":
@@ -727,31 +727,31 @@ func ParsePlatformKind(s string) (PlatformKind, error) {
 }
 ```
 
-#### 利点
+#### Benefits
 
-1. **タイプセーフ**: コンパイル時に型チェックされる
-2. **補完が効く**: IDEで候補が表示される
-3. **Exhaustive check**: switch文での網羅性チェックが可能（golangci-lintの`exhaustive`ルール）
-4. **誤入力を防ぐ**: 未定義の値を渡せない
+1. **Type safety**: Checked at compile time
+2. **Autocompletion**: IDE displays candidates
+3. **Exhaustive check**: Switch statement exhaustiveness checking is possible (golangci-lint's `exhaustive` rule)
+4. **Prevents typos**: Undefined values cannot be passed
 
-#### 注意点
+#### Caveats
 
-- JSON/DBとの相互変換には`String()`と`Parse*`メソッドが必要
-- `iota`は0から始まるため、ゼロ値の扱いに注意
+- `String()` and `Parse*` methods are needed for JSON/DB interconversion
+- `iota` starts at 0, so handle the zero value with care
 
-### エラーハンドリング
+### Error Handling
 
-- ドメインエラーは `xerr` で生成する
-- エラーメッセージは「何が」「なぜ」失敗したかを明示する
-- 呼び出し側で判断可能な情報を含める
+- Generate domain errors with `xerr`
+- Error messages should explicitly state "what" failed and "why"
+- Include information that allows the caller to make decisions
 
 ```go
-// Good: 具体的なエラーメッセージ
+// Good: Specific error message
 if v == "" {
     return "", xerr.New("videoId is empty")
 }
 
-// Bad: 曖昧なエラーメッセージ
+// Bad: Vague error message
 if v == "" {
     return "", xerr.New("invalid input")
 }
@@ -759,58 +759,58 @@ if v == "" {
 
 ---
 
-## 自動チェックツール
+## Automated Checking Tools
 
-以下のツールで設計ガイドラインを機械的にチェック:
+The following tools mechanically check adherence to the design guidelines:
 
-| ツール | チェック内容 |
+| Tool | What It Checks |
 |--------|-------------|
-| `go-arch-lint` | Clean Architecture 依存方向（`.go-arch-lint.yml` で定義） |
-| `usecasegodoc` | UseCase 公開メソッドの冪等性 GoDoc 記載 |
-| `valueobject` | 値オブジェクトのコンストラクタ検証と直接初期化の防止 |
-| `tabletest` | テーブルドリブンテスト形式（`args/want` 構造体、`cmp.Diff` 使用） |
+| `go-arch-lint` | Clean Architecture dependency direction (defined in `.go-arch-lint.yml`) |
+| `usecasegodoc` | Idempotency GoDoc on UseCase public methods |
+| `valueobject` | Constructor validation and prevention of direct initialization for value objects |
+| `tabletest` | Table-driven test format (`args/want` structs, `cmp.Diff` usage) |
 
-### 実行方法
+### How to Run
 
 ```bash
 make lint
 ```
 
-すべてのlintツールが自動実行されます。
+All lint tools are run automatically.
 
 ### valueobject lint
 
-**目的**: プリミティブ型の直接使用を防ぎ、値オブジェクトのコンストラクタで不変条件を検証
+**Purpose**: Prevent direct use of primitive types and validate invariants in value object constructors
 
-**チェック内容**:
-- `Parse*` / `New*` 関数が `error` を返すか
-- 値オブジェクト型（`VideoID`, `PlatformKind` など）の直接初期化を検出
+**What it checks**:
+- Whether `Parse*` / `New*` functions return `error`
+- Detects direct initialization of value object types (`VideoID`, `PlatformKind`, etc.)
 
-**例**:
+**Example**:
 ```go
-// NG: 直接初期化
+// NG: Direct initialization
 videoID := VideoID("abc123")
 
-// OK: コンストラクタ経由
+// OK: Via constructor
 videoID, err := ParseVideoID("abc123")
 ```
 
 ### tabletest lint
 
-**目的**: t-wada推奨のテーブルドリブンテスト形式を強制
+**Purpose**: Enforce t-wada's recommended table-driven test format
 
-**チェック内容**:
-- `*_test.go` で `Test*` 関数が `args`, `want` 構造体を使用しているか
-- `cmp.Diff` で比較しているか（`reflect.DeepEqual` は禁止）
+**What it checks**:
+- Whether `Test*` functions in `*_test.go` use `args` and `want` structs
+- Whether comparisons use `cmp.Diff` (`reflect.DeepEqual` is prohibited)
 
-**例**:
+**Example**:
 ```go
 // OK
 type args struct { raw string }
 type want struct { Got VideoID; Err error }
 tests := []struct { name string; args args; want want }{ ... }
 
-// 比較
+// Comparison
 if diff := cmp.Diff(tt.want, got); diff != "" {
     t.Fatalf("mismatch (-want +got):\n%s", diff)
 }
@@ -818,57 +818,56 @@ if diff := cmp.Diff(tt.want, got); diff != "" {
 
 ---
 
-## チェックリスト
+## Checklist
 
-コードレビュー時に以下を確認する:
+Verify the following during code review:
 
-- [ ] プリミティブ型ではなく値オブジェクトを使用しているか
-- [ ] コンストラクタで不変条件を検証しているか
-- [ ] 状態変更は明示的なメソッドを通しているか
-- [ ] DTO と Domain 型が分離されているか
-- [ ] 新規コードにはテストがあるか
-- [ ] 外部依存は引数として注入可能か
+- [ ] Are value objects used instead of primitive types?
+- [ ] Are invariants validated in constructors?
+- [ ] Are state changes made through explicit methods?
+- [ ] Are DTOs and Domain types separated?
+- [ ] Does new code have tests?
+- [ ] Are external dependencies injectable as arguments?
 
 ---
 
-## t-wada 氏の共通メッセージ
+## t-wada's Core Messages
 
-両セッション資料（「レガシーコード改善の真実の記録」「信頼性の高いコードを育てる」）に共通するメッセージは、以下の2つである。
+The message common to both session materials ("The True Record of Legacy Code Improvement" and "Growing Reliable Code") can be summarized in the following two points.
 
-### 1. フィードバックサイクルの高速化
+### 1. Accelerating Feedback Cycles
 
-**テスト・自動化による迅速なフィードバック**:
-- バージョン管理（Git）で変更履歴を追跡可能にする
-- CI/CD で自動テスト・lint を実行し、問題を早期に検出する
-- テストのないコードは「悪いコード」であり、レガシーコード化を招く
-- まずは雑でも良いので、正常系（Happy Path）が動くテストから始める
+**Rapid feedback through testing and automation**:
+- Make change history trackable with version control (Git)
+- Run automated tests and lint via CI/CD to detect problems early
+- Code without tests is "bad code" and leads to becoming legacy code
+- Start with rough tests that confirm the happy path works, even if imperfect
 
-**効果**:
-- バグの早期発見により、修正コストを大幅に削減
-- リファクタリング時の安全性が向上し、コードの改善が加速する
-- 開発者が自信を持ってコードを変更できる
+**Effects**:
+- Significantly reduce fix costs through early bug detection
+- Improve safety during refactoring, accelerating code improvement
+- Developers can change code with confidence
 
-### 2. 設計による複雑性の制御
+### 2. Controlling Complexity Through Design
 
-**型・責務の分離による予防的設計**:
-- 型システムで不正な値を排除し、防御的プログラミング（大量のif文）を不要にする
-- 列挙型や値オブジェクトで状態空間を最小化する
-- 責務を適切なオブジェクトに配置し、凝集度を高める
-- イミュータビリティでエイリアシング問題を根本的に防ぐ
+**Preventive design through types and separation of responsibilities**:
+- Use the type system to eliminate invalid values, making defensive programming (excessive if-statements) unnecessary
+- Minimize the state space with enumeration types and value objects
+- Place responsibilities in appropriate objects to increase cohesion
+- Fundamentally prevent aliasing problems through immutability
 
-**効果**:
-- コンパイル時に誤りを検出し、実行時エラーを減らす
-- コードの意図が明確になり、保守性が向上する
-- テストすべき範囲が減り、品質保証が容易になる
+**Effects**:
+- Detect errors at compile time, reducing runtime errors
+- Code intent becomes clearer, improving maintainability
+- The scope of what needs testing is reduced, making quality assurance easier
 
-### コードの信頼性と開発継続性を高める鍵
+### The Key to Increasing Code Reliability and Development Sustainability
 
-この2つのアプローチ（**フィードバックサイクルの高速化**と**設計による複雑性の制御**）を組み合わせることで:
+By combining these two approaches (**accelerating feedback cycles** and **controlling complexity through design**):
 
-- **短期的**: バグの早期発見と修正が可能になり、開発速度が向上する
-- **中期的**: リファクタリングが安全に行えるようになり、技術的負債の返済が進む
-- **長期的**: 持続可能な開発体制が確立され、新機能の追加やメンバーの入れ替えにも柔軟に対応できる
+- **Short-term**: Early bug detection and fixing becomes possible, improving development speed
+- **Medium-term**: Refactoring becomes safe, enabling technical debt repayment
+- **Long-term**: A sustainable development system is established, enabling flexible adaptation to new feature additions and team member turnover
 
-**結論**:
-> 「テスト・自動化」と「型・設計」の両輪で、コードの信頼性を高め、開発を継続可能にすることが、レガシーコード改善と新規開発の両方において最も重要である。
-
+**Conclusion**:
+> The most important thing in both legacy code improvement and new development is to increase code reliability and make development sustainable through the twin wheels of "testing and automation" and "types and design."

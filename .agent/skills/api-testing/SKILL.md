@@ -1,21 +1,21 @@
 ---
 name: api-testing
-description: Hono testClient と OpenAPI 契約検証を使って API テストを構築し、エンドポイント契約をモック最小で保証するときに使う。
+description: Used when building API tests with Hono testClient and OpenAPI contract validation, guaranteeing endpoint contracts with minimal mocking.
 ---
 
-# トリガー条件
+# Trigger Conditions
 
-- API エンドポイントのテストを追加・変更するとき
-- ルートの入出力契約を固定したいとき
+- When adding or modifying tests for API endpoints
+- When you want to pin the input/output contract of a route
 
-# 実行チェックリスト
+# Execution Checklist
 
-1. `docs/testing/api-testing.md` を確認する
-2. 正常系/異常系をテーブルで列挙する
-3. `testClient` か `app.request()` でルートを直接叩く
-4. `/doc` ベースの契約チェック対象を更新する
+1. Review `docs/testing/api-testing.md`
+2. Enumerate success and error cases in a table
+3. Hit routes directly using `testClient` or `app.request()`
+4. Update `/doc`-based contract check targets
 
-# 参照ドキュメント
+# Reference Documents
 
 - `docs/testing/api-testing.md`
 - `docs/web-frontend/twada-tdd.md`

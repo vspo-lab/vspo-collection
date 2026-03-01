@@ -1,43 +1,43 @@
-# UI Testing 実装方針
+# UI Testing Implementation Policy
 
-## 目的
+## Purpose
 
-- コンポーネントを「ユーザーがどう使うか」の視点で検証する
-- DOM 構造の変更に強いテストを作る
+- Verify components from the perspective of "how the user uses them"
+- Create tests that are resilient to DOM structure changes
 
-## 対象
+## Scope
 
 - `services/web/shared/components/**`
-- `services/web/features/**` の Container/Presentational 境界
+- Container/Presentational boundaries in `services/web/features/**`
 
-## 実装ルール
+## Implementation Rules
 
-1. Role/Label/Text を優先して要素を取得する
-2. `user-event` 相当の操作でイベントを再現する
-3. テーブルドリブンで props / state バリエーションを検証する
-4. 実装詳細（class名、内部state）ではなく、見える結果を検証する
+1. Prefer Role/Label/Text for element selection
+2. Simulate events using `user-event` equivalent operations
+3. Verify props/state variations using table-driven testing
+4. Verify visible results, not implementation details (class names, internal state)
 
-## モック方針
+## Mocking Policy
 
-- デフォルト: モックしない（子コンポーネントも可能な限り実体）
-- 例外: ネットワーク境界のみ固定レスポンス化（MSW 等）
-- 目的: UIロジックの検証であって、外部SaaSの可用性検証ではない
+- Default: Do not mock (use real implementations for child components where possible)
+- Exception: Fix only network boundary responses (using MSW, etc.)
+- Purpose: Verify UI logic, not external SaaS availability
 
-## クエリ優先順位
+## Query Priority
 
 1. `getByRole`
 2. `getByLabelText`
 3. `getByPlaceholderText`
 4. `getByText`
 5. `getByDisplayValue`
-6. `getByTestId`（最後の手段）
+6. `getByTestId` (last resort)
 
-## 実行コマンド
+## Execution Commands
 
 - `pnpm --filter web vitest run`
 
-## 参考（一次情報）
+## References (Primary Sources)
 
 - Testing Library Guiding Principles: https://testing-library.com/docs/guiding-principles
 - Testing Library Query Priority: https://testing-library.com/docs/queries/about/#priority
-- Next.js Testing（Vitest + Testing Library）: https://nextjs.org/docs/app/guides/testing/vitest
+- Next.js Testing (Vitest + Testing Library): https://nextjs.org/docs/app/guides/testing/vitest

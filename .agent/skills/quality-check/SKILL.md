@@ -1,17 +1,17 @@
 ---
-name: 品質チェック
-description: プロジェクトの品質チェックを実行し、対応が必要な失敗のみを報告する。ユーザーがチェック実行、コード変更の検証、最初の失敗ゲートの特定を依頼したときに使う。
+name: Quality Check
+description: Run the project quality checks and report only the failures that need attention. Use when the user requests a check run, code change verification, or identification of the first failing gate.
 ---
 
-# トリガー条件
+# Trigger Conditions
 
-- ユーザーからチェック実行やコード検証を依頼されたとき
-- コード変更後に品質ゲートの状態を確認したいとき
-- 最初に失敗しているチェックを素早く特定したいとき
+- When the user requests a check run or code verification
+- When you need to confirm the quality gate status after a code change
+- When you need to quickly identify the first failing check
 
-# 実行チェックリスト
+# Execution Checklist
 
-1. `./scripts/post-edit-check.sh` を実行する
-2. 失敗した場合、最初に失敗したコマンドと根本原因を特定する
-3. 最小限の安全な修正を提案する
-4. 自動でコミットしない
+1. Run `./scripts/post-edit-check.sh`
+2. If it fails, identify the first failing command and its root cause
+3. Suggest a minimal, safe fix
+4. Do not commit automatically

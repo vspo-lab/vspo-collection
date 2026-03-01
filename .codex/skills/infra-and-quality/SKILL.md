@@ -1,19 +1,16 @@
 ---
-name: インフラ・コード品質
-description: インフラ・CI/CD（GitHub Actions）・セキュリティスキャン・Biome lint・knip。
+name: Infrastructure and Code Quality
+description: Infrastructure, CI/CD (GitHub Actions), security scanning, Biome lint, knip.
 ---
 
-# トリガー条件
+# Trigger Conditions
 
-- `infrastructure/` 配下のファイルを編集するとき
-- CI/CD ワークフロー（`.github/workflows/`）を修正するとき
-- コード品質チェック（biome, knip, type-check）を実行するとき
+- When editing files under `infrastructure/`
+- When modifying CI/CD workflows (`.github/workflows/`)
+- When running code quality checks (biome, knip, type-check)
 
-# 参照ドキュメント
+# Reference Documents
 
-- `docs/infra/terraform-tfaction-guidelines.md` - Terraform設計ガイドライン（tfactionベース）
-- `docs/infra/terraform.md` - Terraform設計（modules/env分離、命名規則、State管理）
-- `docs/infra/tfaction.md` - tfactionワークフロー（PR→Plan, Merge→Apply）
-- `docs/infra/ci-cd.md` - CI/CDパイプライン（Workload Identity認証）
-- `docs/infra/multi-cloud-best-practices.md` - AWS/GCP/Azure/Cloudflare のインフラ構築ベストプラクティス
-- `docs/security/lint.md` - セキュリティ/lintルール
+- `docs/infra/ci-cd.md` - CI/CD pipeline (Workload Identity authentication)
+- `docs/infra/multi-cloud-best-practices.md` - Infrastructure best practices for AWS/GCP/Azure/Cloudflare
+- `docs/security/lint.md` - Security/lint rules

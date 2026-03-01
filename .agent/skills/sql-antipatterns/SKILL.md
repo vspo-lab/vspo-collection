@@ -1,14 +1,14 @@
 ---
-name: SQLアンチパターン
-description: データベース設計・SQL実装のアンチパターンを検出し、回避策を適用するためのガイド。
+name: SQL Antipatterns
+description: Guide for detecting and applying remedies for database design and SQL implementation antipatterns.
 ---
 
-# トリガー条件
+# Trigger Conditions
 
-- `services/transcriptor/src/infra/repository/` 配下のスキーマ・クエリを編集するとき
-- DB設計レビュー、パフォーマンスレビュー、整合性レビューをするとき
-- 「SQLアンチパターン」「DBアンチパターン」「設計の地雷」を確認したいとき
+- When editing schemas or queries under `services/transcriptor/src/infra/repository/`
+- When performing DB design reviews, performance reviews, or consistency reviews
+- When you want to check for "SQL antipatterns", "DB antipatterns", or "design pitfalls"
 
-# 参照ドキュメント
+# Reference Documents
 
-- `docs/backend/sql-antipatterns.md` - 4カテゴリ（論理設計/物理設計/クエリ記述/アプリ開発）ごとのアンチパターンと回避策
+- `docs/backend/sql-antipatterns.md` - Antipatterns and remedies organized by 4 categories (logical design / physical design / query writing / application development)

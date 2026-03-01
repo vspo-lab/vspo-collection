@@ -54,7 +54,6 @@ Use scope to indicate the changed context:
 
 - Issue links: `Closes #123`, `Refs #456`
 - BREAKING CHANGE declaration
-- Metadata such as `Co-authored-by`
 
 ## BREAKING CHANGE
 

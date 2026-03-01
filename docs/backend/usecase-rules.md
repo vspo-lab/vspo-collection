@@ -1,32 +1,32 @@
-# UseCase 実装ルール
+# UseCase Implementation Rules
 
-## 概要
+## Overview
 
-UseCase は「何を、どの順で実行するか」を宣言的に記述するオーケストレーション層です。
-ビジネスロジックは Domain に、副作用は Infrastructure に委譲します。
+A UseCase is an orchestration layer that declaratively describes "what to execute and in what order."
+Business logic is delegated to the Domain, and side effects are delegated to Infrastructure.
 
-UseCase の理想形は**上から下へ関数を 1 つずつ呼ぶだけ**の実装です。
+The ideal UseCase is an implementation that **simply calls functions one by one from top to bottom**.
 
-## 基本原則: 上から下への逐次実行
+## Core Principle: Sequential Top-to-Bottom Execution
 
-UseCase 関数は上から順に関数を 1 つずつ実行します。
-条件分岐はドメイン関数の前後での早期リターンに限定し、ネストを浅く保ちます。
+A UseCase function executes functions one by one from top to bottom.
+Conditional branching is limited to early returns before or after domain functions, keeping nesting shallow.
 
-### Good: 宣言的な逐次実行
+### Good: Declarative Sequential Execution
 
 ```typescript
 const createItem = async (input: CreateItemInput): Promise<Result<Item, AppError>> => {
   return await txManager.runTx(async (tx) => {
-    // 1. バリデーション
+    // 1. Validation
     const validated = ItemInput.validate(input);
     if (!validated) {
       return Err(new AppError({ code: "VALIDATION_ERROR", message: "Invalid input" }));
     }
 
-    // 2. ドメインオブジェクト生成
+    // 2. Create domain object
     const item = Item.new(validated);
 
-    // 3. 永続化
+    // 3. Persist
     const saveResult = await itemRepository.from({ tx }).create(item);
     if (saveResult.err) return saveResult;
 
@@ -35,13 +35,13 @@ const createItem = async (input: CreateItemInput): Promise<Result<Item, AppError
 };
 ```
 
-### Bad: ループ内に複数の条件分岐
+### Bad: Multiple Conditional Branches Inside a Loop
 
-ループ内に複数の条件分岐や処理がある実装は黄色信号です。
-ドメイン関数に抽出して UseCase をフラットに保ちます。
+Implementations with multiple conditional branches or operations inside a loop are a yellow flag.
+Extract them into domain functions to keep the UseCase flat.
 
 ```typescript
-// ❌ Bad: ループ内分岐が複雑
+// Bad: Complex branching inside a loop
 const processItems = async (items: Item[]) => {
   for (const item of items) {
     if (item.status === "active") {
@@ -56,7 +56,7 @@ const processItems = async (items: Item[]) => {
   }
 };
 
-// ✅ Good: ドメインに委譲して UseCase はフラット
+// Good: Delegate to Domain, keep UseCase flat
 const processItems = async (items: Item[]) => {
   const grouped = Item.groupByAction(items);
 
@@ -70,76 +70,76 @@ const processItems = async (items: Item[]) => {
 };
 ```
 
-## 禁止ルール
+## Prohibited Patterns
 
-### 1. UseCase から UseCase を呼ばない
+### 1. Do Not Call a UseCase from Another UseCase
 
-UseCase 間の依存は暗黙の結合を生みます。共通ロジックは Domain 関数に抽出します。
+Dependencies between UseCases create implicit coupling. Extract shared logic into Domain functions.
 
 ```typescript
-// ❌ Bad: UseCase から UseCase を呼ぶ
+// Bad: Calling a UseCase from a UseCase
 const orderUseCase = OrderUseCase.from(deps);
-const result = await orderUseCase.create(input); // UseCase→UseCase
+const result = await orderUseCase.create(input); // UseCase -> UseCase
 
-// ✅ Good: 共通ロジックは Domain に抽出
+// Good: Extract shared logic into Domain
 const order = Order.new(input);
 const result = await orderRepository.from({ tx }).create(order);
 ```
 
-### 2. UseCase 内で環境変数に直接アクセスしない
+### 2. Do Not Access Environment Variables Directly Inside a UseCase
 
-環境依存は DI コンテナで注入します。UseCase は純粋なオーケストレーションに徹します。
+Environment dependencies are injected via a DI container. UseCases focus purely on orchestration.
 
 ```typescript
-// ❌ Bad: 環境変数を直接参照
+// Bad: Directly referencing environment variables
 const apiKey = process.env.API_KEY;
 
-// ✅ Good: DI で注入
+// Good: Inject via DI
 type Dependencies = Readonly<{
-  config: AppConfig; // 環境変数は config 経由
+  config: AppConfig; // Environment variables accessed through config
   itemRepository: ItemRepository;
 }>;
 ```
 
-### 3. UseCase 内で直接メッセージキューや PubSub を操作しない
+### 3. Do Not Directly Operate Message Queues or PubSub Inside a UseCase
 
-副作用は Infrastructure のインターフェース経由で実行します。
+Side effects are executed through Infrastructure interfaces.
 
 ```typescript
-// ❌ Bad: 直接 publish
+// Bad: Direct publish
 await pubsub.topic("items").publish(message);
 
-// ✅ Good: インターフェース経由
+// Good: Through an interface
 await messageQueue.publishItemCreated({ itemId });
 ```
 
-## 冪等性の文書化
+## Idempotency Documentation
 
-UseCase 関数には冪等性の有無を JSDoc で明示します。
-これによりレビュー時に冪等性を考慮した指摘が行えるようになります。
+UseCase functions must explicitly document their idempotency via JSDoc.
+This enables reviewers to provide idempotency-aware feedback during code reviews.
 
 ```typescript
 /**
- * アイテムを作成する。
+ * Creates an item.
  *
- * @idempotent false - 同一入力で複数回呼ぶと重複作成される
+ * @idempotent false - Calling multiple times with the same input creates duplicates
  */
 const create = async (input: CreateItemInput): Promise<Result<Item, AppError>> => {
   // ...
 };
 
 /**
- * アイテムのステータスを更新する。
+ * Updates the status of an item.
  *
- * @idempotent true - 同一入力で複数回呼んでも結果は同じ
+ * @idempotent true - Calling multiple times with the same input produces the same result
  */
 const updateStatus = async (input: UpdateStatusInput): Promise<Result<Item, AppError>> => {
   // ...
 };
 ```
 
-## 関連ドキュメント
+## Related Documents
 
-- [Server Architecture](./server-architecture.md) - レイヤー構成の全体像
-- [関数ドキュメント規約](./function-documentation.md) - JSDoc の書き方
-- [Domain Model](./domain-modeling.md) - ドメイン層の設計方針
+- [Server Architecture](./server-architecture.md) - Overall layer structure
+- [Function Documentation Conventions](./function-documentation.md) - How to write JSDoc
+- [Domain Model](./domain-modeling.md) - Domain layer design principles

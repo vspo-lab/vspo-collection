@@ -1,46 +1,46 @@
-# Integration Testing 実装方針
+# Integration Testing Implementation Policy
 
-## 目的
+## Purpose
 
-- UseCase と Repository、DB を含む複数モジュール連携の挙動を保証する
-- 単体テストでは見えない境界不整合（永続化、トランザクション、変換）を検出する
+- Guarantee the behavior of multi-module collaboration including UseCase, Repository, and DB
+- Detect boundary inconsistencies (persistence, transactions, transformations) that are invisible in unit tests
 
-## 対象
+## Scope
 
 - `services/transcriptor/src/usecase/**`
 - `services/transcriptor/src/infra/repository/**`
-- DB を含むアプリケーションフロー
+- Application flows that include DB
 
-## 実装ルール
+## Implementation Rules
 
-1. アプリ内部（UseCase/Repository/DB）は実体を使う
-2. 外部サービス依存のみ境界でモックする
-3. テーブルドリブンで業務シナリオを列挙する
-4. 各テストを独立させ、前のケースのデータに依存しない
+1. Use real implementations for app internals (UseCase/Repository/DB)
+2. Mock only at external service boundaries
+3. Enumerate business scenarios using table-driven testing
+4. Keep each test independent; do not depend on data from previous cases
 
-## データ管理
+## Data Management
 
-- テスト前に migrate/seed を実行する
-- テストごとに必要データを作成し、不要な共有状態を避ける
-- CI では `compose.test.yaml` 経由で再現可能にする
+- Run migrate/seed before tests
+- Create required data per test; avoid unnecessary shared state
+- Use `compose.test.yaml` for reproducibility in CI
 
-## モック方針
+## Mocking Policy
 
-- デフォルト: モックしない（特に DB は実体）
-- 例外: 決済、メール、外部SaaSなど制御不能な外部境界のみ
+- Default: Do not mock (especially use real DB)
+- Exception: Only uncontrollable external boundaries such as payment, email, and external SaaS
 
-## ファイル配置
+## File Placement
 
 - `services/transcriptor/src/test/integration/**/*.test.ts`
-- `services/transcriptor/src/vitest.integration.config.ts` の `include` に合わせる
+- Match the `include` in `services/transcriptor/src/vitest.integration.config.ts`
 
-## 実行コマンド
+## Execution Commands
 
-- 全体: `pnpm test:integration`
-- APIのみ: `pnpm --filter api test:integration`
+- All: `pnpm test:integration`
+- API only: `pnpm --filter api test:integration`
 
-## 参考（一次情報）
+## References (Primary Sources)
 
 - Playwright Test Isolation: https://playwright.dev/docs/browser-contexts
-- Next.js Testing（テスト種類の整理）: https://nextjs.org/docs/app/guides/testing
-- t_wada方針: `docs/web-frontend/twada-tdd.md`
+- Next.js Testing (test type organization): https://nextjs.org/docs/app/guides/testing
+- t_wada policy: `docs/web-frontend/twada-tdd.md`

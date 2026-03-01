@@ -1,14 +1,14 @@
 <!-- Do not restructure or delete sections. Update individual values in-place when they change. -->
 # vspo-search (Cloudflare Workers + Next.js)
 
-## 行動の指針
+## Guiding Principles
 
-- エラーハンドリング: `Result` 型を使う (`import { wrap, Ok, Err, AppError } from "@vspo/errors"`)。try-catch 禁止。
-- 型定義: Zod Schema First (`z.infer<typeof schema>`)。明示的な interface 禁止。
-- シンプルさ: 不要なコード削除、3回以上の重複時のみ抽象化、早すぎる最適化禁止。
-- UseCase 実装: 上から下への逐次実行。UseCase→UseCase 呼び出し禁止、環境変数直接参照禁止。
-- 関数ドキュメント: Domain/UseCase の公開関数に JSDoc で事前条件・事後条件・冪等性を記述する。
-- コード変更後は `./scripts/post-edit-check.sh` を実行すること。
+- Error handling: Use the `Result` type (`import { wrap, Ok, Err, AppError } from "@vspo/errors"`). No try-catch.
+- Type definitions: Zod Schema First (`z.infer<typeof schema>`). No explicit interfaces.
+- Simplicity: Delete unused code; abstract only after 3+ duplications; no premature optimization.
+- UseCase implementation: Sequential top-to-bottom execution. No UseCase-to-UseCase calls; no direct env-var access.
+- Function documentation: Add JSDoc with pre-conditions, post-conditions, and idempotency to public Domain/UseCase functions.
+- After any code change, run `./scripts/post-edit-check.sh`.
 
 ## Project Overview
 
@@ -22,30 +22,30 @@ pnpm --filter @vspo/transcriptor dev  # local dev
 ./scripts/post-edit-check.sh          # run after every edit (build + lint + type-check + test + security)
 ```
 
-## 参照
+## References
 
-- 詳細な技術ドキュメント: `docs/`
-- AI エージェント用スキル: `.agent/skills/`
+- Technical documentation: `docs/`
+- AI agent skills: `.agent/skills/`
 
 ## Spec-Driven Development
 
-- 機能開発は「仕様策定 → チェックリスト生成 → フェーズ実装」の順で進める。
-- 仕様ドキュメントは `docs/plan/<feature>/` に配置する。
-- **Spec更新 → 実装**: 仕様変更が発生したら、まず `docs/plan/` を更新してからコードを変更する。口頭の合意は仕様ではない。
-- 実装順序はボトムアップ: Domain → Data Access → UseCase → API → Frontend。
-- スキル: `/plan-feature`（仕様策定）、`/init-impl`（チェックリスト生成）。
+- Feature development follows: spec authoring → checklist generation → phased implementation.
+- Spec documents go in `docs/plan/<feature>/`.
+- **Spec first, then code**: When requirements change, update `docs/plan/` before modifying code. Verbal agreement is not a spec.
+- Implementation order is bottom-up: Domain → Data Access → UseCase → API → Frontend.
+- Skills: `/plan-feature` (spec authoring), `/init-impl` (checklist generation).
 
-## Claude Code 運用
+## Claude Code Operations
 
-- 許可ポリシーと hooks は `.claude/settings.json` で管理する。
-- カスタム `/` は `.claude/skills/`（実体: `.agent/skills/`）に skill として置く。
-- `PreToolUse` hook で危険な Bash 操作（`git push`, `git add -A`, `git reset --hard`）をブロックする。
-- コード編集時は hook が `.claude/.post_edit_check_pending` を立て、応答終了時に `./scripts/post-edit-check.sh` を実行する。
+- Permission policies and hooks are managed in `.claude/settings.json`.
+- Custom `/` commands live in `.claude/skills/` (backed by `.agent/skills/`).
+- `PreToolUse` hook blocks dangerous Bash operations (`git push`, `git add -A`, `git reset --hard`).
+- On code edits, a hook creates `.claude/.post_edit_check_pending`; on Stop, `./scripts/post-edit-check.sh` runs.
 
 ## Architecture
 
 - Domain docs live in `docs/`. Read them before making architectural decisions.
-- Commit format: `<type>(<scope>): <subject>` — see skills/commit-rules for scopes and full convention.
+- Commit format: `<type>(<scope>): <subject>` — see `skills/commit` for scopes and full convention.
 
 ## Maintenance Notes
 <!-- This section is permanent. Do not delete. -->
